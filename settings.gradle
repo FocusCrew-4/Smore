@@ -1,5 +1,5 @@
 rootProject.name = 'Smore'
 
 include 'gateway'
-include 'config'
 include 'eureka'
+include 'config'
