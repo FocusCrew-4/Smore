@@ -1,6 +1,6 @@
 package com.smore.common.event;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 public abstract class CommonKafkaEvent<T> {
@@ -10,34 +10,55 @@ public abstract class CommonKafkaEvent<T> {
     private final String topic;
     private final T payload;
 
-    // 종류 구분 (도메인 이벤트 타입 ex:product -> AUCTION_START -> auction)
+    // 이벤트 카테고리 구분용 (ex: product -> AUCTION_START -> auction)
     private final Enum<?> type;
 
-    // header 에 넣는 방법도 있다고 합니다
+    // 메시지 소스나 발행 서비스 이름 등 헤더에 기록할 용도
     private final String source;
 
-    private final UUID equalKey;
-    private final LocalDateTime timestamp;
+    // 멱등성과 파티셔닝 키로 사용될 값 (Kafka key)
+    private final String idempotencyKey;
 
-    CommonKafkaEvent(String topic, T payload, Enum<?> type, String source) {
+    // LocalDateTime 은 TimeZone 의존도가 높아 UTC 기준 시간 기록을 위해 Instant 사용 권장
+    private final Instant timestamp;
+
+    protected CommonKafkaEvent(String topic, T payload, Enum<?> type, String source, String idempotencyKey) {
         this.topic = topic;
         this.payload = payload;
         this.type = type;
         this.source = source;
-
-        this.equalKey = UUID.randomUUID();
-        this.timestamp = LocalDateTime.now();
+        this.idempotencyKey = idempotencyKey;
+        this.timestamp = Instant.now();
     }
 
-    public UUID getEqualKey() {
-        return equalKey;
+    /**
+     * 랜덤 키가 허용되는 경우에만 사용하세요. 멱등성/파티셔닝이 중요하면 명시적 키를 넘기십시오.
+     */
+    protected CommonKafkaEvent(String topic, T payload, Enum<?> type, String source) {
+        this(topic, payload, type, source, UUID.randomUUID().toString());
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public String getTopic() {
+        return topic;
     }
 
     public T getPayload() {
         return payload;
+    }
+
+    public Enum<?> getType() {
+        return type;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public Instant getTimestamp() {
+        return timestamp;
     }
 }
