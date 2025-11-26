@@ -1,0 +1,184 @@
+version: '3.8'
+
+services:
+
+  redis-stack:
+    image: redis/redis-stack:latest
+    container_name: redis-stack
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    volumes:
+      - ./redis-stack-data:/data
+      - ./redis-stack.conf:/usr/local/etc/redis/redis-stack.conf
+    command: [ "/entrypoint.sh", "./redis-stack.conf" ]
+
+  mongodb:
+    image: mongo:8.0
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: examplepassword
+    volumes:
+      - mongo-data:/data/db
+
+  config-server:
+    container_name: config
+    build: ./config/.
+    restart: always
+    ports:
+      - "19900:19900"
+#    depends_on:
+#      eureka-server:
+#        condition: service_healthy
+
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:19900/actuator/health" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 10
+
+    networks:
+      - msa-network
+
+  eureka-server:
+    container_name: eureka
+    build: ./eureka/.
+    restart: always
+    ports:
+      - "18800:18800"
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:18800/actuator/health" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+    networks:
+      - msa-network
+
+  gateway-server:
+    container_name: gateway
+    build: ./gateway/.
+    restart: always
+    ports:
+      - "17700:17700"
+
+#    depends_on:
+#      eureka-server:
+#        condition: service_healthy
+
+    networks:
+      - msa-network
+
+  postgresql-server:
+    container_name: postgresql
+    image: postgres:17.6
+    restart: always
+    environment:
+      POSTGRES_DB: default
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - ./docker/db/postgresql:/var/lib/postgresql
+      - ./docker/db/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "root", "-d", "default", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - msa-network
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    restart: always
+    ports:
+      - "9411:9411"
+    networks:
+      - msa-network
+
+  kafka-server:
+    image: apache/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"   # (1) Kafka 클라이언트 접속용 포트 (Spring Boot 등 외부 애플리케이션에서 접근)
+      - "9093:9093"   # (2) Kafka 내부 컨트롤러(KRaft) 통신용 포트
+    environment:
+      # [Kafka 브로커의 고유 ID]
+      # Kafka 클러스터 안에서 각 브로커를 식별하기 위한 숫자 ID (중복되면 안 됨)
+      KAFKA_NODE_ID: 1
+
+      # [브로커 역할 정의]
+      # KRaft 모드에서는 Zookeeper가 없기 때문에,
+      # 브로커가 동시에 'broker' + 'controller' 역할을 수행하게 설정
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      # [리스너 정의]
+      # - PLAINTEXT: Kafka 클라이언트와 통신하는 리스너 (외부에서 접근)
+      # - CONTROLLER: KRaft 내부에서 컨트롤러 간 통신용 리스너
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+
+      # [외부로 광고되는 브로커 주소]
+      # 외부 클라이언트(Spring Boot, CLI 등)가 접속할 때 사용할 주소를 명시
+      # Docker 호스트 기준 주소(여기서는 localhost)
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-server:9092
+
+      # [브로커 간 통신 리스너 지정]
+      # 복제 및 내부 통신에 사용할 리스너 이름 지정
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      # [컨트롤러 리스너 이름 지정]
+      # 컨트롤러 역할이 사용할 리스너 이름을 명시해야 함
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      # [컨트롤러 투표자(합의 참여자) 지정 - KRaft 필수 설정]
+      # 단일 브로커 환경에서는 자기 자신만 투표자로 설정
+      # 형식: nodeId@hostname:controllerPort
+      # 예: 1@kafka:9093 → nodeId=1, host=kafka(컨테이너명), controllerPort=9093
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      # [클러스터 고유 식별자]
+      # KRaft 모드에서 메타데이터 로그를 식별하기 위한 ID (UUID 형식 사용 권장)
+      # 여러 브로커 구성 시 모든 브로커가 동일한 CLUSTER_ID를 가져야 함
+      CLUSTER_ID: "MYSAMPLECLUSTERID123"
+
+      # [토픽 복제 계수]
+      # 단일 브로커 환경에서는 반드시 1이어야 함
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+      # [자동 토픽 생성 허용]
+      # 프로듀서/컨슈머가 존재하지 않는 토픽에 접근할 경우 자동으로 토픽을 생성함 (개발용으로만 권장)
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+
+    # [Kafka 데이터 저장 볼륨]
+    # 브로커의 로그/메타데이터를 지속적으로 저장하기 위한 볼륨 마운트
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+    # [네트워크 설정]
+    # 다른 컨테이너(Spring Boot 애플리케이션 등)과 통신할 수 있도록 네트워크 지정
+    networks:
+      - msa-network
+
+volumes:
+  kafka-data:
+  mongo-data:
+    driver: local
+
+networks:
+  msa-network:
+    driver: bridge
