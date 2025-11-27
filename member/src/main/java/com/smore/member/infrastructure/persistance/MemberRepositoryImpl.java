@@ -13,7 +13,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     private final MemberJpaRepository memberJpaRepository;
 
     @Override
-    public Member findByEmail() {
+    public Member findByEmail(String email) {
         return null;
     }
 }
