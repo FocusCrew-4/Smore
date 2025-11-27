@@ -1,0 +1,51 @@
+package com.smore.member.infrastructure.persistance.jpa.entity;
+
+import com.smore.member.domain.enums.RegistrationStatus;
+import com.smore.member.domain.enums.Role;
+import com.smore.member.domain.enums.Status;
+import com.smore.member.infrastructure.persistance.jpa.vo.CredentialEmbeddable;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name = "p_member")
+@Getter
+@Setter
+@NoArgsConstructor
+public class MemberJpa {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Enumerated(EnumType.STRING)
+    private Role role;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "email", column = @Column(name = "email", unique = true, nullable = false)),
+        @AttributeOverride(name = "password", column = @Column(name = "password", nullable = false))
+    })
+    private CredentialEmbeddable credential;
+    private String nickname;
+    private Integer auctionCancelCount;
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    @Enumerated(EnumType.STRING)
+    private RegistrationStatus registrationStatus;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
+    private Long deleteBy;
+}

@@ -49,6 +49,12 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // 매핑(MapStruct)
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+
     // Querydsl
     implementation 'io.github.openfeign.querydsl:querydsl-core:7.0'
     implementation 'io.github.openfeign.querydsl:querydsl-jpa:7.0'
