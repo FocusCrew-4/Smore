@@ -1,18 +1,18 @@
 package com.smore.common.response;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record CommonResponse<T>(
     boolean success,
     T data,
     ErrorResponse error,
-    LocalDateTime dateTime
+    Instant dateTime
 ) {
     CommonResponse(
         boolean success,
         T data,
         ErrorResponse error
     ) {
-        this(success, data, error, LocalDateTime.now());
+        this(success, data, error, Instant.now());
     }
 }

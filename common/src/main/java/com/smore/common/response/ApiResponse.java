@@ -9,11 +9,11 @@ public class ApiResponse {
     }
 
     public static CommonResponse<?> error(String code, String message) {
-        return new CommonResponse<>(false, null, new ErrorResponse(code, message));
+        return new CommonResponse<>(false, null, new ErrorResponse(code, message, null));
     }
 
-    public  static CommonResponse<?> error(ErrorCode errorCode) {
+    public static CommonResponse<?> error(ErrorCode errorCode) {
         return new CommonResponse<>(false, errorCode, new ErrorResponse(errorCode.code(),
-            errorCode.message()));
+            errorCode.message(), errorCode.triggeredBy()));
     }
 }
