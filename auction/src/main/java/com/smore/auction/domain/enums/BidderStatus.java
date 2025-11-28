@@ -6,7 +6,7 @@ public enum BidderStatus {
     CONFIRMED("구매 확정"),
     CANCELLED("권리 보유했지만 거절/환불/기한초과");
 
-    String description;
+    private final String description;
 
     BidderStatus(String description) {
         this.description = description;

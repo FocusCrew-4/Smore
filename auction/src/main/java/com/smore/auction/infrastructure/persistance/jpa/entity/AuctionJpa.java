@@ -16,7 +16,6 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,18 +24,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class AuctionJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "id", column = @Column(name = "product_id")),
         @AttributeOverride(name = "price", column = @Column(name = "product_price"))
     })
     private ProductEmbeddable product;
+
     private Long stock;
     private Long sellerId;
     @Enumerated(EnumType.STRING)
