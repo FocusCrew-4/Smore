@@ -9,8 +9,8 @@ services:
       - "6379:6379"
       - "8001:8001"
     volumes:
-      - ./redis-stack-data:/data
-      - ./redis-stack.conf:/usr/local/etc/redis/redis-stack.conf
+      - ./docker/db/redis/redis-stack-data:/data
+      - ./docker/db/redis/redis-stack.conf:/usr/local/etc/redis/redis-stack.conf
     command: [ "/entrypoint.sh", "./redis-stack.conf" ]
 
   mongodb:
@@ -23,7 +23,30 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: examplepassword
     volumes:
-      - mongo-data:/data/db
+      - ./docker/db/mongo/mongo-data:/data/db
+
+  postgresql-server:
+    container_name: postgresql
+    image: postgres:17.6
+    restart: always
+    environment:
+      POSTGRES_DB: default
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - ./docker/db/postgresql:/var/lib/postgresql
+      - ./docker/db/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "root", "-d", "default", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - msa-network
 
   config-server:
     container_name: config
@@ -72,29 +95,6 @@ services:
 #    depends_on:
 #      eureka-server:
 #        condition: service_healthy
-
-    networks:
-      - msa-network
-
-  postgresql-server:
-    container_name: postgresql
-    image: postgres:17.6
-    restart: always
-    environment:
-      POSTGRES_DB: default
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-    volumes:
-      - ./docker/db/postgresql:/var/lib/postgresql
-      - ./docker/db/init:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
-
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "root", "-d", "default", "-h", "localhost" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
     networks:
       - msa-network

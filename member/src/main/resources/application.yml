@@ -1,0 +1,5 @@
+# member - application.yml
+
+spring:
+  application:
+    name: member-service
