@@ -18,11 +18,10 @@ public class TokenProvider implements JwtProvider {
         Instant now = Instant.now();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
-            .subject(user.getUsername())
+            .subject(user.getUserId().toString())
             .issuedAt(now)
             .expiresAt(now.plusSeconds(1800))
             .claim("role", user.getRole())
-            .claim("userId", user.getUserId().toString())
             .build();
 
         JwsHeader header = JwsHeader.with(() -> "HS256").build();
