@@ -2,6 +2,9 @@ package com.smore.auction.infrastructure.persistance.jpa.entity;
 
 import com.smore.auction.domain.enums.AuctionStatus;
 import com.smore.auction.infrastructure.persistance.jpa.vo.ProductEmbeddable;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -29,6 +32,10 @@ public class AuctionJpa {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "id", column = @Column(name = "product_id")),
+        @AttributeOverride(name = "price", column = @Column(name = "product_price"))
+    })
     private ProductEmbeddable product;
     private Long stock;
     private Long sellerId;

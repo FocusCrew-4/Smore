@@ -11,4 +11,8 @@ public enum BidderStatus {
     BidderStatus(String description) {
         this.description = description;
     }
+
+    public String description() {
+        return description;
+    }
 }

@@ -1,6 +1,9 @@
 package com.smore.auction.infrastructure.persistance.jpa.entity;
 
 import com.smore.auction.infrastructure.persistance.jpa.vo.BidderEmbeddable;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,6 +36,12 @@ public class AuctionBidderRankJpa {
     private AuctionJpa auction;
 
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "id", column = @Column(name = "bidder_id")),
+        @AttributeOverride(name = "price", column = @Column(name = "bidder_price")),
+        @AttributeOverride(name = "quantity", column = @Column(name = "bidder_quantity")),
+        @AttributeOverride(name = "status", column = @Column(name = "bidder_status"))
+    })
     private BidderEmbeddable bidder;
 
     private LocalDateTime createdAt;

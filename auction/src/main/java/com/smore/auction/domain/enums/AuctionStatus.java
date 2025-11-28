@@ -6,9 +6,13 @@ public enum AuctionStatus {
     CLOSED("경매 종료"),
     CANCELED("경매 취소");
 
-    String description;
+    private final String description;
 
     AuctionStatus(String description) {
         this.description = description;
+    }
+
+    public String description() {
+        return description;
     }
 }
