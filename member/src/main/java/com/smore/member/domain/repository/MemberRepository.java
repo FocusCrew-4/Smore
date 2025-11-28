@@ -1,5 +1,7 @@
 package com.smore.member.domain.repository;
 
-public interface MemberRepository {
+import com.smore.member.domain.model.Member;
 
+public interface MemberRepository {
+    Member findByEmail(String email);
 }
