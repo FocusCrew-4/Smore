@@ -1,6 +1,6 @@
 package com.smore.member.domain.enums;
 
-public enum Status {
+public enum MemberStatus {
     ACTIVE,
     INACTIVE,
     DELETED,

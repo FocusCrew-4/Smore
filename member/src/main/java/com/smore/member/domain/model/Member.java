@@ -1,8 +1,7 @@
 package com.smore.member.domain.model;
 
-import com.smore.member.domain.enums.RegistrationStatus;
+import com.smore.member.domain.enums.MemberStatus;
 import com.smore.member.domain.enums.Role;
-import com.smore.member.domain.enums.Status;
 import com.smore.member.domain.vo.Credential;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -16,10 +15,10 @@ public class Member {
     private Credential credential;
     private String nickname;
     private Integer auctionCancelCount;
-    private Status status;
-    private RegistrationStatus registrationStatus;
+    private MemberStatus status;
+
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
-    private Long deleteBy;
+    private Long deletedBy;
 }
