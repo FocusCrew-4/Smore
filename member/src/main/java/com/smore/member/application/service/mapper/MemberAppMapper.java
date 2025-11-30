@@ -5,7 +5,7 @@ import com.smore.member.domain.model.Member;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MemberMapper {
+public class MemberAppMapper {
 
     public MemberResult toMemberResult(Member member) {
         return new MemberResult(

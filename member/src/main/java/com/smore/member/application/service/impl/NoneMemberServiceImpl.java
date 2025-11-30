@@ -1,7 +1,7 @@
 package com.smore.member.application.service.impl;
 
 import com.smore.member.application.service.command.CreateCommand;
-import com.smore.member.application.service.mapper.MemberMapper;
+import com.smore.member.application.service.mapper.MemberAppMapper;
 import com.smore.member.application.service.result.MemberResult;
 import com.smore.member.domain.enums.Role;
 import com.smore.member.domain.model.Member;
@@ -16,7 +16,7 @@ public class NoneMemberServiceImpl extends AbstractMemberService {
 
     public NoneMemberServiceImpl(
         MemberRepository memberRepository,
-        MemberMapper mapper,
+        MemberAppMapper mapper,
         PasswordEncoder passwordEncoder
     ) {
         super(memberRepository, mapper);
