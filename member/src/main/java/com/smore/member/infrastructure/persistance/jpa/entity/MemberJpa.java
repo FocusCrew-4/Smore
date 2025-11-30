@@ -1,8 +1,7 @@
 package com.smore.member.infrastructure.persistance.jpa.entity;
 
-import com.smore.member.domain.enums.RegistrationStatus;
 import com.smore.member.domain.enums.Role;
-import com.smore.member.domain.enums.Status;
+import com.smore.member.domain.enums.MemberStatus;
 import com.smore.member.infrastructure.persistance.jpa.vo.CredentialEmbeddable;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -19,7 +18,6 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "p_member")
@@ -41,12 +39,10 @@ public class MemberJpa {
     private String nickname;
     private Integer auctionCancelCount;
     @Enumerated(EnumType.STRING)
-    private Status status;
-    @Enumerated(EnumType.STRING)
-    private RegistrationStatus registrationStatus;
+    private MemberStatus status;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
-    private Long deleteBy;
+    private Long deletedBy;
 }
