@@ -11,7 +11,7 @@ public enum GlobalErrorCode implements ErrorCode {
     GlobalErrorCode(String code, String message) {
         this.code = code;
         this.message = message;
-        this.triggeredBy = TriggerLocator.resolve();
+        this.triggeredBy = ErrorCode.super.triggeredBy();
     }
 
     @Override
@@ -20,5 +20,6 @@ public enum GlobalErrorCode implements ErrorCode {
     @Override
     public String message() { return message; }
 
+    @Override
     public String triggeredBy() { return triggeredBy; }
 }

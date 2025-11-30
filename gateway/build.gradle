@@ -29,12 +29,27 @@ ext {
 }
 
 dependencies {
+    // Monitoring & health checks
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Service discovery client
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    // Reactive gateway stack
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
+
+    // OAuth2 resource server with JWT support
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+    // Shared common library (module dependency)
+    implementation project(":common")
+
+    // Build-time annotation processing
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
