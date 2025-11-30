@@ -83,9 +83,9 @@ class OrderServiceTest {
         ).save(Mockito.any());
     }
 
-    @DisplayName("만약 이미 등록된 주문이라면 createOrder는 즉시 리턴되고 주문을 생성하지 않는다.")
+    @DisplayName("createOrder 성공 케이스 테스트 코드")
     @Test
-    void createOrderIdempotencyKeyTest2() {
+    void createOrder() {
         // given
         Instant fixedInstant = Instant.parse("2025-10-11T00:00:00Z");
 
