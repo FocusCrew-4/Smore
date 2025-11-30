@@ -7,7 +7,7 @@ import com.smore.member.infrastructure.persistance.jpa.vo.CredentialEmbeddable;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface MemberMapper {
+public interface MemberJpaMapper {
     Member toDomain(MemberJpa entity);
 
     MemberJpa toEntity(Member member);
