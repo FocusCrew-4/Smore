@@ -34,7 +34,7 @@ public class MemberController {
         RoleBasedMemberService service
             = memberServiceSelector.select(role);
 
-        MemberResult member = service.readMember();
+        MemberResult member = service.createMember(mapper.toCreateCommand(requestDto));
         var res = mapper.toCreateResponseDto(member);
 
         URI uri = URI.create("/api/v1/members/" + res.id());

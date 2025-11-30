@@ -73,7 +73,7 @@ class MemberControllerTest {
         );
 
         when(memberServiceSelector.select(Role.CONSUMER)).thenReturn(roleBasedMemberService);
-        when(roleBasedMemberService.readMember()).thenReturn(memberResult);
+        when(roleBasedMemberService.createMember(memberControllerMapper.toCreateCommand(requestDto))).thenReturn(memberResult);
         when(memberControllerMapper.toCreateResponseDto(memberResult)).thenReturn(responseDto);
 
         // when & then
