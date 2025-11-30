@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Embeddable
+@Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
     @Column(name = "product_id", nullable = false)
