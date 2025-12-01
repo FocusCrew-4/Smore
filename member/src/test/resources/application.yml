@@ -1,0 +1,22 @@
+## member - test/resources/application.yml
+spring:
+  config:
+    activate:
+      on-profile: test
+  jpa:
+    generate-ddl: true
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  cloud:
+    config:
+      enabled: false
+
+eureka:
+  client:
+    enabled: false
