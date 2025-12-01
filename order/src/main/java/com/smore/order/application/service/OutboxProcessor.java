@@ -9,6 +9,7 @@ import com.smore.order.domain.status.OutboxResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Slf4j(topic = "OutboxProcessor")
@@ -22,6 +23,7 @@ public class OutboxProcessor {
     private final OutboxRepository outboxRepository;
     private final OutboxCommandFactory factory;
 
+    @Async("taskExecutor")
     public void outboxProcessor(Long outboxId) {
 
         int updated = outboxRepository.claim(outboxId, EventStatus.PROCESSING);
