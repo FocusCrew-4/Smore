@@ -3,10 +3,7 @@ package com.smore.payment.feepolicy.presentation;
 import com.smore.payment.feepolicy.application.FeePolicyService;
 import com.smore.payment.feepolicy.application.command.CreateFeePolicyCommand;
 import com.smore.payment.feepolicy.application.query.GetFeePolicyQuery;
-import com.smore.payment.feepolicy.domain.model.FeeRate;
-import com.smore.payment.feepolicy.domain.model.FeeType;
-import com.smore.payment.feepolicy.domain.model.FixedAmount;
-import com.smore.payment.feepolicy.domain.model.TargetType;
+import com.smore.payment.feepolicy.domain.model.*;
 import com.smore.payment.feepolicy.presentation.dto.CreateFeePolicyRequestDto;
 import com.smore.payment.feepolicy.presentation.dto.GetFeePolicyRequest;
 import jakarta.validation.Valid;
@@ -48,16 +45,16 @@ public class FeePolicyController {
                 getFeePolicyRequest.getTargetKey()
         );
 
-        feePolicyService.getFeePolicy(getFeePolicyQuery);
+        FeePolicy feePolicy = feePolicyService.getFeePolicy(getFeePolicyQuery);
 
         //Todo: 공통응답 사용해서 응답 반환
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteFeePolicy(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteFeePolicy(@PathVariable UUID id, @RequestHeader("X-USER-ID") UUID userId) {
 
-        feePolicyService.deleteFeePolicy(id);
+        feePolicyService.deleteFeePolicy(id, userId);
 
         return ResponseEntity.ok().build();
     }
