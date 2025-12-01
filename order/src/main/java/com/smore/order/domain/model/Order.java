@@ -63,6 +63,47 @@ public class Order {
             .build();
     }
 
+    public static Order of(
+        UUID id,
+        Long userId,
+        UUID productId,
+        Integer productPrice,
+        Integer quantity,
+        Integer totalAmount,
+        Integer refundAmount,
+        Integer feeAmount,
+        UUID idempotencyKey,
+        OrderStatus orderStatus,
+        CancelState cancelState,
+        LocalDateTime orderedAt,
+        LocalDateTime confirmedAt,
+        LocalDateTime cancelledAt,
+        String street,
+        String city,
+        String zipcode
+    ) {
+
+        Product product = new Product(productId, productPrice);
+        Address address = new Address(street, city, zipcode);
+
+        return Order.builder()
+            .id(id)
+            .userId(userId)
+            .product(product)
+            .quantity(quantity)
+            .totalAmount(totalAmount)
+            .refundAmount(refundAmount)
+            .feeAmount(feeAmount)
+            .idempotencyKey(idempotencyKey)
+            .orderStatus(orderStatus)
+            .cancelState(cancelState)
+            .orderedAt(orderedAt)
+            .confirmedAt(confirmedAt)
+            .cancelledAt(cancelledAt)
+            .address(address)
+            .build();
+    }
+
     private static Integer calculateTotalPrice(Integer price, Integer quantity) {
         return price * quantity;
     }
