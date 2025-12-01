@@ -22,14 +22,14 @@ public class OutboxProcessor {
     private final OutboxRepository outboxRepository;
     private final OutboxCommandFactory factory;
 
-    public void outboxProcessor(Outbox outbox) {
+    public void outboxProcessor(Long outboxId) {
 
-        int updated = outboxRepository.claim(outbox.getId(), EventStatus.PROCESSING);
+        int updated = outboxRepository.claim(outboxId, EventStatus.PROCESSING);
         if (updated == 0) {
             return;
         }
 
-        Outbox fresh = outboxRepository.findById(outbox.getId());
+        Outbox fresh = outboxRepository.findById(outboxId);
 
         if (fresh.isExceededRetry(maxRetryCount)) {
             int result = outboxRepository.makeFail(fresh.getId(), EventStatus.FAILED, maxRetryCount);
