@@ -4,17 +4,19 @@ import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
 import com.smore.member.application.service.AuthService;
 import com.smore.member.application.service.result.MemberResult;
+import com.smore.member.application.service.selector.MemberFindSelector;
 import com.smore.member.application.service.usecase.MemberCreate;
 import com.smore.member.domain.enums.Role;
 import com.smore.member.presentation.web.dto.request.CreateRequestDto;
+import com.smore.member.presentation.web.dto.request.FindRequestDto;
 import com.smore.member.presentation.web.dto.request.LoginRequestDto;
-import com.smore.member.presentation.web.dto.response.CreateResponseDto;
 import com.smore.member.presentation.web.mapper.MemberControllerMapper;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -29,6 +31,7 @@ public class MemberController {
     private final MemberControllerMapper mapper;
     private final AuthService authService;
     private final MemberCreate memberCreate;
+    private final MemberFindSelector memberFindSelector;
 
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<?>> login(@RequestBody LoginRequestDto requestDto) {
@@ -56,4 +59,18 @@ public class MemberController {
             .body(ApiResponse.ok(res));
     }
 
+    @GetMapping("/{email}")
+    public ResponseEntity<CommonResponse<?>> getMember(
+        @RequestHeader("X-User-Id") Long id,
+        @RequestHeader("X-User-Role") Role role,
+        @RequestBody FindRequestDto requestDto
+    ) {
+        MemberResult findMember
+            = memberFindSelector.select(role).findMember(mapper.toFindCommand(id, requestDto));
+        var res = mapper.toFindResponseDto(findMember);
+
+        return  ResponseEntity.ok(
+            ApiResponse.ok(res)
+        );
+    }
 }

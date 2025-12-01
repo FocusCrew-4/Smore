@@ -44,4 +44,8 @@ public class Member {
             null
         );
     }
+
+    public boolean isMe(Long memberId) {
+        return this.id.equals(memberId);
+    }
 }

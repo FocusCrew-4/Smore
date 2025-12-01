@@ -18,9 +18,10 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Member findByEmail(String email) {
-        MemberJpa memberJpa = memberJpaRepository.findByCredentialEmail(email);
+        MemberJpa memberJpa = memberJpaRepository.findByCredentialEmail(email)
+            .orElseThrow(() -> new NoSuchElementException("member not found"));
 
-        return memberJpa != null ? mapper.toDomain(memberJpa) : null;
+        return mapper.toDomain(memberJpa);
     }
 
     @Override

@@ -1,11 +1,14 @@
 package com.smore.member.presentation.web.mapper;
 
 import com.smore.member.application.service.command.CreateCommand;
+import com.smore.member.application.service.command.FindCommand;
 import com.smore.member.application.service.command.LoginCommand;
 import com.smore.member.application.service.result.MemberResult;
 import com.smore.member.presentation.web.dto.request.CreateRequestDto;
+import com.smore.member.presentation.web.dto.request.FindRequestDto;
 import com.smore.member.presentation.web.dto.request.LoginRequestDto;
 import com.smore.member.presentation.web.dto.response.CreateResponseDto;
+import com.smore.member.presentation.web.dto.response.FindResponseDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,6 +35,25 @@ public class MemberControllerMapper {
             result.id(),
             result.email(),
             result.nickname()
+        );
+    }
+
+    public FindCommand toFindCommand(Long myId, FindRequestDto requestDto) {
+        return new FindCommand(
+            myId,
+            requestDto.email()
+        );
+    }
+
+    public FindResponseDto toFindResponseDto(MemberResult findMember) {
+        return new FindResponseDto(
+            findMember.id(),
+            findMember.role(),
+            findMember.email(),
+            findMember.nickname(),
+            findMember.auctionCancelCount(),
+            findMember.memberStatus(),
+            findMember.deletedBy()
         );
     }
 }
