@@ -31,4 +31,20 @@ public class FeePolicyService {
         return feePolicy.getId();
     }
 
+    @Transactional(readOnly = true)
+    public FeePolicy getFeePolicy(UUID id) {
+    }
+
+    public void deleteFeePolicy(UUID id) {
+        FeePolicy feePolicy = findFeePolicyById(id);
+        feePolicy.deactivate();
+        feePolicyRepository.delete(feePolicy);
+    }
+
+    @Transactional(readOnly = true)
+    public FeePolicy findFeePolicyById(UUID id) {
+        return feePolicyRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 수수료 정책을 찾을 수 없습니다."));
+    }
+
 }
