@@ -85,10 +85,10 @@ public class FeePolicy {
     public FixedAmount getFixedAmount() { return fixedAmount; }
     public boolean isActive() { return active; }
 
-    private void validate(FeeType feeType, FeeRate rate, FixedAmount fixedAmount) {
+    private void validate(FeeType feeType, FeeRate feeRate, FixedAmount fixedAmount) {
         switch (feeType) {
             case RATE -> {
-                if (rate == null)
+                if (feeRate == null)
                     throw new IllegalArgumentException("정률 수수료(rate)가 반드시 필요합니다.");
             }
             case FIXED -> {
@@ -96,7 +96,7 @@ public class FeePolicy {
                     throw new IllegalArgumentException("정액 수수료(fixedAmount)가 반드시 필요합니다.");
             }
             case MIXED -> {
-                if (rate == null || fixedAmount == null)
+                if (feeRate == null || fixedAmount == null)
                     throw new IllegalArgumentException("혼합 수수료는 정률(rate)과 정액(fixed)이 모두 필요합니다.");
             }
         }
