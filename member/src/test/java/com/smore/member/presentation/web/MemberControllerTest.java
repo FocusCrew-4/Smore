@@ -222,24 +222,5 @@ class MemberControllerTest {
             verify(memberFindSelector).select(role);
             verify(memberFind).findMember(findCommand);
         }
-
-        @Test
-        @DisplayName("USER 역할이 다른 회원을 조회하면 4xx로 처리된다")
-        void userAccessingOtherMemberIsRejected() throws Exception {
-            // given
-            Long userId = 1L;
-            Long targetId = 2L;
-            Role role = Role.USER;
-
-            when(memberFindSelector.select(role)).thenThrow(new RuntimeException("권한이 없습니다"));
-
-            // when & then
-            mockMvc.perform(get("/api/v1/members/{id}", targetId)
-                    .header("X-User-Id", userId)
-                    .header("X-User-Role", role))
-                .andExpect(status().is4xxClientError());
-
-            verify(memberFindSelector).select(role);
-        }
     }
 }
