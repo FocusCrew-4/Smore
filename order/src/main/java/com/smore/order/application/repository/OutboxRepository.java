@@ -2,6 +2,9 @@ package com.smore.order.application.repository;
 
 import com.smore.order.domain.model.Outbox;
 import com.smore.order.domain.status.EventStatus;
+import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface OutboxRepository {
 
@@ -17,4 +20,5 @@ public interface OutboxRepository {
 
     int makeFail(Long outboxId, EventStatus eventStatus, Integer maxRetryCount);
 
+    Page<Long> findPendingIds(Collection<EventStatus> states, Pageable pageable);
 }

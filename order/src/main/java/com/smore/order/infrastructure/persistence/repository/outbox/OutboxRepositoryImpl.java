@@ -7,8 +7,11 @@ import com.smore.order.infrastructure.persistence.entity.outbox.OutboxEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOutboxFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOutboxException;
 import com.smore.order.infrastructure.persistence.mapper.OutboxMapper;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,5 +106,21 @@ public class OutboxRepositoryImpl implements OutboxRepository {
         }
 
         return outboxJpaRepository.makeFail(outboxId, eventStatus, maxRetryCount);
+    }
+
+    @Override
+    public Page<Long> findPendingIds(Collection<EventStatus> states, Pageable pageable) {
+
+        if (states == null || states.isEmpty()) {
+            log.error("states가 유효하지 않습니다. : method = {}", "findPendingIds()");
+            throw new IllegalArgumentException("states가 유효하지 않습니다.");
+        }
+
+        if (pageable == null) {
+            log.error("pageable이 유효하지 않습니다. : method = {}", "findPendingIds()");
+            throw new IllegalArgumentException("pageable이 유효하지 않습니다.");
+        }
+
+        return outboxJpaRepository.findPendingIds(states, pageable);
     }
 }

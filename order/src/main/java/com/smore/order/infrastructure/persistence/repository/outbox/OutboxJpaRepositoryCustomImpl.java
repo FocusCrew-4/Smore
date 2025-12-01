@@ -2,11 +2,17 @@ package com.smore.order.infrastructure.persistence.repository.outbox;
 
 import static com.smore.order.infrastructure.persistence.entity.outbox.QOutboxEntity.*;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import com.smore.order.domain.status.EventStatus;
 import jakarta.persistence.EntityManager;
+import java.util.Collection;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 @RequiredArgsConstructor
 public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom {
@@ -83,5 +89,29 @@ public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom 
         em.clear();
 
         return (int) updated;
+    }
+
+    @Override
+    public Page<Long> findPendingIds(Collection<EventStatus> states, Pageable pageable) {
+
+        List<Long> content = queryFactory
+            .select(outboxEntity.id)
+            .from(outboxEntity)
+            .where(
+                outboxEntity.eventStatus.in(states)
+            )
+            .orderBy(outboxEntity.createdAt.asc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+            .select(outboxEntity.count())
+            .from(outboxEntity)
+            .where(
+                outboxEntity.eventStatus.in(states)
+            );
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 }
