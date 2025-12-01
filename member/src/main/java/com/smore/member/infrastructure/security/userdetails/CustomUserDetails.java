@@ -1,6 +1,6 @@
 package com.smore.member.infrastructure.security.userdetails;
 
-import com.smore.member.domain.enums.Status;
+import com.smore.member.domain.enums.MemberStatus;
 import com.smore.member.domain.model.Member;
 import java.util.Collection;
 import java.util.List;
@@ -43,7 +43,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return member.getStatus() == Status.ACTIVE;
+        return member.getStatus() == MemberStatus.ACTIVE;
     }
 
     @Override
