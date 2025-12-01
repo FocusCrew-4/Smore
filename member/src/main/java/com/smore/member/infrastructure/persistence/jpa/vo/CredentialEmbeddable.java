@@ -1,11 +1,10 @@
-package com.smore.member.infrastructure.persistance.jpa.vo;
+package com.smore.member.infrastructure.persistence.jpa.vo;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Embeddable
 @Getter
