@@ -77,4 +77,8 @@ public class Outbox {
             .build();
     }
 
+    public boolean isExceededRetry(Integer maxRetryCount) {
+        return retryCount >= maxRetryCount;
+    }
+
 }
