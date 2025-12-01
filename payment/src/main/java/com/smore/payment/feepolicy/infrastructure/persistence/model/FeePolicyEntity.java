@@ -1,8 +1,6 @@
 package com.smore.payment.feepolicy.infrastructure.persistence.model;
 
-import com.smore.payment.feepolicy.domain.model.FeeRate;
 import com.smore.payment.feepolicy.domain.model.FeeType;
-import com.smore.payment.feepolicy.domain.model.FixedAmount;
 import com.smore.payment.feepolicy.domain.model.TargetType;
 import com.smore.payment.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -10,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -43,8 +40,18 @@ public class FeePolicyEntity extends BaseEntity {
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    public FeePolicyEntity(UUID id, FeeType feeType, FeeRateJpa rate, FixedAmountJpa fixedAmount, boolean active) {
+    public FeePolicyEntity(
+            UUID id,
+            TargetType targetType,
+            UUID targetKey,
+            FeeType feeType,
+            FeeRateJpa rate,
+            FixedAmountJpa fixedAmount,
+            boolean active
+    ) {
         this.id = id;
+        this.targetType = targetType;
+        this.targetKey = targetKey;
         this.feeType = feeType;
         this.rate = rate;
         this.fixedAmount = fixedAmount;

@@ -15,13 +15,6 @@ public class FeePolicy {
 
     private boolean active;
 
-    private final LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
-    private Long createdBy;
-    private Long updatedBy;
-    private Long deletedBy;
-
     protected FeePolicy(
         TargetType targetType,
         UUID targetKey,
@@ -39,7 +32,6 @@ public class FeePolicy {
         this.fixedAmount = fixedAmount;
 
         active = false;
-        createdAt = LocalDateTime.now();
     }
 
     public static FeePolicy create(
@@ -59,13 +51,7 @@ public class FeePolicy {
             FeeType feeType,
             FeeRate rate,
             FixedAmount fixedAmount,
-            boolean active,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt,
-            LocalDateTime deletedAt,
-            Long createdBy,
-            Long updatedBy,
-            Long deletedBy
+            boolean active
     ) {
         this.id = id;
         this.targetType = targetType;
@@ -73,14 +59,7 @@ public class FeePolicy {
         this.feeType = feeType;
         this.rate = rate;
         this.fixedAmount = fixedAmount;
-
         this.active = active;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
-        this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
-        this.deletedBy = deletedBy;
     }
 
     public static FeePolicy reconstruct(
@@ -90,18 +69,11 @@ public class FeePolicy {
             FeeType feeType,
             FeeRate rate,
             FixedAmount fixedAmount,
-            boolean active,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt,
-            LocalDateTime deletedAt,
-            Long createdBy,
-            Long updatedBy,
-            Long deletedBy
+            boolean active
     ) {
         return new FeePolicy(
                 id, targetType, targetKey, feeType, rate, fixedAmount,
-                active, createdAt, updatedAt, deletedAt,
-                createdBy, updatedBy, deletedBy
+                active
         );
     }
 
@@ -112,12 +84,6 @@ public class FeePolicy {
     public FeeRate getRate() { return rate; }
     public FixedAmount getFixedAmount() { return fixedAmount; }
     public boolean isActive() { return active; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public LocalDateTime getDeletedAt() { return deletedAt; }
-    public Long getCreatedBy() { return createdBy; }
-    public Long getUpdatedBy() { return updatedBy; }
-    public Long getDeletedBy() { return deletedBy; }
 
     private void validate(FeeType feeType, FeeRate rate, FixedAmount fixedAmount) {
         switch (feeType) {
@@ -136,7 +102,6 @@ public class FeePolicy {
         }
     }
 
-
     public BigDecimal calculateFee(BigDecimal amount) {
         return switch (feeType) {
             case RATE -> rate.apply(amount);
@@ -151,13 +116,8 @@ public class FeePolicy {
     }
 
     // 정책 비활성화
-    public void deActivate() {
+    public void deactivate() {
         this.active = false;
     }
 
-    public void deactivate(Long userId) {
-        this.active = false;
-        this.deletedAt = LocalDateTime.now();
-        this.deletedBy = userId;
-    }
 }

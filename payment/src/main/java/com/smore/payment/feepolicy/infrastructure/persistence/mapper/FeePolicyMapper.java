@@ -21,6 +21,8 @@ public class FeePolicyMapper {
 
         return new FeePolicyEntity(
                 feePolicy.getId(),
+                feePolicy.getTargetType(),
+                feePolicy.getTargetKey(),
                 feePolicy.getFeeType(),
                 feeRateJpa,
                 fixedAmountJpa,
@@ -43,13 +45,7 @@ public class FeePolicyMapper {
                 feePolicyEntity.getFeeType(),
                 feeRate,
                 fixedAmount,
-                false,
-                feePolicyEntity.getCreatedAt(),
-                feePolicyEntity.getUpdatedAt(),
-                feePolicyEntity.getDeletedAt(),
-                feePolicyEntity.getCreateBy(),
-                feePolicyEntity.getUpdatedBy(),
-                feePolicyEntity.getDeletedBy()
+                feePolicyEntity.isActive()
         );
     }
 }
