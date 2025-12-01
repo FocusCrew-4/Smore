@@ -1,10 +1,10 @@
-package com.smore.member.infrastructure.persistance;
+package com.smore.member.infrastructure.persistence;
 
 import com.smore.member.domain.model.Member;
 import com.smore.member.domain.repository.MemberRepository;
-import com.smore.member.infrastructure.persistance.jpa.entity.MemberJpa;
-import com.smore.member.infrastructure.persistance.jpa.mapper.MemberJpaMapper;
-import com.smore.member.infrastructure.persistance.jpa.repository.MemberJpaRepository;
+import com.smore.member.infrastructure.persistence.jpa.entity.MemberJpa;
+import com.smore.member.infrastructure.persistence.jpa.mapper.MemberJpaMapper;
+import com.smore.member.infrastructure.persistence.jpa.repository.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

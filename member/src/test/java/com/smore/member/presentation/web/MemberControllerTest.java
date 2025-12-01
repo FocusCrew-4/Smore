@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smore.member.application.service.AuthService;
 import com.smore.member.application.service.RoleBasedMemberService;
 import com.smore.member.application.service.result.MemberResult;
 import com.smore.member.application.service.selector.MemberServiceSelector;
@@ -44,6 +45,9 @@ class MemberControllerTest {
 
     @MockitoBean
     RoleBasedMemberService roleBasedMemberService;
+
+    @MockitoBean
+    AuthService authService;
 
     @Test
     @DisplayName("POST /api/v1/members - 201 Created with response body")

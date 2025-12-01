@@ -1,4 +1,4 @@
-package com.smore.seller.infrastructure.persistance.entity;
+package com.smore.seller.infrastructure.persistence.entity;
 
 import com.smore.seller.domain.enums.SellerStatus;
 import jakarta.persistence.Entity;
