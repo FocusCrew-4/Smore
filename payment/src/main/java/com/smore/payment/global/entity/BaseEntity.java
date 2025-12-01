@@ -4,6 +4,8 @@ package com.smore.payment.global.entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -28,11 +30,11 @@ public class BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    private Long deletedBy;
+    private UUID deletedBy;
 
     private LocalDateTime deletedAt;
 
-    public void delete(Long id) {
+    public void delete(UUID id) {
         this.deletedBy = id;
         this.deletedAt = LocalDateTime.now();
     }

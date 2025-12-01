@@ -50,6 +50,7 @@ public class FeePolicyController {
 
         feePolicyService.getFeePolicy(getFeePolicyQuery);
 
+        //Todo: 공통응답 사용해서 응답 반환
         return ResponseEntity.ok().build();
     }
 

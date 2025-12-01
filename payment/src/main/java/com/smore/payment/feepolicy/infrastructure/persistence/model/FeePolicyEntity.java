@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
@@ -37,6 +38,7 @@ public class FeePolicyEntity extends BaseEntity {
     @Embedded
     private FixedAmountJpa fixedAmount;
 
+    @Setter
     @Column(name = "active", nullable = false)
     private boolean active;
 
@@ -57,4 +59,5 @@ public class FeePolicyEntity extends BaseEntity {
         this.fixedAmount = fixedAmount;
         this.active = active;
     }
+
 }
