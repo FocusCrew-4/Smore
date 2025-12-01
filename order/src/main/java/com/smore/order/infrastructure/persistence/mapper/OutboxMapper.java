@@ -20,6 +20,7 @@ public final class OutboxMapper {
             outbox.getEventType(),
             outbox.getIdempotencyKey(),
             outbox.getPayload(),
+            outbox.getRetryCount(),
             outbox.getEventStatus()
         );
     }
@@ -36,6 +37,7 @@ public final class OutboxMapper {
             entity.getEventType(),
             entity.getIdempotencyKey(),
             entity.getPayload(),
+            entity.getRetryCount(),
             entity.getEventStatus()
         );
     }

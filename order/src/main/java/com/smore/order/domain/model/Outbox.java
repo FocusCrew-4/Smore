@@ -26,6 +26,8 @@ public class Outbox {
 
     private String payload;
 
+    private Integer retryCount;
+
     private EventStatus eventStatus;
 
     public static Outbox create(
@@ -47,6 +49,7 @@ public class Outbox {
             .eventType(eventType)
             .idempotencyKey(idempotencyKey)
             .payload(payload)
+            .retryCount(0)
             .eventStatus(EventStatus.PENDING)
             .build();
     }
@@ -58,6 +61,7 @@ public class Outbox {
         EventType eventType,
         UUID idempotencyKey,
         String payload,
+        Integer retryCount,
         EventStatus eventStatus
     ) {
 
@@ -68,6 +72,7 @@ public class Outbox {
             .eventType(eventType)
             .idempotencyKey(idempotencyKey)
             .payload(payload)
+            .retryCount(retryCount)
             .eventStatus(eventStatus)
             .build();
     }
