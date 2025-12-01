@@ -1,6 +1,13 @@
 package com.smore.payment.feepolicy.presentation;
 
+import com.smore.payment.feepolicy.application.FeePolicyService;
+import com.smore.payment.feepolicy.application.command.CreateFeePolicyCommand;
+import com.smore.payment.feepolicy.domain.model.FeeRate;
+import com.smore.payment.feepolicy.domain.model.FeeType;
+import com.smore.payment.feepolicy.domain.model.FixedAmount;
+import com.smore.payment.feepolicy.domain.model.TargetType;
 import com.smore.payment.feepolicy.presentation.dto.CreateFeePolicyRequestDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +22,19 @@ public class FeePolicyController {
     private final FeePolicyService feePolicyService;
 
     @PostMapping
-    public ResponseEntity<?> createFeePolicy(@RequestBody CreateFeePolicyRequestDto createFeePolicyDto) {
+    public ResponseEntity<?> createFeePolicy(@Valid @RequestBody CreateFeePolicyRequestDto createFeePolicyDto) {
 
-        feePolicyService.createFeePolicy(createFeePolicyDto);
+        CreateFeePolicyCommand createFeePolicyCommand = new CreateFeePolicyCommand(
+                TargetType.valueOf(createFeePolicyDto.getTargetType()),
+                createFeePolicyDto.getTargetKey(),
+                FeeType.valueOf(createFeePolicyDto.getFeeType()),
+                new FeeRate(createFeePolicyDto.getRate()),
+                new FixedAmount(createFeePolicyDto.getFixedAmount())
+        );
 
+        UUID id = feePolicyService.createFeePolicy(createFeePolicyCommand);
+
+        //Todo: 공통응답 사용해서 id 반환
         return ResponseEntity.ok().build();
     }
 
