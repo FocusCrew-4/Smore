@@ -1,8 +1,8 @@
-package com.smore.member.infrastructure.persistance.jpa.entity;
+package com.smore.member.infrastructure.persistence.jpa.entity;
 
 import com.smore.member.domain.enums.Role;
 import com.smore.member.domain.enums.MemberStatus;
-import com.smore.member.infrastructure.persistance.jpa.vo.CredentialEmbeddable;
+import com.smore.member.infrastructure.persistence.jpa.vo.CredentialEmbeddable;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;

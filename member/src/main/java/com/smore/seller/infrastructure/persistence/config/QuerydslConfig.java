@@ -1,4 +1,4 @@
-package com.smore.member.infrastructure.persistance.config;
+package com.smore.seller.infrastructure.persistence.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

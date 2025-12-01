@@ -1,4 +1,4 @@
-package com.smore.member.infrastructure.persistance;
+package com.smore.member.infrastructure.persistence;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -8,9 +8,8 @@ import com.smore.member.domain.model.Member;
 import com.smore.member.domain.repository.MemberRepository;
 import com.smore.member.domain.vo.Credential;
 import com.smore.member.infrastructure.config.TestContainerConfig;
-import com.smore.member.infrastructure.persistance.config.QuerydslConfig;
-import com.smore.member.infrastructure.persistance.jpa.mapper.MemberJpaMapperImpl;
-import groovy.util.logging.Slf4j;
+import com.smore.member.infrastructure.persistence.config.QuerydslConfig;
+import com.smore.member.infrastructure.persistence.jpa.mapper.MemberJpaMapperImpl;
 import java.time.LocalDateTime;
 import org.instancio.Instancio;
 import org.instancio.Select;

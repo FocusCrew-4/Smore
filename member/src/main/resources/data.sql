@@ -1,7 +1,7 @@
 -- Seed members by role/status
 INSERT INTO p_member (id, role, email, password, nickname, auction_cancel_count, status, created_at, updated_at, deleted_at, deleted_by)
 VALUES
-    (1, 'ADMIN', 'admin@example.com', 'hashed-admin-password', 'admin', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
+    (1, 'ADMIN', 'admin@example.com', '$2a$10$sFHAFHXkl0ohQkv3uCuOAOmsfZgI/Aca4FH6hnkKP6jj1Fqw1Prg2', 'admin', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
     (2, 'SELLER', 'seller_pending@example.com', 'hashed-seller-password', 'seller_pending', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
     (3, 'SELLER', 'seller_active@example.com', 'hashed-seller-password', 'seller_active', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
     (4, 'SELLER', 'seller_inactive@example.com', 'hashed-seller-password', 'seller_inactive', 0, 'INACTIVE', NOW(), NOW(), NULL, NULL),
