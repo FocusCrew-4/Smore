@@ -5,7 +5,6 @@ import com.smore.member.application.service.command.FindCommand;
 import com.smore.member.application.service.command.LoginCommand;
 import com.smore.member.application.service.result.MemberResult;
 import com.smore.member.presentation.web.dto.request.CreateRequestDto;
-import com.smore.member.presentation.web.dto.request.FindRequestDto;
 import com.smore.member.presentation.web.dto.request.LoginRequestDto;
 import com.smore.member.presentation.web.dto.response.CreateResponseDto;
 import com.smore.member.presentation.web.dto.response.FindResponseDto;
@@ -38,11 +37,8 @@ public class MemberControllerMapper {
         );
     }
 
-    public FindCommand toFindCommand(Long myId, FindRequestDto requestDto) {
-        return new FindCommand(
-            myId,
-            requestDto.email()
-        );
+    public FindCommand toFindCommand(Long requesterId, Long targetId) {
+        return new FindCommand(requesterId, targetId);
     }
 
     public FindResponseDto toFindResponseDto(MemberResult findMember) {

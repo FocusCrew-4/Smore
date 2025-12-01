@@ -6,6 +6,7 @@ import com.smore.member.application.service.result.MemberResult;
 import com.smore.member.application.service.usecase.MemberFind;
 import com.smore.member.application.service.usecase.RoleSupportable;
 import com.smore.member.domain.enums.Role;
+import com.smore.member.domain.model.Member;
 import com.smore.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,10 @@ public class AdminServiceImpl
 
     @Override
     public MemberResult findMember(FindCommand findCommand) {
-        return mapper.toMemberResult(
-            repository.findByEmail(findCommand.email())
-        );
+        Member member = repository.findById(findCommand.targetId());
+        if (member == null) {
+            throw new RuntimeException("회원이 존재하지 않습니다");
+        }
+        return mapper.toMemberResult(member);
     }
 }

@@ -8,7 +8,6 @@ import com.smore.member.application.service.selector.MemberFindSelector;
 import com.smore.member.application.service.usecase.MemberCreate;
 import com.smore.member.domain.enums.Role;
 import com.smore.member.presentation.web.dto.request.CreateRequestDto;
-import com.smore.member.presentation.web.dto.request.FindRequestDto;
 import com.smore.member.presentation.web.dto.request.LoginRequestDto;
 import com.smore.member.presentation.web.mapper.MemberControllerMapper;
 import jakarta.validation.Valid;
@@ -17,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -59,14 +59,28 @@ public class MemberController {
             .body(ApiResponse.ok(res));
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("/me")
     public ResponseEntity<CommonResponse<?>> getMember(
         @RequestHeader("X-User-Id") Long id,
-        @RequestHeader("X-User-Role") Role role,
-        @RequestBody FindRequestDto requestDto
+        @RequestHeader("X-User-Role") Role role
     ) {
         MemberResult findMember
-            = memberFindSelector.select(role).findMember(mapper.toFindCommand(id, requestDto));
+            = memberFindSelector.select(role).findMember(mapper.toFindCommand(id, id));
+        var res = mapper.toFindResponseDto(findMember);
+
+        return  ResponseEntity.ok(
+            ApiResponse.ok(res)
+        );
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonResponse<?>> getMemberById(
+        @RequestHeader("X-User-Id") Long myId,
+        @RequestHeader("X-User-Role") Role role,
+        @PathVariable("id") Long targetId
+    ) {
+        MemberResult findMember
+            = memberFindSelector.select(role).findMember(mapper.toFindCommand(myId, targetId));
         var res = mapper.toFindResponseDto(findMember);
 
         return  ResponseEntity.ok(

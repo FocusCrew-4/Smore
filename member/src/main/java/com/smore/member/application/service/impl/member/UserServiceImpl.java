@@ -28,8 +28,11 @@ public class UserServiceImpl
     // TODO: 에러 타입 변경 필요
     @Override
     public MemberResult findMember(FindCommand findCommand) {
-        Member member = repository.findByEmail(findCommand.email());
-        if (!member.isMe(findCommand.myId())) {
+        Member member = repository.findById(findCommand.targetId());
+        if (member == null) {
+            throw new RuntimeException("회원이 존재하지 않습니다");
+        }
+        if (!member.isMe(findCommand.requesterId())) {
             throw new RuntimeException("자신의 정보만 조회 가능합니다");
         }
         return mapper.toMemberResult(member);
