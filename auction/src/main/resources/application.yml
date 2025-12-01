@@ -1,0 +1,5 @@
+# auction - application.yml
+
+spring:
+  application:
+    name: auction
