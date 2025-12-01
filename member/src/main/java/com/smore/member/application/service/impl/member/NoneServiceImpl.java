@@ -1,27 +1,27 @@
-package com.smore.member.application.service.impl;
+package com.smore.member.application.service.impl.member;
 
 import com.smore.member.application.service.command.CreateCommand;
 import com.smore.member.application.service.mapper.MemberAppMapper;
 import com.smore.member.application.service.result.MemberResult;
+import com.smore.member.application.service.usecase.MemberCreate;
+import com.smore.member.application.service.usecase.RoleSupportable;
 import com.smore.member.domain.enums.Role;
 import com.smore.member.domain.model.Member;
 import com.smore.member.domain.repository.MemberRepository;
+import java.time.Clock;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NoneMemberServiceImpl extends AbstractMemberService {
+@RequiredArgsConstructor
+public class NoneServiceImpl implements MemberCreate, RoleSupportable {
 
+    private final MemberRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final MemberAppMapper mapper;
+    private final Clock clock;
 
-    public NoneMemberServiceImpl(
-        MemberRepository memberRepository,
-        MemberAppMapper mapper,
-        PasswordEncoder passwordEncoder
-    ) {
-        super(memberRepository, mapper);
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public Role getSupportedRole() {
@@ -30,15 +30,19 @@ public class NoneMemberServiceImpl extends AbstractMemberService {
 
     @Override
     public MemberResult createMember(CreateCommand command) {
+        if (repository.findByEmail(command.getEmail()) != null) {
+            throw new RuntimeException("email already exists");
+        }
 
         Member member = Member.create(
             command.getRole(),
             command.getEmail(),
             passwordEncoder.encode(command.getPassword()),
-            command.getNickname()
+            command.getNickname(),
+            clock
         );
 
-        Member savedMember = memberRepository.save(member);
+        Member savedMember = repository.save(member);
 
         return mapper.toMemberResult(savedMember);
     }

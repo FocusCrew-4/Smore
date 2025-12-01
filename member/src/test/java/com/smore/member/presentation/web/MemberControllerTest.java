@@ -8,9 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.member.application.service.AuthService;
-import com.smore.member.application.service.RoleBasedMemberService;
+import com.smore.member.application.service.command.CreateCommand;
 import com.smore.member.application.service.result.MemberResult;
-import com.smore.member.application.service.selector.MemberServiceSelector;
+import com.smore.member.application.service.usecase.MemberCreate;
 import com.smore.member.domain.enums.MemberStatus;
 import com.smore.member.domain.enums.Role;
 import com.smore.member.presentation.web.dto.request.CreateRequestDto;
@@ -38,13 +38,10 @@ class MemberControllerTest {
     ObjectMapper objectMapper;
 
     @MockitoBean
-    MemberServiceSelector memberServiceSelector;
+    MemberCreate memberCreate;
 
     @MockitoBean
     MemberControllerMapper memberControllerMapper;
-
-    @MockitoBean
-    RoleBasedMemberService roleBasedMemberService;
 
     @MockitoBean
     AuthService authService;
@@ -76,14 +73,21 @@ class MemberControllerTest {
             memberResult.nickname()
         );
 
-        when(memberServiceSelector.select(Role.CONSUMER)).thenReturn(roleBasedMemberService);
-        when(roleBasedMemberService.createMember(memberControllerMapper.toCreateCommand(requestDto))).thenReturn(memberResult);
+        CreateCommand command = new CreateCommand(
+            requestDto.role(),
+            requestDto.email(),
+            requestDto.password(),
+            requestDto.nickname()
+        );
+
+        when(memberControllerMapper.toCreateCommand(requestDto)).thenReturn(command);
+        when(memberCreate.createMember(command)).thenReturn(memberResult);
         when(memberControllerMapper.toCreateResponseDto(memberResult)).thenReturn(responseDto);
 
         // when & then
-        mockMvc.perform(post("/api/v1/members")
+        mockMvc.perform(post("/api/v1/members/register")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("X-User-Role", requestDto.role())
+                .header("X-User-Role", Role.NONE)
                 .content(objectMapper.writeValueAsString(requestDto)))
             .andExpect(status().isCreated())
             .andExpect(header().string("Location", "/api/v1/members/" + responseDto.id()))

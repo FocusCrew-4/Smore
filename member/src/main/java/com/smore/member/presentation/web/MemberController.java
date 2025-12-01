@@ -3,14 +3,14 @@ package com.smore.member.presentation.web;
 import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
 import com.smore.member.application.service.AuthService;
-import com.smore.member.application.service.RoleBasedMemberService;
 import com.smore.member.application.service.result.MemberResult;
-import com.smore.member.application.service.selector.MemberServiceSelector;
+import com.smore.member.application.service.usecase.MemberCreate;
 import com.smore.member.domain.enums.Role;
 import com.smore.member.presentation.web.dto.request.CreateRequestDto;
 import com.smore.member.presentation.web.dto.request.LoginRequestDto;
 import com.smore.member.presentation.web.dto.response.CreateResponseDto;
 import com.smore.member.presentation.web.mapper.MemberControllerMapper;
+import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberServiceSelector memberServiceSelector;
     private final MemberControllerMapper mapper;
     private final AuthService authService;
+    private final MemberCreate memberCreate;
 
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<?>> login(@RequestBody LoginRequestDto requestDto) {
@@ -38,15 +38,16 @@ public class MemberController {
             .body(ApiResponse.ok(null));
     }
 
-    @PostMapping
-    public ResponseEntity<CommonResponse<CreateResponseDto>> registerConsumer(
+    @PostMapping("/register")
+    public ResponseEntity<CommonResponse<?>> register(
         @RequestHeader("X-User-Role") Role role,
-        @RequestBody CreateRequestDto requestDto
+        @Valid @RequestBody CreateRequestDto requestDto
     ) {
-        RoleBasedMemberService service
-            = memberServiceSelector.select(role);
-
-        MemberResult member = service.createMember(mapper.toCreateCommand(requestDto));
+        if (!role.equals(Role.NONE)) {
+            return ResponseEntity.badRequest()
+                .body(ApiResponse.error("M401", "회원 가입은 비회원만 가능합니다"));
+        }
+        MemberResult member = memberCreate.createMember(mapper.toCreateCommand(requestDto));
         var res = mapper.toCreateResponseDto(member);
 
         URI uri = URI.create("/api/v1/members/" + res.id());
