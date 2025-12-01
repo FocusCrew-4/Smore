@@ -2,11 +2,13 @@ package com.smore.payment.feepolicy.presentation;
 
 import com.smore.payment.feepolicy.application.FeePolicyService;
 import com.smore.payment.feepolicy.application.command.CreateFeePolicyCommand;
+import com.smore.payment.feepolicy.application.query.GetFeePolicyQuery;
 import com.smore.payment.feepolicy.domain.model.FeeRate;
 import com.smore.payment.feepolicy.domain.model.FeeType;
 import com.smore.payment.feepolicy.domain.model.FixedAmount;
 import com.smore.payment.feepolicy.domain.model.TargetType;
 import com.smore.payment.feepolicy.presentation.dto.CreateFeePolicyRequestDto;
+import com.smore.payment.feepolicy.presentation.dto.GetFeePolicyRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,10 +40,15 @@ public class FeePolicyController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getFeePolicy(@PathVariable UUID id) {
+    @GetMapping
+    public ResponseEntity<?> getFeePolicy(@Valid @RequestBody GetFeePolicyRequest getFeePolicyRequest) {
 
-        feePolicyService.getFeePolicy(id);
+        GetFeePolicyQuery getFeePolicyQuery = new GetFeePolicyQuery(
+                TargetType.valueOf(getFeePolicyRequest.getTargetType()),
+                getFeePolicyRequest.getTargetKey()
+        );
+
+        feePolicyService.getFeePolicy(getFeePolicyQuery);
 
         return ResponseEntity.ok().build();
     }

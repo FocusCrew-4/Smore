@@ -1,6 +1,7 @@
 package com.smore.payment.feepolicy.application;
 
 import com.smore.payment.feepolicy.application.command.CreateFeePolicyCommand;
+import com.smore.payment.feepolicy.application.query.GetFeePolicyQuery;
 import com.smore.payment.feepolicy.domain.model.FeePolicy;
 import com.smore.payment.feepolicy.domain.repository.FeePolicyRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,11 @@ public class FeePolicyService {
     }
 
     @Transactional(readOnly = true)
-    public FeePolicy getFeePolicy(UUID id) {
+    public FeePolicy getFeePolicy(GetFeePolicyQuery getFeePolicyQuery) {
+        return feePolicyRepository.findByTargetTypeAndTargetKey(
+                getFeePolicyQuery.targetType(),
+                getFeePolicyQuery.TargetKey()
+        ).orElseThrow(() -> new IllegalArgumentException("판매자 또는 카테고리에 해당하는 수수료 정책을 찾을 수 없습니다."));
     }
 
     public void deleteFeePolicy(UUID id) {
