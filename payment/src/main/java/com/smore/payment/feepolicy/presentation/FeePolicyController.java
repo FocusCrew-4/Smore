@@ -1,5 +1,6 @@
 package com.smore.payment.feepolicy.presentation;
 
+import com.smore.payment.feepolicy.presentation.dto.CreateFeePolicyRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
