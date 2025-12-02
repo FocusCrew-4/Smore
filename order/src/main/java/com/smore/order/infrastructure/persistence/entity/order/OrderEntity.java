@@ -93,7 +93,7 @@ public class OrderEntity extends BaseEntity {
         if (quantity == null)throw new IllegalArgumentException("주문 수량은 필수값입니다.");
         if (quantity < 1)throw new IllegalArgumentException("주문 수량은 1개 이상이어야 합니다.");
         if (idempotencyKey == null) throw new IllegalArgumentException("멱등키는 필수입니다.");
-        if (orderStatus != OrderStatus.CRATED) throw new IllegalArgumentException("주문 생성 시 OrderStatus의 상태는 CREATED 상태여야 합니다.");
+        if (orderStatus != OrderStatus.CREATED) throw new IllegalArgumentException("주문 생성 시 OrderStatus의 상태는 CREATED 상태여야 합니다.");
         if (cancelState != CancelState.NONE) throw new IllegalArgumentException("주문 생성 시 CancelStatus의 상태는 NONE 상태여야 합니다.");
         if (orderedAt == null) throw new IllegalArgumentException("현재 날짜는 필수입니다.");
 

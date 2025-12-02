@@ -56,7 +56,7 @@ public class Order {
             .quantity(quantity)
             .totalAmount(totalAmount)
             .idempotencyKey(idempotencyKey)
-            .orderStatus(OrderStatus.CRATED)
+            .orderStatus(OrderStatus.CREATED)
             .cancelState(CancelState.NONE)
             .orderedAt(now)
             .address(address)
@@ -102,6 +102,10 @@ public class Order {
             .cancelledAt(cancelledAt)
             .address(address)
             .build();
+    }
+
+    public boolean isCompleted() {
+        return orderStatus == OrderStatus.COMPLETED;
     }
 
     private static Integer calculateTotalPrice(Integer price, Integer quantity) {
