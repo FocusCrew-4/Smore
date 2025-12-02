@@ -16,18 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class NoneServiceImpl implements MemberCreate, RoleSupportable {
+public class NoneServiceImpl implements MemberCreate {
 
     private final MemberRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final MemberAppMapper mapper;
     private final Clock clock;
-
-
-    @Override
-    public Role getSupportedRole() {
-        return Role.NONE;
-    }
 
     @Override
     @Transactional
