@@ -12,6 +12,7 @@ import java.time.Clock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class NoneServiceImpl implements MemberCreate, RoleSupportable {
     }
 
     @Override
+    @Transactional
     public MemberResult createMember(CreateCommand command) {
         if (repository.findByEmail(command.getEmail()) != null) {
             throw new RuntimeException("email already exists");
