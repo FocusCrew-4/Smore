@@ -63,8 +63,20 @@ class OrderServiceTest {
             "06234"
         );
 
+        Order order = Order.create(
+            1L,
+            UUID.fromString("11111111-1111-1111-1111-111111111111"),
+            10_000,
+            2,
+            UUID.fromString("22222222-2222-2222-2222-222222222222"),
+            LocalDateTime.of(2025, 11, 30, 12, 0, 0),
+            "서울시 강남구 테헤란로 1",
+            "서울시",
+            "06234"
+        );
+
         Mockito.when(orderRepository.findByIdempotencyKey(command.getIdempotencyKey()))
-            .thenReturn(null);
+            .thenReturn(order);
 
         // when
         orderService.createOrder(command);
@@ -131,7 +143,7 @@ class OrderServiceTest {
             1L);
 
         Mockito.when(orderRepository.findByIdempotencyKey(command.getIdempotencyKey()))
-            .thenReturn(order);
+            .thenReturn(null);
 
         Mockito.when(orderRepository.save(Mockito.any(Order.class)))
             .thenReturn(order);
