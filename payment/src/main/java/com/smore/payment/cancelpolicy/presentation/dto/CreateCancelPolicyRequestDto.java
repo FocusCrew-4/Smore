@@ -20,9 +20,15 @@ public class CreateCancelPolicyRequestDto {
     private UUID targetKey;
 
     @NotNull
+    private Integer cancelLimitMinutes;
+
+    @NotNull
     private String cancelFeeType;
 
     private BigDecimal rate;
     private BigDecimal cancelFixedAmount;
+
+    @NotNull
+    private boolean cancellable;
 
 }

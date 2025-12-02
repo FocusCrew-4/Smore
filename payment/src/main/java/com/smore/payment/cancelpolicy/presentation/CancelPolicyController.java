@@ -1,6 +1,9 @@
 package com.smore.payment.cancelpolicy.presentation;
 
-import com.smore.payment.cancelpolicy.domain.model.CancelPolicy;
+import com.smore.payment.cancelpolicy.application.CancelPolicyService;
+import com.smore.payment.cancelpolicy.application.command.CreateCancelPolicyCommand;
+import com.smore.payment.cancelpolicy.application.query.GetCancelPolicyQuery;
+import com.smore.payment.cancelpolicy.domain.model.*;
 import com.smore.payment.cancelpolicy.presentation.dto.CreateCancelPolicyRequestDto;
 import com.smore.payment.cancelpolicy.presentation.dto.GetCancelPolicyRequest;
 import com.smore.payment.feepolicy.application.FeePolicyService;
@@ -29,7 +32,17 @@ public class CancelPolicyController {
     ) {
         UserContextHolder.set(userId);
 
-        UUID id = cancelPolicyService.createCancelPolicy();
+        CreateCancelPolicyCommand command = new CreateCancelPolicyCommand(
+                CancelTargetType.valueOf(createCancelPolicyRequestDto.getCancelTargetType()),
+                createCancelPolicyRequestDto.getTargetKey(),
+                createCancelPolicyRequestDto.getCancelLimitMinutes(),
+                CancelFeeType.valueOf(createCancelPolicyRequestDto.getCancelFeeType()),
+                new CancelFeeRate(createCancelPolicyRequestDto.getRate()),
+                new CancelFixedAmount(createCancelPolicyRequestDto.getCancelFixedAmount()),
+                createCancelPolicyRequestDto.isCancellable()
+        );
+
+        UUID id = cancelPolicyService.createCancelPolicy(command);
 
         UserContextHolder.clear();
         //Todo: 공통응답 사용해서 id 반환
@@ -39,7 +52,12 @@ public class CancelPolicyController {
     @GetMapping
     public ResponseEntity<?> getCancelPolicy(@Valid @RequestBody GetCancelPolicyRequest getCancelPolicyRequest) {
 
-        CancelPolicy cancelPolicy = cancelPolicyService.getCancelPolicy();
+        GetCancelPolicyQuery getCancelPolicyQuery = new GetCancelPolicyQuery(
+                CancelTargetType.valueOf(getCancelPolicyRequest.getCancelTargetType()),
+                getCancelPolicyRequest.getTargetKey()
+        );
+
+        CancelPolicy cancelPolicy = cancelPolicyService.getCancelPolicy(getCancelPolicyQuery);
 
         //Todo: 공통응답 사용해서 응답 반환
         return ResponseEntity.ok().build();
