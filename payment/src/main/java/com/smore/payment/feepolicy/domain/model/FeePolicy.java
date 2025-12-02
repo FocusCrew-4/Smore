@@ -102,14 +102,6 @@ public class FeePolicy {
         }
     }
 
-    public BigDecimal calculateFee(BigDecimal amount) {
-        return switch (feeType) {
-            case RATE -> rate.apply(amount);
-            case FIXED -> fixedAmount.value();
-            case MIXED -> rate.apply(amount).add(fixedAmount.value());
-        };
-    }
-
     // 정책 활성화
     public void activate() {
         this.active = true;

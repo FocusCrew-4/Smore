@@ -1,11 +1,13 @@
 package com.smore.payment.feepolicy.presentation;
 
+import com.smore.common.response.ApiResponse;
 import com.smore.payment.feepolicy.application.FeePolicyService;
 import com.smore.payment.feepolicy.application.command.CreateFeePolicyCommand;
 import com.smore.payment.feepolicy.application.query.GetFeePolicyQuery;
 import com.smore.payment.feepolicy.domain.model.*;
-import com.smore.payment.feepolicy.presentation.dto.CreateFeePolicyRequestDto;
-import com.smore.payment.feepolicy.presentation.dto.GetFeePolicyRequest;
+import com.smore.payment.feepolicy.presentation.dto.request.CreateFeePolicyRequestDto;
+import com.smore.payment.feepolicy.presentation.dto.request.GetFeePolicyRequestDto;
+import com.smore.payment.feepolicy.presentation.dto.response.GetFeePolicyResponseDto;
 import com.smore.payment.global.config.UserContextHolder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,33 +29,20 @@ public class FeePolicyController {
             @RequestHeader("X-USER-ID") UUID userId
     ) {
         UserContextHolder.set(userId);
-        CreateFeePolicyCommand createFeePolicyCommand = new CreateFeePolicyCommand(
-                TargetType.valueOf(createFeePolicyDto.getTargetType()),
-                createFeePolicyDto.getTargetKey(),
-                FeeType.valueOf(createFeePolicyDto.getFeeType()),
-                new FeeRate(createFeePolicyDto.getRate()),
-                new FixedAmount(createFeePolicyDto.getFixedAmount())
-        );
 
-        UUID id = feePolicyService.createFeePolicy(createFeePolicyCommand);
+        UUID id = feePolicyService.createFeePolicy(CreateFeePolicyCommand.from(createFeePolicyDto));
 
         UserContextHolder.clear();
-        //Todo: 공통응답 사용해서 id 반환
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(ApiResponse.ok(id));
     }
 
     @GetMapping
-    public ResponseEntity<?> getFeePolicy(@Valid @RequestBody GetFeePolicyRequest getFeePolicyRequest) {
+    public ResponseEntity<?> getFeePolicy(@Valid @RequestBody GetFeePolicyRequestDto getFeePolicyRequestDto) {
 
-        GetFeePolicyQuery getFeePolicyQuery = new GetFeePolicyQuery(
-                TargetType.valueOf(getFeePolicyRequest.getTargetType()),
-                getFeePolicyRequest.getTargetKey()
-        );
+        FeePolicy feePolicy = feePolicyService.getFeePolicy(GetFeePolicyQuery.from(getFeePolicyRequestDto));
 
-        FeePolicy feePolicy = feePolicyService.getFeePolicy(getFeePolicyQuery);
-
-        //Todo: 공통응답 사용해서 응답 반환
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.ok(GetFeePolicyResponseDto.from(feePolicy)));
     }
 
     @DeleteMapping("/{id}")

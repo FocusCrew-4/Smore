@@ -4,9 +4,6 @@ import com.smore.payment.cancelpolicy.application.command.CreateCancelPolicyComm
 import com.smore.payment.cancelpolicy.application.query.GetCancelPolicyQuery;
 import com.smore.payment.cancelpolicy.domain.model.CancelPolicy;
 import com.smore.payment.cancelpolicy.domain.repository.CancelPolicyRepository;
-import com.smore.payment.feepolicy.application.command.CreateFeePolicyCommand;
-import com.smore.payment.feepolicy.application.query.GetFeePolicyQuery;
-import com.smore.payment.feepolicy.domain.model.FeePolicy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

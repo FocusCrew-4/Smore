@@ -1,4 +1,4 @@
-package com.smore.payment.feepolicy.presentation.dto;
+package com.smore.payment.feepolicy.presentation.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,11 +10,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class GetFeePolicyRequest {
+public class GetFeePolicyRequestDto {
 
     @NotNull
-    private String TargetType;
+    private String targetType;
 
     @NotNull
-    private UUID TargetKey;
+    private UUID targetKey;
 }
