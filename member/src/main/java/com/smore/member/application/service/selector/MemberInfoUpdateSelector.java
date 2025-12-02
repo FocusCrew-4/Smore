@@ -9,25 +9,14 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MemberInfoUpdateSelector {
+public class MemberInfoUpdateSelector extends RoleSelector<MemberInfoUpdate>{
 
-    private final Map<Role, MemberInfoUpdate> infoUpdateMap = new EnumMap<>(Role.class);
-
-    public MemberInfoUpdateSelector(List<MemberInfoUpdate> infoUpdaters) {
-        for (MemberInfoUpdate updater : infoUpdaters) {
-            if (updater instanceof RoleSupportable supportable) {
-                infoUpdateMap.put(supportable.getSupportedRole(), updater);
-            }
-        }
+    public MemberInfoUpdateSelector(List<MemberInfoUpdate> finders) {
+        super(finders);
     }
 
+    @Override
     public MemberInfoUpdate select(Role role) {
-        if (role.equals(Role.SELLER) || role.equals(Role.CONSUMER)) {
-            role = Role.USER;
-        }
-        if (!infoUpdateMap.containsKey(role)) {
-            throw new RuntimeException("권한이 없습니다");
-        }
-        return infoUpdateMap.get(role);
+        return super.select(role);
     }
 }
