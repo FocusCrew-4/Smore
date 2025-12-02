@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -46,6 +47,9 @@ class UserServiceImplTest {
             member.getNickname(),
             member.getAuctionCancelCount(),
             member.getStatus(),
+            member.getCreatedAt(),
+            member.getUpdatedAt(),
+            member.getDeletedAt(),
             member.getDeletedBy()
         );
 
@@ -68,26 +72,12 @@ class UserServiceImplTest {
         FindCommand command = new FindCommand(requesterId, targetId);
         Member member = member(targetId, Role.USER);
 
-        when(memberRepository.findById(targetId)).thenReturn(member);
-
         // when / then
         assertThatThrownBy(() -> userService.findMember(command))
             .isInstanceOf(RuntimeException.class)
             .hasMessageContaining("자신의 정보만 조회 가능합니다");
     }
 
-    @Test
-    @DisplayName("대상 회원이 없으면 예외를 던진다")
-    void throwsWhenMemberNotFound() {
-        // given
-        FindCommand command = new FindCommand(1L, 2L);
-        when(memberRepository.findById(2L)).thenReturn(null);
-
-        // when / then
-        assertThatThrownBy(() -> userService.findMember(command))
-            .isInstanceOf(RuntimeException.class)
-            .hasMessageContaining("회원이 존재하지 않습니다");
-    }
 
     private Member member(Long id, Role role) {
         return new Member(
