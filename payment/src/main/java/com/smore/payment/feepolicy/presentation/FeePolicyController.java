@@ -26,7 +26,7 @@ public class FeePolicyController {
     @PostMapping
     public ResponseEntity<?> createFeePolicy(
             @Valid @RequestBody CreateFeePolicyRequestDto createFeePolicyDto,
-            @RequestHeader("X-USER-ID") UUID userId
+            @RequestHeader("X-User-Id") UUID userId
     ) {
         UserContextHolder.set(userId);
 
@@ -46,7 +46,7 @@ public class FeePolicyController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteFeePolicy(@PathVariable UUID id, @RequestHeader("X-USER-ID") UUID userId) {
+    public ResponseEntity<?> deleteFeePolicy(@PathVariable UUID id, @RequestHeader("X-User-Id") UUID userId) {
         UserContextHolder.set(userId);
         feePolicyService.deleteFeePolicy(id, userId);
         UserContextHolder.clear();

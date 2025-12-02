@@ -1,5 +1,25 @@
 package com.smore.payment.cancelpolicy.domain.model;
 
+import com.smore.payment.feepolicy.domain.model.FeeType;
+import lombok.Getter;
+
+@Getter
 public enum CancelFeeType {
-    RATE, FIXED, MIXED
+    RATE("비율 수수료 (예: 5%)"),
+    FIXED("고정 수수료 (예: 500원)"),
+    MIXED("비율 + 고정 복합 수수료");
+
+    private final String description;
+
+    CancelFeeType(String description) {
+        this.description = description;
+    }
+
+    public static CancelFeeType of(String value) {
+        try {
+            return CancelFeeType.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid FeeType: " + value);
+        }
+    }
 }

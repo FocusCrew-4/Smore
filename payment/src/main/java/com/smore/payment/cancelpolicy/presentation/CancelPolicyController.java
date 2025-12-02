@@ -1,15 +1,13 @@
 package com.smore.payment.cancelpolicy.presentation;
 
+import com.smore.common.response.ApiResponse;
 import com.smore.payment.cancelpolicy.application.CancelPolicyService;
 import com.smore.payment.cancelpolicy.application.command.CreateCancelPolicyCommand;
 import com.smore.payment.cancelpolicy.application.query.GetCancelPolicyQuery;
 import com.smore.payment.cancelpolicy.domain.model.*;
-import com.smore.payment.cancelpolicy.presentation.dto.CreateCancelPolicyRequestDto;
-import com.smore.payment.cancelpolicy.presentation.dto.GetCancelPolicyRequest;
-import com.smore.payment.feepolicy.application.FeePolicyService;
-import com.smore.payment.feepolicy.application.command.CreateFeePolicyCommand;
-import com.smore.payment.feepolicy.application.query.GetFeePolicyQuery;
-import com.smore.payment.feepolicy.domain.model.*;
+import com.smore.payment.cancelpolicy.presentation.dto.request.CreateCancelPolicyRequestDto;
+import com.smore.payment.cancelpolicy.presentation.dto.request.GetCancelPolicyRequestDto;
+import com.smore.payment.cancelpolicy.presentation.dto.response.GetCancelPolicyResponseDto;
 import com.smore.payment.global.config.UserContextHolder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,43 +26,27 @@ public class CancelPolicyController {
     @PostMapping
     public ResponseEntity<?> createCancelPolicy(
             @Valid @RequestBody CreateCancelPolicyRequestDto createCancelPolicyRequestDto,
-            @RequestHeader("X-USER-ID") UUID userId
+            @RequestHeader("X-User-Id") UUID userId
     ) {
         UserContextHolder.set(userId);
 
-        CreateCancelPolicyCommand command = new CreateCancelPolicyCommand(
-                CancelTargetType.valueOf(createCancelPolicyRequestDto.getCancelTargetType()),
-                createCancelPolicyRequestDto.getTargetKey(),
-                createCancelPolicyRequestDto.getCancelLimitMinutes(),
-                CancelFeeType.valueOf(createCancelPolicyRequestDto.getCancelFeeType()),
-                new CancelFeeRate(createCancelPolicyRequestDto.getRate()),
-                new CancelFixedAmount(createCancelPolicyRequestDto.getCancelFixedAmount()),
-                createCancelPolicyRequestDto.isCancellable()
-        );
-
-        UUID id = cancelPolicyService.createCancelPolicy(command);
+        UUID id = cancelPolicyService.createCancelPolicy(CreateCancelPolicyCommand.from(createCancelPolicyRequestDto));
 
         UserContextHolder.clear();
-        //Todo: 공통응답 사용해서 id 반환
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(ApiResponse.ok(id));
     }
 
     @GetMapping
-    public ResponseEntity<?> getCancelPolicy(@Valid @RequestBody GetCancelPolicyRequest getCancelPolicyRequest) {
+    public ResponseEntity<?> getCancelPolicy(@Valid @RequestBody GetCancelPolicyRequestDto getCancelPolicyRequestDto) {
 
-        GetCancelPolicyQuery getCancelPolicyQuery = new GetCancelPolicyQuery(
-                CancelTargetType.valueOf(getCancelPolicyRequest.getCancelTargetType()),
-                getCancelPolicyRequest.getTargetKey()
-        );
+        CancelPolicy cancelPolicy = cancelPolicyService.getCancelPolicy(GetCancelPolicyQuery.from(getCancelPolicyRequestDto));
 
-        CancelPolicy cancelPolicy = cancelPolicyService.getCancelPolicy(getCancelPolicyQuery);
-
-        //Todo: 공통응답 사용해서 응답 반환
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.ok(GetCancelPolicyResponseDto.from(cancelPolicy)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCancelPolicy(@PathVariable UUID id, @RequestHeader("X-USER-ID") UUID userId) {
+    public ResponseEntity<?> deleteCancelPolicy(@PathVariable UUID id, @RequestHeader("X-User-Id") UUID userId) {
         UserContextHolder.set(userId);
         cancelPolicyService.deleteCancelPolicy(id, userId);
         UserContextHolder.clear();

@@ -1,4 +1,4 @@
-package com.smore.payment.cancelpolicy.presentation.dto;
+package com.smore.payment.cancelpolicy.presentation.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

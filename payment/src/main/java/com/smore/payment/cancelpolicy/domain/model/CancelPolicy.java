@@ -116,14 +116,6 @@ public class CancelPolicy {
         }
     }
 
-    public BigDecimal calculateFee(BigDecimal amount) {
-        return switch (cancelFeeType) {
-            case RATE -> cancelFeeRate.apply(amount);
-            case FIXED -> cancelFixedAmount.value();
-            case MIXED -> cancelFeeRate.apply(amount).add(cancelFixedAmount.value());
-        };
-    }
-
     // 정책 활성화
     public void activate() {
         this.active = true;

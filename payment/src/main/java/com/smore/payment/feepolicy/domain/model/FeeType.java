@@ -1,5 +1,8 @@
 package com.smore.payment.feepolicy.domain.model;
 
+import lombok.Getter;
+
+@Getter
 public enum FeeType {
     RATE("비율 수수료 (예: 5%)"),
     FIXED("고정 수수료 (예: 500원)"),
@@ -9,10 +12,6 @@ public enum FeeType {
 
     FeeType(String description) {
         this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public static FeeType of(String value) {

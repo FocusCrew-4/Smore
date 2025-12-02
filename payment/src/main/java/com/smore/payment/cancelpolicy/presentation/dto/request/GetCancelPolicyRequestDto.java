@@ -1,4 +1,4 @@
-package com.smore.payment.cancelpolicy.presentation.dto;
+package com.smore.payment.cancelpolicy.presentation.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class GetCancelPolicyRequest {
+public class GetCancelPolicyRequestDto {
 
     @NotNull
     private String cancelTargetType;
