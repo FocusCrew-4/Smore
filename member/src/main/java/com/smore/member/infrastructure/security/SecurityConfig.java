@@ -53,8 +53,8 @@ public class SecurityConfig {
                     "/webjars/**"
                 ).permitAll()
                 .requestMatchers(
-                    "/v1/member/login",
-                    "/v1/member/register"
+                    "/api/v1/members/login",
+                    "/api/v1/members/register"
                 ).permitAll()
                 .anyRequest().authenticated()
             )

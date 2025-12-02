@@ -230,6 +230,17 @@ services:
 
 
 
+  member-service:
+    container_name: member-service
+    build: ./member/.
+    ports:
+      - "9900:9900"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - msa-network
+
+
 volumes:
   kafka-1-data:
   kafka-2-data:
