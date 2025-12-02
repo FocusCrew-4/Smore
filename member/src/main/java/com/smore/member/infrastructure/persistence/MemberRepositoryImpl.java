@@ -6,6 +6,7 @@ import com.smore.member.infrastructure.persistence.jpa.entity.MemberJpa;
 import com.smore.member.infrastructure.persistence.jpa.mapper.MemberJpaMapper;
 import com.smore.member.infrastructure.persistence.jpa.repository.MemberJpaRepository;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -18,10 +19,9 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Member findByEmail(String email) {
-        MemberJpa memberJpa = memberJpaRepository.findByCredentialEmail(email)
-            .orElseThrow(() -> new NoSuchElementException("member not found"));
-
-        return mapper.toDomain(memberJpa);
+        return memberJpaRepository.findByCredentialEmail(email)
+            .map(mapper::toDomain)
+            .orElse(null);
     }
 
     @Override
