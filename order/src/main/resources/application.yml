@@ -43,14 +43,17 @@ topic:
     created: order.created
     completed: order.completed
 
-
+  bid:
+    order:
+      request: bid.order.request
 
   payment:
     completed: payment.completed
 
 consumer:
   group:
-    payment: payment-completed-consumer-group
+    payment: payment-consumer-group
+    bid: bid-consumer-group
 
 
 retry:

@@ -37,7 +37,7 @@ public class OrderService {
     public void createOrder(CreateOrderCommand command) {
 
         Order findOrder = orderRepository.findByIdempotencyKey(command.getIdempotencyKey());
-        if (findOrder == null) {
+        if (findOrder != null) {
             return;
         }
 
