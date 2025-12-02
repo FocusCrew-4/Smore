@@ -1,0 +1,10 @@
+# member - application.yml
+server:
+  port: 9900
+
+spring:
+  application:
+    name: member-service
+  cloud:
+    discovery:
+      enabled: true

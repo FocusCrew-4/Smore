@@ -1,6 +1,9 @@
+server:
+  port: 17700
+
 spring:
   application:
-    name: gateway
+    name: gateway-server
   cloud:
     gateway:
       server:
@@ -14,6 +17,43 @@ spring:
             - id: member-service
               uri: lb://member-service
               predicates:
-                - Path=/v*/member/**
-              filters:
+                - Path=/api/v*/member/**
 
+            - id: auction-service
+              uri: lb://auction-service
+              predicates:
+               - Path=/api/v*/auctions/**
+
+            - id: product-service
+              uri: lb://product-service
+              predicates:
+               - Path=/api/v*/products/**
+
+            - id: payment-service
+              uri: lb://payment-service
+              predicates:
+                - Path=/api/v*/payments/**
+
+            - id: fee-policy-service
+              uri: lb://fee-policy-service
+              predicates:
+                - Path=/api/v*/fee-policies/**
+
+            - id: cancel-policy-service
+              uri: lb://cancel-policy-service
+              predicates:
+                - Path=/api/v*/cancel-policies/**
+
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/api/v*/orders/**, /api/v*/admin/orders/**
+
+            - id: bid-competition-service
+              uri: lb://bid-competition-service
+              predicates:
+                - Path=/api/v*/bid-competitions/**
+
+eureka:
+  instance:
+    hostname: gateway-server
