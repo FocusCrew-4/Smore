@@ -5,7 +5,7 @@ import com.smore.order.domain.status.OutboxResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 
-@Slf4j(topic = "CreatedOrderCommand")
+@Slf4j(topic = "CompletedOrderCommand")
 public class CompletedOrderCommand implements OutboxCommand{
 
     private final String topic;
