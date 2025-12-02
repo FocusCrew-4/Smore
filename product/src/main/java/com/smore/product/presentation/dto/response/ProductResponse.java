@@ -1,4 +1,4 @@
-package com.smore.product.domain.dto;
+package com.smore.product.presentation.dto.response;
 
 import com.smore.product.domain.entity.Product;
 import com.smore.product.domain.entity.ProductStatus;

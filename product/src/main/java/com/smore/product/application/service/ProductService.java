@@ -1,7 +1,7 @@
-package com.smore.product.service;
+package com.smore.product.application.service;
 
-import com.smore.product.domain.dto.CreateProductRequest;
-import com.smore.product.domain.dto.ProductResponse;
+import com.smore.product.presentation.dto.request.CreateProductRequest;
+import com.smore.product.presentation.dto.response.ProductResponse;
 import com.smore.product.domain.entity.Product;
 import com.smore.product.domain.entity.SaleType;
 import com.smore.product.domain.repository.ProductRepository;

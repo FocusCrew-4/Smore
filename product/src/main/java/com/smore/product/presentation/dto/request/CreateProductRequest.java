@@ -1,4 +1,4 @@
-package com.smore.product.domain.dto;
+package com.smore.product.presentation.dto.request;
 
 import com.smore.product.domain.entity.SaleType;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateProductRequest {
-    private UUID sellerId;
+    private Long sellerId;
     private UUID categoryId;
     private String name;
     private String description;

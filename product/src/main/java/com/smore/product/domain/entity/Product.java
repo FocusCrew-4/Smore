@@ -19,7 +19,7 @@ public class Product {
     @Column(columnDefinition = "UUID")
     private UUID id;
 
-    private UUID sellerId;
+    private Long sellerId;
 
     private UUID categoryId;
 
@@ -43,7 +43,7 @@ public class Product {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
-    private UUID deletedBy;
+    private Long deletedBy;
 
     @PrePersist
     public void onCreate() {
