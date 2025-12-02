@@ -41,6 +41,17 @@ spring:
 topic:
   order:
     created: order.created
+    completed: order.completed
+
+
+
+  payment:
+    completed: payment.completed
+
+consumer:
+  group:
+    payment: payment-completed-consumer-group
+
 
 retry:
   count:
