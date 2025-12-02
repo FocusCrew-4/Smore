@@ -58,9 +58,15 @@ public class Member {
             = new Credential(email, this.credential.password());
     }
 
-    public void  changePassword(String password) {
+    public void changePassword(String password) {
         this.credential
             = new Credential(this.credential.email(), password);
+    }
+
+    public void deleteMember(Long requesterId) {
+        this.deletedAt = LocalDateTime.now(Clock.systemUTC());
+        this.status = MemberStatus.DELETED;
+        this.deletedBy = requesterId;
     }
 
     public boolean isMe(Long memberId) {

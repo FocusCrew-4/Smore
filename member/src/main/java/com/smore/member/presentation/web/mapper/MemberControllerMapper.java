@@ -1,6 +1,7 @@
 package com.smore.member.presentation.web.mapper;
 
 import com.smore.member.application.service.command.CreateCommand;
+import com.smore.member.application.service.command.DeleteCommand;
 import com.smore.member.application.service.command.FindCommand;
 import com.smore.member.application.service.command.InfoUpdateCommand;
 import com.smore.member.application.service.command.LoginCommand;
@@ -56,12 +57,19 @@ public class MemberControllerMapper {
     }
 
     public InfoUpdateCommand toUpdateInfoCommand(Long requesterId, Long targetId, UpdateInfoRequestDto requestDto) {
-        return new  InfoUpdateCommand(
+        return new InfoUpdateCommand(
             requesterId,
             targetId,
             requestDto.nickname(),
             requestDto.email(),
             requestDto.password()
+        );
+    }
+
+    public DeleteCommand toDeleteCommand(Long requesterId, Long targetId) {
+        return new DeleteCommand(
+            requesterId,
+            targetId
         );
     }
 }

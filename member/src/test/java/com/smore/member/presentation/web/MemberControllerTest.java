@@ -14,6 +14,7 @@ import com.smore.member.application.service.AuthService;
 import com.smore.member.application.service.command.CreateCommand;
 import com.smore.member.application.service.command.FindCommand;
 import com.smore.member.application.service.result.MemberResult;
+import com.smore.member.application.service.selector.MemberDeleteSelector;
 import com.smore.member.application.service.selector.MemberFindSelector;
 import com.smore.member.application.service.selector.MemberInfoUpdateSelector;
 import com.smore.member.application.service.usecase.MemberCreate;
@@ -57,6 +58,9 @@ class MemberControllerTest {
 
     @MockitoBean
     MemberInfoUpdateSelector memberInfoUpdateSelector;
+
+    @MockitoBean
+    MemberDeleteSelector memberDeleteSelector;
 
     @MockitoBean
     AuthService authService;

@@ -1,9 +1,11 @@
 package com.smore.member.application.service.impl.member;
 
+import com.smore.member.application.service.command.DeleteCommand;
 import com.smore.member.application.service.command.FindCommand;
 import com.smore.member.application.service.command.InfoUpdateCommand;
 import com.smore.member.application.service.mapper.MemberAppMapper;
 import com.smore.member.application.service.result.MemberResult;
+import com.smore.member.application.service.usecase.MemberDelete;
 import com.smore.member.application.service.usecase.MemberFind;
 import com.smore.member.application.service.usecase.MemberInfoUpdate;
 import com.smore.member.application.service.usecase.RoleSupportable;
@@ -19,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AdminServiceImpl
-    implements RoleSupportable, MemberFind, MemberInfoUpdate {
+    implements MemberFind, MemberInfoUpdate, MemberDelete {
 
     private final MemberRepository repository;
     private final MemberAppMapper mapper;
@@ -56,5 +58,14 @@ public class AdminServiceImpl
         }
         Member updatedMember = repository.save(member);
         return mapper.toMemberResult(updatedMember);
+    }
+
+    @Override
+    @Transactional
+    public MemberResult delete(DeleteCommand deleteCommand) {
+        Member findMember = repository.findById(deleteCommand.targetId());
+        findMember.deleteMember(deleteCommand.requesterId());
+        Member deletedMember = repository.save(findMember);
+        return mapper.toMemberResult(deletedMember);
     }
 }

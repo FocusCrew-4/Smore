@@ -4,23 +4,23 @@ import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
 import com.smore.member.application.service.AuthService;
 import com.smore.member.application.service.result.MemberResult;
+import com.smore.member.application.service.selector.MemberDeleteSelector;
 import com.smore.member.application.service.selector.MemberFindSelector;
 import com.smore.member.application.service.selector.MemberInfoUpdateSelector;
 import com.smore.member.application.service.usecase.MemberCreate;
-import com.smore.member.application.service.usecase.MemberInfoUpdate;
 import com.smore.member.domain.enums.Role;
 import com.smore.member.presentation.web.dto.request.CreateRequestDto;
 import com.smore.member.presentation.web.dto.request.LoginRequestDto;
 import com.smore.member.presentation.web.dto.request.UpdateInfoRequestDto;
 import com.smore.member.presentation.web.mapper.MemberControllerMapper;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.PATCH;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -41,6 +41,7 @@ public class MemberController {
     private final MemberCreate memberCreate;
     private final MemberFindSelector memberFindSelector;
     private final MemberInfoUpdateSelector memberInfoUpdateSelector;
+    private final MemberDeleteSelector memberDeleteSelector;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -114,5 +115,19 @@ public class MemberController {
             .update(mapper.toUpdateInfoCommand(requesterId, targetId, requestDto));
 
         return ResponseEntity.ok(ApiResponse.ok("정보 수정 성공"));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<CommonResponse<String>> deleteMember(
+        @RequestHeader("X-User-Id") Long requesterId,
+        @RequestHeader("X-User-Role") Role role,
+        @PathVariable("id") Long targetId
+    ) {
+        MemberResult deletedMember
+            = memberDeleteSelector.select(role)
+            .delete(mapper.toDeleteCommand(requesterId, targetId));
+
+        return ResponseEntity.noContent()
+            .build();
     }
 }
