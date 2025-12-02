@@ -1,6 +1,8 @@
 package com.smore.seller.infrastructure.persistence.entity;
 
 import com.smore.seller.domain.enums.SellerStatus;
+import com.smore.seller.infrastructure.persistence.vo.MoneyEmbeddable;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -29,6 +31,8 @@ public class SellerJpa {
     private String accountNum;
     @Enumerated(EnumType.STRING)
     private SellerStatus status;
+    @Embedded
+    private MoneyEmbeddable money;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

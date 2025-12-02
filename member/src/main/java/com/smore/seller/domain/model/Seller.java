@@ -1,6 +1,8 @@
 package com.smore.seller.domain.model;
 
 import com.smore.seller.domain.enums.SellerStatus;
+import com.smore.seller.domain.vo.Money;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -13,6 +15,7 @@ public class Seller {
     private final Long memberId;
     private String accountNum;
     private SellerStatus status;
+    private Money money;
 
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
