@@ -66,6 +66,9 @@ class NoneServiceImplTest {
             command.getNickname(),
             0,
             saved.getStatus(),
+            null,
+            null,
+            null,
             null
         );
 

@@ -15,6 +15,7 @@ import com.smore.member.application.service.command.CreateCommand;
 import com.smore.member.application.service.command.FindCommand;
 import com.smore.member.application.service.result.MemberResult;
 import com.smore.member.application.service.selector.MemberFindSelector;
+import com.smore.member.application.service.selector.MemberInfoUpdateSelector;
 import com.smore.member.application.service.usecase.MemberCreate;
 import com.smore.member.application.service.usecase.MemberFind;
 import com.smore.member.domain.enums.MemberStatus;
@@ -55,6 +56,9 @@ class MemberControllerTest {
     MemberFindSelector memberFindSelector;
 
     @MockitoBean
+    MemberInfoUpdateSelector memberInfoUpdateSelector;
+
+    @MockitoBean
     AuthService authService;
 
     @Test
@@ -75,6 +79,9 @@ class MemberControllerTest {
             requestDto.nickname(),
             0,
             MemberStatus.ACTIVE,
+            null,
+            null,
+            null,
             null
         );
 
@@ -126,6 +133,9 @@ class MemberControllerTest {
                 "user",
                 0,
                 MemberStatus.ACTIVE,
+                null,
+                null,
+                null,
                 null
             );
 
@@ -184,6 +194,9 @@ class MemberControllerTest {
                 "target",
                 1,
                 MemberStatus.ACTIVE,
+                null,
+                null,
+                null,
                 null
             );
 
