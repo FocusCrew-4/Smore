@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.smore.config.TestContainerConfig;
+import com.smore.member.infrastructure.persistence.config.QuerydslConfig;
 import com.smore.seller.domain.enums.SellerStatus;
 import com.smore.seller.domain.model.Seller;
 import com.smore.seller.domain.repository.SellerRepository;
 import com.smore.seller.domain.vo.Money;
-import com.smore.seller.infrastructure.persistence.config.QuerydslConfig;
 import com.smore.seller.infrastructure.persistence.jpa.mapper.SellerJpaMapperImpl;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
