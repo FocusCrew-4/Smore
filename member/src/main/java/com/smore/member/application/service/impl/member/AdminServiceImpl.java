@@ -45,13 +45,13 @@ public class AdminServiceImpl
     @Transactional
     public MemberResult update(InfoUpdateCommand command) {
         Member member = repository.findById(command.targetId());
-        if (command.nickname() != null) {
+        if (command.hasNickname()) {
             member.updateNickname(command.nickname());
         }
-        if (command.email() != null) {
+        if (command.hasEmail()) {
             member.changeEmail(command.email());
         }
-        if (command.password() != null) {
+        if (command.hasPassword()) {
             member.changePassword(
                 passwordEncoder.encode(command.password())
             );
