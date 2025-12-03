@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 public class ProductResponse {
     private UUID id;
-    private UUID sellerId;
+    private Long sellerId;
     private UUID categoryId;
     private String name;
     private String description;
@@ -25,7 +25,7 @@ public class ProductResponse {
 
     public ProductResponse(Product p) {
         this.id = p.getId();
-//        this.sellerId = p.getSellerId();
+        this.sellerId = p.getSellerId();
         this.categoryId = p.getCategoryId();
         this.name = p.getName();
         this.description = p.getDescription();
