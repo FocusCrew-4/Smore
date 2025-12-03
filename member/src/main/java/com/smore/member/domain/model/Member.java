@@ -11,6 +11,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Member {
+
     private final Long id;
     private final Role role;
     private Credential credential;
@@ -43,6 +44,29 @@ public class Member {
             null,
             null
         );
+    }
+
+    public void updateNickname(String nickname) {
+        if (nickname == null || nickname.trim().isEmpty()) {
+            throw new IllegalArgumentException("nickname cannot be null or empty");
+        }
+        this.nickname = nickname;
+    }
+
+    public void changeEmail(String email) {
+        this.credential
+            = new Credential(email, this.credential.password());
+    }
+
+    public void changePassword(String password) {
+        this.credential
+            = new Credential(this.credential.email(), password);
+    }
+
+    public void deleteMember(Long requesterId) {
+        this.deletedAt = LocalDateTime.now(Clock.systemUTC());
+        this.status = MemberStatus.DELETED;
+        this.deletedBy = requesterId;
     }
 
     public boolean isMe(Long memberId) {
