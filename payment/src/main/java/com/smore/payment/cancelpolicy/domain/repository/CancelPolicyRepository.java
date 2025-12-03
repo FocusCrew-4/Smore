@@ -4,7 +4,6 @@ import com.smore.payment.cancelpolicy.domain.model.CancelPolicy;
 import com.smore.payment.cancelpolicy.domain.model.CancelTargetType;
 import org.springframework.stereotype.Repository;
 
-import java.lang.ScopedValue;
 import java.util.Optional;
 import java.util.UUID;
 
