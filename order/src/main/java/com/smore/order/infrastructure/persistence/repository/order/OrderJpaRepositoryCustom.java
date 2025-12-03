@@ -9,4 +9,6 @@ public interface OrderJpaRepositoryCustom {
     OrderEntity findByIdempotencyKey(UUID idempotencyKey);
 
     int markComplete(UUID orderId, OrderStatus status);
+
+    OrderEntity findByAllocationKeyAndUserId(UUID allocationKey, Long userId);
 }
