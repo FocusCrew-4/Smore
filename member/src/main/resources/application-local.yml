@@ -62,7 +62,7 @@ spring:
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
       # 브로커의 리더 + 모든 ISR 에 쓰기 성공 후 ACK
       acks: all
       retries: 3
