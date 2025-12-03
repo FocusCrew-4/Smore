@@ -9,9 +9,11 @@ import com.smore.seller.domain.repository.SellerRepository;
 import java.time.Clock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class SellerApplyImpl implements SellerApply {
 
     private final SellerRepository repository;
