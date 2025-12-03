@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
+// TODO: yml 에서 토픽과 컨슈머 이름관리 @Value 사용
 @Configuration
 @ConditionalOnProperty(name = "spring.kafka.bootstrap-servers")
 public class KafkaTopicConfig {
