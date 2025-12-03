@@ -1,0 +1,50 @@
+spring:
+  config:
+    import: ""           # configserver import 완전 해제
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+    jpa:
+      hibernate:
+        ddl-auto: create-drop
+
+      properties:
+        hibernate:
+          show_sql: true
+          format_sql: true
+          dialect: org.hibernate.dialect.H2Dialect
+
+  kafka:
+    bootstrap-servers: localhost:19092,localhost:29092,localhost:39092
+
+    # 기본 직렬화/역직렬화 설정 (문자열)
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+      # 신뢰성 관련 (acks=all + 재시도 + idempotence)
+      acks: all
+      retries: 10
+      properties:
+        enable.idempotence: true
+
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+      # 컨슈머 그룹 ID (서비스 단위로 나눠서)
+      group-id: my-api-service-group
+
+      # 처음 시작 시 어디서부터 읽을지
+      auto-offset-reset: earliest   # 필요에 따라 latest 로 변경 가능
+
+      # 자동 커밋 끄고 수동 커밋으로 가는 것도 실무에서 많이 씀
+      enable-auto-commit: false

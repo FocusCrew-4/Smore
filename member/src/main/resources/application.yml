@@ -1,5 +1,20 @@
 # member - application.yml
+server:
+  port: 9900
 
 spring:
   application:
     name: member-service
+  cloud:
+    discovery:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+      show-components: always

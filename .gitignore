@@ -53,3 +53,4 @@ bin/
 /docker/redis/
 /docker/db/mongo/
 /docker/db/redis/
+/org/instancio/settings/Keys.class

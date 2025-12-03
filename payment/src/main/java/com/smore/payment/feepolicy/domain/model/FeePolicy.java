@@ -8,22 +8,14 @@ public class FeePolicy {
 
     private final UUID id;
     private final TargetType targetType;
-    private final UUID targetKey; // 상품ID, 카테고리ID, 판메자ID
+    private final UUID targetKey; // 카테고리ID, 판매자ID
     private final FeeType feeType;
     private final FeeRate rate;
     private final FixedAmount fixedAmount;
 
     private boolean active;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
-    private Long createdBy;
-    private Long updatedBy;
-    private Long deletedBy;
-
-    public FeePolicy(
-        UUID id,
+    protected FeePolicy(
         TargetType targetType,
         UUID targetKey,
         FeeType feeType,
@@ -32,16 +24,66 @@ public class FeePolicy {
     ) {
         validate(feeType, rate, fixedAmount);
 
-        this.id = id;
+        this.id = UUID.randomUUID();
         this.targetType = targetType;
         this.targetKey = targetKey;
         this.feeType = feeType;
         this.rate = rate;
         this.fixedAmount = fixedAmount;
 
-        active = true;
-        createdAt = LocalDateTime.now();
+        active = false;
     }
+
+    public static FeePolicy create(
+            TargetType targetType,
+            UUID targetKey,
+            FeeType feeType,
+            FeeRate rate,
+            FixedAmount fixedAmount
+    ) {
+        return new FeePolicy(targetType, targetKey, feeType, rate, fixedAmount);
+    }
+
+    protected FeePolicy(
+            UUID id,
+            TargetType targetType,
+            UUID targetKey,
+            FeeType feeType,
+            FeeRate rate,
+            FixedAmount fixedAmount,
+            boolean active
+    ) {
+        this.id = id;
+        this.targetType = targetType;
+        this.targetKey = targetKey;
+        this.feeType = feeType;
+        this.rate = rate;
+        this.fixedAmount = fixedAmount;
+        this.active = active;
+    }
+
+    public static FeePolicy reconstruct(
+            UUID id,
+            TargetType targetType,
+            UUID targetKey,
+            FeeType feeType,
+            FeeRate rate,
+            FixedAmount fixedAmount,
+            boolean active
+    ) {
+        return new FeePolicy(
+                id, targetType, targetKey, feeType, rate, fixedAmount,
+                active
+        );
+    }
+
+    public UUID getId() { return id; }
+    public TargetType getTargetType() { return targetType; }
+    public UUID getTargetKey() { return targetKey; }
+    public FeeType getFeeType() { return feeType; }
+    public FeeRate getRate() { return rate; }
+    public FixedAmount getFixedAmount() { return fixedAmount; }
+    public boolean isActive() { return active; }
 
     private void validate(FeeType feeType, FeeRate rate, FixedAmount fixedAmount) {
         switch (feeType) {
@@ -60,7 +102,6 @@ public class FeePolicy {
         }
     }
 
-
     public BigDecimal calculateFee(BigDecimal amount) {
         return switch (feeType) {
             case RATE -> rate.apply(amount);
@@ -69,9 +110,14 @@ public class FeePolicy {
         };
     }
 
-    public void deactivate(Long userId) {
-        this.active = false;
-        this.deletedAt = LocalDateTime.now();
-        this.deletedBy = userId;
+    // 정책 활성화
+    public void activate() {
+        this.active = true;
     }
+
+    // 정책 비활성화
+    public void deactivate() {
+        this.active = false;
+    }
+
 }
