@@ -2,8 +2,6 @@ package com.smore.seller.domain.vo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
