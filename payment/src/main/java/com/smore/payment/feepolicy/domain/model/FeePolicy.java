@@ -1,7 +1,5 @@
 package com.smore.payment.feepolicy.domain.model;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class FeePolicy {

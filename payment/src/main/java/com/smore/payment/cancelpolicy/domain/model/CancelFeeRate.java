@@ -1,7 +1,5 @@
 package com.smore.payment.cancelpolicy.domain.model;
 
-import com.smore.payment.feepolicy.domain.model.FeeRate;
-
 import java.math.BigDecimal;
 
 public record CancelFeeRate(BigDecimal value) {

@@ -2,8 +2,6 @@ package com.smore.payment.cancelpolicy.infrastructure.persistence.model;
 
 import com.smore.payment.cancelpolicy.domain.model.CancelFeeType;
 import com.smore.payment.cancelpolicy.domain.model.CancelTargetType;
-import com.smore.payment.feepolicy.domain.model.FeeType;
-import com.smore.payment.feepolicy.domain.model.TargetType;
 import com.smore.payment.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

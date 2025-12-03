@@ -1,6 +1,5 @@
 package com.smore.payment.feepolicy.application.query;
 
-import com.smore.payment.feepolicy.application.command.CreateFeePolicyCommand;
 import com.smore.payment.feepolicy.domain.model.TargetType;
 import com.smore.payment.feepolicy.presentation.dto.request.GetFeePolicyRequestDto;
 

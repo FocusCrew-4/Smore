@@ -1,7 +1,7 @@
 package com.smore.payment.feepolicy.application.command;
 
-import com.smore.payment.feepolicy.domain.model.FeeType;
 import com.smore.payment.feepolicy.domain.model.FeeRate;
+import com.smore.payment.feepolicy.domain.model.FeeType;
 import com.smore.payment.feepolicy.domain.model.FixedAmount;
 import com.smore.payment.feepolicy.domain.model.TargetType;
 import com.smore.payment.feepolicy.presentation.dto.request.CreateFeePolicyRequestDto;

@@ -1,6 +1,5 @@
 package com.smore.payment.cancelpolicy.domain.model;
 
-import com.smore.payment.feepolicy.domain.model.FeeType;
 import lombok.Getter;
 
 @Getter

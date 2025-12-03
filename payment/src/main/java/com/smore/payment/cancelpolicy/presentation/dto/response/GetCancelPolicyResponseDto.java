@@ -1,9 +1,6 @@
 package com.smore.payment.cancelpolicy.presentation.dto.response;
 
 import com.smore.payment.cancelpolicy.domain.model.CancelPolicy;
-import com.smore.payment.cancelpolicy.presentation.dto.request.GetCancelPolicyRequestDto;
-import com.smore.payment.feepolicy.domain.model.FeePolicy;
-import com.smore.payment.feepolicy.presentation.dto.response.GetFeePolicyResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

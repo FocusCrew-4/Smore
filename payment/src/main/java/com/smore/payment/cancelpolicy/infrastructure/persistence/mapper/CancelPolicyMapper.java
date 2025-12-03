@@ -3,12 +3,9 @@ package com.smore.payment.cancelpolicy.infrastructure.persistence.mapper;
 import com.smore.payment.cancelpolicy.domain.model.CancelFeeRate;
 import com.smore.payment.cancelpolicy.domain.model.CancelFixedAmount;
 import com.smore.payment.cancelpolicy.domain.model.CancelPolicy;
-import com.smore.payment.cancelpolicy.infrastructure.persistence.model.CancelPolicyEntity;
 import com.smore.payment.cancelpolicy.infrastructure.persistence.model.CancelFeeRateJpa;
 import com.smore.payment.cancelpolicy.infrastructure.persistence.model.CancelFixedAmountJpa;
-import com.smore.payment.feepolicy.domain.model.FeePolicy;
-import com.smore.payment.feepolicy.domain.model.FeeRate;
-import com.smore.payment.feepolicy.domain.model.FixedAmount;
+import com.smore.payment.cancelpolicy.infrastructure.persistence.model.CancelPolicyEntity;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -4,7 +4,7 @@ import com.smore.common.response.ApiResponse;
 import com.smore.payment.feepolicy.application.FeePolicyService;
 import com.smore.payment.feepolicy.application.command.CreateFeePolicyCommand;
 import com.smore.payment.feepolicy.application.query.GetFeePolicyQuery;
-import com.smore.payment.feepolicy.domain.model.*;
+import com.smore.payment.feepolicy.domain.model.FeePolicy;
 import com.smore.payment.feepolicy.presentation.dto.request.CreateFeePolicyRequestDto;
 import com.smore.payment.feepolicy.presentation.dto.request.GetFeePolicyRequestDto;
 import com.smore.payment.feepolicy.presentation.dto.response.GetFeePolicyResponseDto;

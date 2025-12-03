@@ -5,7 +5,6 @@ import com.smore.payment.cancelpolicy.domain.model.CancelTargetType;
 import com.smore.payment.cancelpolicy.domain.repository.CancelPolicyRepository;
 import com.smore.payment.cancelpolicy.infrastructure.persistence.mapper.CancelPolicyMapper;
 import com.smore.payment.cancelpolicy.infrastructure.persistence.model.CancelPolicyEntity;
-import com.smore.payment.feepolicy.infrastructure.persistence.model.FeePolicyEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

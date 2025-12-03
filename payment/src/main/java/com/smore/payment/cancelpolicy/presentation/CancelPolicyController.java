@@ -4,7 +4,7 @@ import com.smore.common.response.ApiResponse;
 import com.smore.payment.cancelpolicy.application.CancelPolicyService;
 import com.smore.payment.cancelpolicy.application.command.CreateCancelPolicyCommand;
 import com.smore.payment.cancelpolicy.application.query.GetCancelPolicyQuery;
-import com.smore.payment.cancelpolicy.domain.model.*;
+import com.smore.payment.cancelpolicy.domain.model.CancelPolicy;
 import com.smore.payment.cancelpolicy.presentation.dto.request.CreateCancelPolicyRequestDto;
 import com.smore.payment.cancelpolicy.presentation.dto.request.GetCancelPolicyRequestDto;
 import com.smore.payment.cancelpolicy.presentation.dto.response.GetCancelPolicyResponseDto;

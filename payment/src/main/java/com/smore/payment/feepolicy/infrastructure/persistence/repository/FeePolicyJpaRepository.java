@@ -1,6 +1,5 @@
 package com.smore.payment.feepolicy.infrastructure.persistence.repository;
 
-import com.smore.payment.feepolicy.domain.model.FeePolicy;
 import com.smore.payment.feepolicy.domain.model.TargetType;
 import com.smore.payment.feepolicy.infrastructure.persistence.model.FeePolicyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

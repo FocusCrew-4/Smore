@@ -1,7 +1,5 @@
 package com.smore.payment.cancelpolicy.domain.model;
 
-import com.smore.payment.feepolicy.domain.model.TargetType;
-
 public enum CancelTargetType {
     CATEGORY, MERCHANT, AUCTION, COMPETITION, USER_TYPE;
 
