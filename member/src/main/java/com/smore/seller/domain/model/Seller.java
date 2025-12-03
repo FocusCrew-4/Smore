@@ -42,7 +42,13 @@ public class Seller {
         );
     }
 
-    public void rejectApply() {
+    public void rejectApply(Clock clock) {
         this.status = SellerStatus.REJECTED;
+        this.updatedAt = LocalDateTime.now(clock);
+    }
+
+    public void approveApply(Clock clock) {
+        this.status = SellerStatus.ACTIVE;
+        this.updatedAt = LocalDateTime.now(clock);
     }
 }
