@@ -1,13 +1,13 @@
 package com.smore.member.infrastructure.jwt;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.smore.member.domain.repository.MemberRepository;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -48,10 +48,10 @@ public class JwtConfig {
     // TODO: 공부 및 정리
     @Bean
     CustomJwtAuthenticationConverter customJwtAuthenticationConverter(
-        UserDetailsService userDetailsService,
+        MemberRepository memberRepository,
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter
     ) {
-        return new CustomJwtAuthenticationConverter(userDetailsService, jwtGrantedAuthoritiesConverter);
+        return new CustomJwtAuthenticationConverter(memberRepository, jwtGrantedAuthoritiesConverter);
     }
 
 }
