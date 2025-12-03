@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
+// TODO: 인프라에 의존하는 부분 없애도록 변경
 @Service
 @RequiredArgsConstructor
 @Slf4j
