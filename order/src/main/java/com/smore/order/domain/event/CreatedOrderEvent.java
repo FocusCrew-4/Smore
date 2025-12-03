@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 @Builder(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class CreatedOrderEvent {
+public class CreatedOrderEvent implements OrderEvent{
 
     private final UUID orderId;
     private final Long userId;

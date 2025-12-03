@@ -9,4 +9,8 @@ public interface OrderRepository {
 
     Order save(Order order);
 
+    int markComplete(UUID orderId);
+
+    Order findById(UUID orderId);
+
 }

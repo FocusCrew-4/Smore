@@ -5,11 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.order.application.dto.CreateOrderCommand;
 import com.smore.order.application.repository.OrderRepository;
 import com.smore.order.application.repository.OutboxRepository;
+import com.smore.order.domain.event.CompletedOrderEvent;
 import com.smore.order.domain.event.CreatedOrderEvent;
+import com.smore.order.domain.event.OrderEvent;
 import com.smore.order.domain.model.Order;
 import com.smore.order.domain.model.Outbox;
 import com.smore.order.domain.status.AggregateType;
 import com.smore.order.domain.status.EventType;
+import com.smore.order.domain.status.OrderStatus;
+import com.smore.order.domain.status.ServiceResult;
+import com.smore.order.infrastructure.persistence.exception.CompleteOrderFailException;
 import jakarta.transaction.Transactional;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -32,7 +37,7 @@ public class OrderService {
     public void createOrder(CreateOrderCommand command) {
 
         Order findOrder = orderRepository.findByIdempotencyKey(command.getIdempotencyKey());
-        if (findOrder == null) {
+        if (findOrder != null) {
             return;
         }
 
@@ -71,7 +76,46 @@ public class OrderService {
         outboxRepository.save(outbox);
     }
 
-    private String makePayload(CreatedOrderEvent event)  {
+    @Transactional
+    public ServiceResult completeOrder(UUID orderId) {
+
+        Order order = orderRepository.findById(orderId);
+
+        if (order.isCompleted()) {
+            log.info("이미 처리된 작업 orderId : {}", orderId);
+            return ServiceResult.SUCCESS;
+        }
+
+        int updated = orderRepository.markComplete(orderId);
+
+        if (updated == 0) {
+            log.error("주문 완료 상태로 변경하지 못했습니다. orderId = {}, methodName = {}", orderId, "completeOrder");
+            throw new CompleteOrderFailException("주문 완료 상태로 변경하지 못했습니다.");
+        }
+
+        CompletedOrderEvent event = CompletedOrderEvent.of(
+            order.getId(),
+            order.getUserId(),
+            OrderStatus.COMPLETED,
+            UUID.randomUUID(),
+            LocalDateTime.now(clock)
+        );
+
+        Outbox outbox = Outbox.create(
+            AggregateType.ORDER,
+            order.getId(),
+            EventType.ORDER_COMPLETED,
+            UUID.randomUUID(),
+            makePayload(event)
+        );
+
+        outboxRepository.save(outbox);
+
+        return ServiceResult.SUCCESS;
+    }
+
+    // TODO: 나중에 클래스로 분리할 예정
+    private String makePayload(OrderEvent event)  {
         try {
             return objectMapper.writeValueAsString(event);
         } catch (JsonProcessingException e) {

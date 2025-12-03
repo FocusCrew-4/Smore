@@ -48,6 +48,8 @@ public class OutboxEntity extends BaseEntity {
 
     private String payload;
 
+    private Integer retryCount;
+
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
 
@@ -57,6 +59,7 @@ public class OutboxEntity extends BaseEntity {
         EventType eventType,
         UUID idempotencyKey,
         String payload,
+        Integer retryCount,
         EventStatus eventStatus
     ) {
 
@@ -71,6 +74,7 @@ public class OutboxEntity extends BaseEntity {
             .eventType(eventType)
             .idempotencyKey(idempotencyKey)
             .payload(payload)
+            .retryCount(retryCount)
             .eventStatus(eventStatus)
             .build();
     }

@@ -56,7 +56,7 @@ public class SecurityConfig {
                     "/api/v1/members/login",
                     "/api/v1/members/register"
                 ).permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
 
             .oauth2ResourceServer(oauth ->

@@ -21,6 +21,10 @@ public class JwtValidationFilter implements GlobalFilter, Ordered {
 
     private final JwtValidation jwtValidation;
 
+    /*
+    WhiteListFilter 에서 jwt 가 없는 요청은 이미 한번 거르기때문에
+    해당 필터에서는 jwt 가 없으면 그대로 통과
+     */
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
@@ -28,7 +32,11 @@ public class JwtValidationFilter implements GlobalFilter, Ordered {
 
         String bearerJwt
             = request.getHeaders().getFirst("Authorization");
-        if (bearerJwt == null || !bearerJwt.startsWith("Bearer ")) {
+        if (bearerJwt == null) {
+            return chain.filter(exchange);
+        }
+        if (!bearerJwt.startsWith("Bearer ")) {
+            log.error("Bearer Token is invalid (JwtValidationFilter)");
             var response = exchange.getResponse();
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();

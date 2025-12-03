@@ -16,5 +16,9 @@ public record CreateRequestDto(
     @NotBlank
     String nickname
 ) {
-
+    public CreateRequestDto {
+        if (role != Role.SELLER && role != Role.CONSUMER) {
+            throw new IllegalArgumentException("SELLER 또는 CONSUMER만 등록 가능합니다.");
+        }
+    }
 }
