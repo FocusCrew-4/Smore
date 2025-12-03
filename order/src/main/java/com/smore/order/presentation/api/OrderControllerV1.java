@@ -2,10 +2,8 @@ package com.smore.order.presentation.api;
 
 import static com.smore.order.presentation.auth.OrderRole.*;
 
-import com.smore.common.error.ErrorCode;
 import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
-import com.smore.member.domain.enums.Role;
 import com.smore.order.application.service.OrderService;
 import com.smore.order.presentation.auth.OrderRole;
 import com.smore.order.presentation.dto.IsOrderCreatedResponse;
