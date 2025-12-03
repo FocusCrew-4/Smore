@@ -7,10 +7,9 @@ import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.response.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,5 +26,13 @@ public class ProductController {
 
         return ResponseEntity.ok()
                 .body(ApiResponse.ok(response));
+    }
+
+    @GetMapping("/{productId}")
+    public ResponseEntity<CommonResponse<ProductResponse>> getProduct(
+            @PathVariable UUID productId
+    ) {
+        ProductResponse response = productService.getProduct(productId);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }
