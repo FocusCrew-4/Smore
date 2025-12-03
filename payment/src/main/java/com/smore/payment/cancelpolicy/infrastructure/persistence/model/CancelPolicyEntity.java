@@ -14,7 +14,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "fee_policies")
+@Table(name = "cancel_policies")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class CancelPolicyEntity extends BaseEntity {
