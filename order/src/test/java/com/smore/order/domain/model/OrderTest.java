@@ -431,7 +431,7 @@ class OrderTest {
         Assertions.assertThat(order.getTotalAmount()).isEqualTo(productPrice * quantity);
 
         Assertions.assertThat(order.getIdempotencyKey()).isEqualTo(idempotencyKey);
-        Assertions.assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.CRATED);
+        Assertions.assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.CREATED);
         Assertions.assertThat(order.getCancelState()).isEqualTo(CancelState.NONE);
 
         Assertions.assertThat(order.getOrderedAt()).isEqualTo(now);
