@@ -1,7 +1,7 @@
 package com.smore.order.domain.status;
 
 public enum OrderStatus {
-    CRATED("주문 생성"),
+    CREATED("주문 생성"),
     COMPLETED("주문 완료"),
     FAILED("주문 실패"),
     CANCELLED("주문 취소")

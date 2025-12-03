@@ -15,6 +15,9 @@ public class MemberAppMapper {
             member.getNickname(),
             member.getAuctionCancelCount(),
             member.getStatus(),
+            member.getCreatedAt(),
+            member.getUpdatedAt(),
+            member.getDeletedAt(),
             member.getDeletedBy()
         );
     }

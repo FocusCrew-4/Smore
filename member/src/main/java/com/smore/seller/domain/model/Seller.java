@@ -8,6 +8,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+// TODO: 정산금액 관리 필요
 @Getter
 @AllArgsConstructor
 public class Seller {
