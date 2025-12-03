@@ -30,7 +30,7 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
       # 컨슈머 그룹 ID (서비스 단위로 나눠서)
-      group-id: my-api-service-group
+      group-id: order-service-consumer-group
 
       # 처음 시작 시 어디서부터 읽을지
       auto-offset-reset: earliest   # 필요에 따라 latest 로 변경 가능
