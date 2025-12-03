@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 @EntityScan({
     "com.smore.member.infrastructure.persistence.jpa.entity",
-    "com.smore.seller.infrastructure.persistence.entity"
+    "com.smore.seller.infrastructure.persistence.jpa.entity"
 })
 public class MemberApplication {
 

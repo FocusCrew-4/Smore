@@ -1,4 +1,4 @@
-package com.smore.seller.infrastructure.persistence.vo;
+package com.smore.seller.infrastructure.persistence.jpa.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

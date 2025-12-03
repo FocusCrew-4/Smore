@@ -2,11 +2,15 @@ package com.smore.seller.domain.vo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 public class Money {
     private final BigDecimal amount;
 
-    private Money(BigDecimal amount) {
+    public Money(BigDecimal amount) {
         if (amount == null) {
             throw new IllegalArgumentException("Amount cannot be null");
         }

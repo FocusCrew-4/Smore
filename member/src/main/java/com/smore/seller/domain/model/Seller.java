@@ -2,7 +2,7 @@ package com.smore.seller.domain.model;
 
 import com.smore.seller.domain.enums.SellerStatus;
 import com.smore.seller.domain.vo.Money;
-import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -22,4 +22,23 @@ public class Seller {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
     private Long deletedBy;
+
+    public static Seller apply(
+        Long memberId,
+        String accountNum,
+        Clock clock
+    ) {
+        LocalDateTime now = LocalDateTime.now(clock);
+        return new Seller(
+            null,
+            memberId,
+            accountNum,
+            SellerStatus.PENDING,
+            Money.of(0),
+            now,
+            now,
+            null,
+            null
+        );
+    }
 }

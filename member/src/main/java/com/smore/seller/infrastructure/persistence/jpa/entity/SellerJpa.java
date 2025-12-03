@@ -1,7 +1,7 @@
-package com.smore.seller.infrastructure.persistence.entity;
+package com.smore.seller.infrastructure.persistence.jpa.entity;
 
 import com.smore.seller.domain.enums.SellerStatus;
-import com.smore.seller.infrastructure.persistence.vo.MoneyEmbeddable;
+import com.smore.seller.infrastructure.persistence.jpa.vo.MoneyEmbeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
