@@ -61,7 +61,7 @@ public class MemberController {
         @RequestHeader("X-User-Role") Role role,
         @Valid @RequestBody CreateRequestDto requestDto
     ) {
-        if (!role.equals(Role.NONE)) {
+        if (!role.isNONE()) {
             return ResponseEntity.badRequest()
                 .body(ApiResponse.error("M401", "회원 가입은 비회원만 가능합니다"));
         }
