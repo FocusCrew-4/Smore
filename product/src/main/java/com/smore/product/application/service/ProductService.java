@@ -8,6 +8,8 @@ import com.smore.product.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -32,6 +34,13 @@ public class ProductService {
                 .build();
 
         productRepository.save(p);
+
+        return new ProductResponse(p);
+    }
+
+    public ProductResponse getProduct(UUID productId) {
+        Product p = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
         return new ProductResponse(p);
     }
