@@ -114,6 +114,14 @@ public class Order {
         return orderStatus == OrderStatus.COMPLETED;
     }
 
+    public boolean noRefund() {
+
+        boolean noRemainingQuantity =
+            quantity <= (refundedQuantity + refundReservedQuantity);
+
+        return noRemainingQuantity || !orderStatus.isRefundable();
+    }
+
     private static Integer calculateTotalPrice(Integer price, Integer quantity) {
         return price * quantity;
     }
