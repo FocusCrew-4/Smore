@@ -21,7 +21,7 @@ public class RefundPolicyMapper {
         return new RefundPolicyEntity(
                 refundPolicy.getId(),
                 refundPolicy.getRefundTargetType(),
-                refundPolicy.getTargetKey().toString(),
+                refundPolicy.getTargetKey().getValueAsString(),
                 refundPolicy.getRefundPeriodDays(),
                 refundPolicy.getRefundFeeType(),
                 refundFeeRateJpa,

@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Duration;
 import java.util.UUID;
 
 @Entity
@@ -26,10 +27,10 @@ public class CancelPolicyEntity extends BaseEntity {
     private CancelTargetType cancelTargetType;
 
     @Column(name = "target_key", nullable = false, updatable = false)
-    private UUID targetKey;
+    private String targetKey;
 
     @Column(name = "cancel_limit_minutes")
-    private Integer cancelLimitMinutes;
+    private Duration cancelLimitMinutes;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "cancel_fee_type", nullable = false, updatable = false)
@@ -51,8 +52,8 @@ public class CancelPolicyEntity extends BaseEntity {
     public CancelPolicyEntity(
             UUID id,
             CancelTargetType cancelTargetType,
-            UUID targetKey,
-            Integer cancelLimitMinutes,
+            String targetKey,
+            Duration cancelLimitMinutes,
             CancelFeeType cancelFeeType,
             CancelFeeRateJpa rate,
             CancelFixedAmountJpa fixedAmount,

@@ -1,13 +1,14 @@
 package com.smore.payment.cancelpolicy.domain.model;
 
+import java.time.Duration;
 import java.util.UUID;
 
 public class CancelPolicy {
 
     private final UUID id;
     private final CancelTargetType cancelTargetType;
-    private final UUID targetKey;
-    private final Integer cancelLimitMinutes;
+    private final TargetKey targetKey;
+    private final Duration cancelLimitMinutes;
     private final CancelFeeType cancelFeeType;
     private final CancelFeeRate cancelFeeRate;
     private final CancelFixedAmount cancelFixedAmount;
@@ -16,8 +17,8 @@ public class CancelPolicy {
 
     protected CancelPolicy(
         CancelTargetType cancelTargetType,
-        UUID targetKey,
-        Integer cancelLimitMinutes,
+        TargetKey targetKey,
+        Duration cancelLimitMinutes,
         CancelFeeType cancelFeeType,
         CancelFeeRate cancelFeeRate,
         CancelFixedAmount cancelFixedAmount,
@@ -39,8 +40,8 @@ public class CancelPolicy {
 
     public static CancelPolicy create(
             CancelTargetType cancelTargetType,
-            UUID targetKey,
-            Integer cancelLimitMinutes,
+            TargetKey targetKey,
+            Duration cancelLimitMinutes,
             CancelFeeType feeType,
             CancelFeeRate rate,
             CancelFixedAmount cancelFixedAmount,
@@ -52,8 +53,8 @@ public class CancelPolicy {
     protected CancelPolicy(
             UUID id,
             CancelTargetType cancelTargetType,
-            UUID targetKey,
-            Integer cancelLimitMinutes,
+            TargetKey targetKey,
+            Duration cancelLimitMinutes,
             CancelFeeType cancelFeeType,
             CancelFeeRate cancelFeeRate,
             CancelFixedAmount cancelFixedAmount,
@@ -74,8 +75,8 @@ public class CancelPolicy {
     public static CancelPolicy reconstruct(
             UUID id,
             CancelTargetType cancelTargetType,
-            UUID targetKey,
-            Integer cancelLimitMinutes,
+            TargetKey targetKey,
+            Duration cancelLimitMinutes,
             CancelFeeType feeType,
             CancelFeeRate rate,
             CancelFixedAmount cancelFixedAmount,
@@ -90,8 +91,8 @@ public class CancelPolicy {
 
     public UUID getId() { return id; }
     public CancelTargetType getCancelTargetType() { return cancelTargetType; }
-    public UUID getTargetKey() { return targetKey; }
-    public Integer getCancelLimitMinutes() { return cancelLimitMinutes; }
+    public TargetKey getTargetKey() { return targetKey; }
+    public Duration getCancelLimitMinutes() { return cancelLimitMinutes; }
     public CancelFeeType getCancelFeeType() { return cancelFeeType; }
     public CancelFeeRate getCancelFeeRate() { return cancelFeeRate; }
     public CancelFixedAmount getCancelFixedAmount() { return cancelFixedAmount; }

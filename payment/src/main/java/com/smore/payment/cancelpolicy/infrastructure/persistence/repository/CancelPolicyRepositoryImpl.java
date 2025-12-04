@@ -2,6 +2,7 @@ package com.smore.payment.cancelpolicy.infrastructure.persistence.repository;
 
 import com.smore.payment.cancelpolicy.domain.model.CancelPolicy;
 import com.smore.payment.cancelpolicy.domain.model.CancelTargetType;
+import com.smore.payment.cancelpolicy.domain.model.TargetKey;
 import com.smore.payment.cancelpolicy.domain.repository.CancelPolicyRepository;
 import com.smore.payment.cancelpolicy.infrastructure.persistence.mapper.CancelPolicyMapper;
 import com.smore.payment.cancelpolicy.infrastructure.persistence.model.CancelPolicyEntity;
@@ -24,8 +25,8 @@ public class CancelPolicyRepositoryImpl implements CancelPolicyRepository {
     }
 
     @Override
-    public Optional<CancelPolicy> findByTargetTypeAndTargetKey(CancelTargetType cancelTargetType, UUID targetKey) {
-        return cancelPolicyJpaRepository.findByCancelTargetTypeAndTargetKey(cancelTargetType, targetKey)
+    public Optional<CancelPolicy> findByTargetTypeAndTargetKey(CancelTargetType cancelTargetType, TargetKey targetKey) {
+        return cancelPolicyJpaRepository.findByCancelTargetTypeAndTargetKey(cancelTargetType, targetKey.getValueAsString())
                 .map(cancelPolicyMapper::toDomainEntity);
     }
 

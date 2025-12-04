@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -15,8 +16,8 @@ public class GetCancelPolicyResponseDto {
 
     private UUID id;
     private String targetType;
-    private UUID targetKey;
-    private Integer cancelLimitMinutes;
+    private String targetKey;
+    private Duration cancelLimitMinutes;
     private String feeType;
     private BigDecimal rate;
     private BigDecimal fixedAmount;
@@ -27,7 +28,7 @@ public class GetCancelPolicyResponseDto {
         return new GetCancelPolicyResponseDto(
                 cancelPolicy.getId(),
                 cancelPolicy.getCancelTargetType().toString(),
-                cancelPolicy.getTargetKey(),
+                cancelPolicy.getTargetKey().toString(),
                 cancelPolicy.getCancelLimitMinutes(),
                 cancelPolicy.getCancelFeeType().toString(),
                 cancelPolicy.getCancelFeeRate().value(),

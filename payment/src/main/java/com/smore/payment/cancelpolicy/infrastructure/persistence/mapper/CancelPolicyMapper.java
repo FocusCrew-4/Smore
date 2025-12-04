@@ -1,12 +1,14 @@
 package com.smore.payment.cancelpolicy.infrastructure.persistence.mapper;
 
-import com.smore.payment.cancelpolicy.domain.model.CancelFeeRate;
-import com.smore.payment.cancelpolicy.domain.model.CancelFixedAmount;
-import com.smore.payment.cancelpolicy.domain.model.CancelPolicy;
+import com.smore.payment.cancelpolicy.domain.model.*;
 import com.smore.payment.cancelpolicy.infrastructure.persistence.model.CancelFeeRateJpa;
 import com.smore.payment.cancelpolicy.infrastructure.persistence.model.CancelFixedAmountJpa;
 import com.smore.payment.cancelpolicy.infrastructure.persistence.model.CancelPolicyEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
+
+import static com.smore.payment.cancelpolicy.domain.model.CancelTargetType.*;
 
 @Component
 public class CancelPolicyMapper {
@@ -22,7 +24,7 @@ public class CancelPolicyMapper {
         return new CancelPolicyEntity(
                 cancelPolicy.getId(),
                 cancelPolicy.getCancelTargetType(),
-                cancelPolicy.getTargetKey(),
+                cancelPolicy.getTargetKey().getValueAsString(),
                 cancelPolicy.getCancelLimitMinutes(),
                 cancelPolicy.getCancelFeeType(),
                 cancelFeeRateJpa,
@@ -39,11 +41,16 @@ public class CancelPolicyMapper {
         CancelFixedAmount fixedAmount = new CancelFixedAmount(
                 cancelPolicyEntity.getCancelFixedAmountJpa().getFixedAmount()
         );
-
+        TargetKey targetKey = switch (cancelPolicyEntity.getCancelTargetType()) {
+            case CATEGORY -> new TargetKeyUUID(UUID.fromString(cancelPolicyEntity.getTargetKey()));
+            case MERCHANT -> new TargetKeyLong(Long.parseLong(cancelPolicyEntity.getTargetKey()));
+            case AUCTION_TYPE -> new TargetKeyString(cancelPolicyEntity.getTargetKey());
+            case USER_TYPE -> null;
+        };
         return CancelPolicy.reconstruct(
                 cancelPolicyEntity.getId(),
                 cancelPolicyEntity.getCancelTargetType(),
-                cancelPolicyEntity.getTargetKey(),
+                targetKey,
                 cancelPolicyEntity.getCancelLimitMinutes(),
                 cancelPolicyEntity.getCancelFeeType(),
                 feeRate,

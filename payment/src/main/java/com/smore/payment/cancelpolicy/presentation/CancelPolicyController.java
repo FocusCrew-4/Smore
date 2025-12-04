@@ -30,7 +30,7 @@ public class CancelPolicyController {
     ) {
         UserContextHolder.set(userId);
 
-        UUID id = cancelPolicyService.createCancelPolicy(CreateCancelPolicyCommand.from(createCancelPolicyRequestDto));
+        UUID id = cancelPolicyService.createCancelPolicy(createCancelPolicyRequestDto.toCommand());
 
         UserContextHolder.clear();
 
@@ -40,7 +40,7 @@ public class CancelPolicyController {
     @GetMapping
     public ResponseEntity<?> getCancelPolicy(@Valid @RequestBody GetCancelPolicyRequestDto getCancelPolicyRequestDto) {
 
-        CancelPolicy cancelPolicy = cancelPolicyService.getCancelPolicy(GetCancelPolicyQuery.from(getCancelPolicyRequestDto));
+        CancelPolicy cancelPolicy = cancelPolicyService.getCancelPolicy(getCancelPolicyRequestDto.toQuery());
 
         return ResponseEntity.ok(ApiResponse.ok(GetCancelPolicyResponseDto.from(cancelPolicy)));
     }

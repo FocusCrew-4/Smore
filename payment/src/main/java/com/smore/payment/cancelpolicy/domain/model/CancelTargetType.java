@@ -1,7 +1,7 @@
 package com.smore.payment.cancelpolicy.domain.model;
 
 public enum CancelTargetType {
-    CATEGORY, MERCHANT, AUCTION, COMPETITION, USER_TYPE;
+    CATEGORY, MERCHANT, AUCTION_TYPE, USER_TYPE;
 
     public static CancelTargetType of(String value) {
         try {
