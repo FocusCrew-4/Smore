@@ -7,10 +7,19 @@ import lombok.Getter;
 @Getter
 public class Money {
     private final BigDecimal amount;
+    private static final BigDecimal MAX_AMOUNT = new BigDecimal("1000000000000.00");
 
     public Money(BigDecimal amount) {
         if (amount == null) {
             throw new IllegalArgumentException("Amount cannot be null");
+        }
+        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Amount cannot be negative");
+        }
+        if (amount.compareTo(MAX_AMOUNT) > 0) {
+            throw new IllegalArgumentException(
+                "Amount exceeds the maximum allowed value: " + MAX_AMOUNT
+            );
         }
         this.amount = amount.setScale(2, RoundingMode.HALF_UP);
     }
