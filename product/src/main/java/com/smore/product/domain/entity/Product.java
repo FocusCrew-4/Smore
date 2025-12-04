@@ -57,5 +57,31 @@ public class Product {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void changeName(String name) {
+        this.name = name;
+    }
 
+    public void changeDescription(String description) {
+        this.description = description;
+    }
+
+    public void changePrice(Integer price) {
+        this.price = price;
+    }
+
+    public void changeStock(Integer stock) {
+        this.stock = stock;
+    }
+
+    public void changeCategory(UUID categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public void changeSaleType(SaleType saleType) {
+        this.saleType = saleType;
+    }
+
+    public void changeThreshold(Integer threshold) {
+        this.thresholdForAuction = threshold;
+    }
 }

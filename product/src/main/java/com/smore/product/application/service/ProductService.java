@@ -57,15 +57,15 @@ public class ProductService {
     @Transactional
     public ProductResponse updateProduct(UUID productId, UpdateProductRequest req) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+                .orElseThrow(() -> new RuntimeException("상품 없음"));
 
-        if (req.getName() != null) product.setName(req.getName());
-        if (req.getDescription() != null) product.setDescription(req.getDescription());
-        if (req.getPrice() != null) product.setPrice(req.getPrice());
-        if (req.getStock() != null) product.setStock(req.getStock());
-        if (req.getCategoryId() != null) product.setCategoryId(req.getCategoryId());
-        if (req.getSaleType() != null) product.setSaleType(req.getSaleType());
-        if (req.getThresholdForAuction() != null) product.setThresholdForAuction(req.getThresholdForAuction());
+        if (req.getName() != null) product.changeName(req.getName());
+        if (req.getDescription() != null) product.changeDescription(req.getDescription());
+        if (req.getPrice() != null) product.changePrice(req.getPrice());
+        if (req.getStock() != null) product.changeStock(req.getStock());
+        if (req.getCategoryId() != null) product.changeCategory(req.getCategoryId());
+        if (req.getSaleType() != null) product.changeSaleType(req.getSaleType());
+        if (req.getThresholdForAuction() != null) product.changeThreshold(req.getThresholdForAuction());
 
         return new ProductResponse(product);
     }
