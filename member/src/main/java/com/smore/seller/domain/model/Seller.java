@@ -41,4 +41,8 @@ public class Seller {
             null
         );
     }
+
+    public void rejectApply() {
+        this.status = SellerStatus.REJECTED;
+    }
 }

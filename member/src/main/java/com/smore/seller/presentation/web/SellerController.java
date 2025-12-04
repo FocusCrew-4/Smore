@@ -2,8 +2,9 @@ package com.smore.seller.presentation.web;
 
 import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
-import com.smore.seller.application.usecase.SellerApply;
 import com.smore.seller.application.result.SellerResult;
+import com.smore.seller.application.usecase.SellerApply;
+import com.smore.seller.application.usecase.SellerReject;
 import com.smore.seller.presentation.web.dto.request.SellerApplyRequestDto;
 import com.smore.seller.presentation.web.mapper.SellerControllerMapper;
 import java.net.URI;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -27,6 +29,7 @@ public class SellerController {
 
     private final SellerApply sellerApply;
     private final SellerControllerMapper mapper;
+    private final SellerReject sellerReject;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -52,6 +55,21 @@ public class SellerController {
 
         return ResponseEntity.created(uri)
             .body(ApiResponse.ok(uri));
+    }
+
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<CommonResponse<?>> rejectSeller(
+        @RequestHeader("X-User-Role") String role,
+        @PathVariable Long id
+    ) {
+        if (role.equals("ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error("S401", "관리자만 사용가능합니다"));
+        }
+
+        sellerReject.rejectSeller(id);
+
+        return ResponseEntity.ok(ApiResponse.ok("거절 성공"));
     }
 
 }
