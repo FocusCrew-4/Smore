@@ -1,13 +1,14 @@
 package com.smore.payment.refundpolicy.domain.model;
 
+import java.time.Duration;
 import java.util.UUID;
 
 public class RefundPolicy {
 
     private final UUID id;
     private final RefundTargetType refundTargetType;
-    private final UUID targetKey;
-    private final Integer refundPeriodDays;
+    private final TargetKey targetKey;
+    private final Duration refundPeriodDays;
     private final RefundFeeType refundFeeType;
     private final RefundFeeRate refundFeeRate;
     private final RefundFixedAmount refundFixedAmount;
@@ -16,8 +17,8 @@ public class RefundPolicy {
 
     protected RefundPolicy(
         RefundTargetType refundTargetType,
-        UUID targetKey,
-        Integer refundPeriodDays,
+        TargetKey targetKey,
+        Duration refundPeriodDays,
         RefundFeeType refundFeeType,
         RefundFeeRate refundFeeRate,
         RefundFixedAmount refundFixedAmount,
@@ -39,8 +40,8 @@ public class RefundPolicy {
 
     public static RefundPolicy create(
             RefundTargetType refundTargetType,
-            UUID targetKey,
-            Integer refundPeriodDays,
+            TargetKey targetKey,
+            Duration refundPeriodDays,
             RefundFeeType feeType,
             RefundFeeRate rate,
             RefundFixedAmount refundFixedAmount,
@@ -52,8 +53,8 @@ public class RefundPolicy {
     protected RefundPolicy(
             UUID id,
             RefundTargetType refundTargetType,
-            UUID targetKey,
-            Integer refundPeriodDays,
+            TargetKey targetKey,
+            Duration refundPeriodDays,
             RefundFeeType refundFeeType,
             RefundFeeRate refundFeeRate,
             RefundFixedAmount refundFixedAmount,
@@ -74,8 +75,8 @@ public class RefundPolicy {
     public static RefundPolicy reconstruct(
             UUID id,
             RefundTargetType refundTargetType,
-            UUID targetKey,
-            Integer refundPeriodDays,
+            TargetKey targetKey,
+            Duration refundPeriodDays,
             RefundFeeType feeType,
             RefundFeeRate rate,
             RefundFixedAmount refundFixedAmount,
@@ -90,8 +91,8 @@ public class RefundPolicy {
 
     public UUID getId() { return id; }
     public RefundTargetType getRefundTargetType() { return refundTargetType; }
-    public UUID getTargetKey() { return targetKey; }
-    public Integer getRefundPeriodDays() { return refundPeriodDays; }
+    public TargetKey getTargetKey() { return targetKey; }
+    public Duration getRefundPeriodDays() { return refundPeriodDays; }
     public RefundFeeType getRefundFeeType() { return refundFeeType; }
     public RefundFeeRate getRefundFeeRate() { return refundFeeRate; }
     public RefundFixedAmount getRefundFixedAmount() { return refundFixedAmount; }

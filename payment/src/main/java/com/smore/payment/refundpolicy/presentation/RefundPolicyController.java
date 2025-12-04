@@ -3,8 +3,6 @@ package com.smore.payment.refundpolicy.presentation;
 import com.smore.common.response.ApiResponse;
 import com.smore.payment.global.config.UserContextHolder;
 import com.smore.payment.refundpolicy.application.RefundPolicyService;
-import com.smore.payment.refundpolicy.application.command.CreateRefundPolicyCommand;
-import com.smore.payment.refundpolicy.application.query.GetRefundPolicyQuery;
 import com.smore.payment.refundpolicy.domain.model.RefundPolicy;
 import com.smore.payment.refundpolicy.presentation.dto.request.CreateRefundPolicyRequestDto;
 import com.smore.payment.refundpolicy.presentation.dto.request.GetRefundPolicyRequestDto;
@@ -30,7 +28,7 @@ public class RefundPolicyController {
     ) {
         UserContextHolder.set(userId);
 
-        UUID id = refundPolicyService.createRefundPolicy(CreateRefundPolicyCommand.from(createRefundPolicyRequestDto));
+        UUID id = refundPolicyService.createRefundPolicy(createRefundPolicyRequestDto.toCommand());
 
         UserContextHolder.clear();
 
@@ -40,16 +38,14 @@ public class RefundPolicyController {
     @GetMapping
     public ResponseEntity<?> getRefundPolicy(@Valid @RequestBody GetRefundPolicyRequestDto getRefundPolicyRequestDto) {
 
-        RefundPolicy refundPolicy = refundPolicyService.getRefundPolicy(GetRefundPolicyQuery.from(getRefundPolicyRequestDto));
+        RefundPolicy refundPolicy = refundPolicyService.getRefundPolicy(getRefundPolicyRequestDto.toQuery());
 
         return ResponseEntity.ok(ApiResponse.ok(GetRefundPolicyResponseDto.from(refundPolicy)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteRefundPolicy(@PathVariable UUID id, @RequestHeader("X-User-Id") UUID userId) {
-        UserContextHolder.set(userId);
         refundPolicyService.deleteRefundPolicy(id, userId);
-        UserContextHolder.clear();
         return ResponseEntity.ok().build();
     }
 }

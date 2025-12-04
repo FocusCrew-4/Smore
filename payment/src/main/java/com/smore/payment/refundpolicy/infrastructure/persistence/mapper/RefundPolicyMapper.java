@@ -1,12 +1,12 @@
 package com.smore.payment.refundpolicy.infrastructure.persistence.mapper;
 
-import com.smore.payment.refundpolicy.domain.model.RefundFeeRate;
-import com.smore.payment.refundpolicy.domain.model.RefundFixedAmount;
-import com.smore.payment.refundpolicy.domain.model.RefundPolicy;
+import com.smore.payment.refundpolicy.domain.model.*;
 import com.smore.payment.refundpolicy.infrastructure.persistence.model.RefundFeeRateJpa;
 import com.smore.payment.refundpolicy.infrastructure.persistence.model.RefundFixedAmountJpa;
 import com.smore.payment.refundpolicy.infrastructure.persistence.model.RefundPolicyEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class RefundPolicyMapper {
@@ -18,11 +18,10 @@ public class RefundPolicyMapper {
         RefundFixedAmountJpa refundFixedAmountJpa = new RefundFixedAmountJpa(
                 refundPolicy.getRefundFixedAmount().value()
         );
-
         return new RefundPolicyEntity(
                 refundPolicy.getId(),
                 refundPolicy.getRefundTargetType(),
-                refundPolicy.getTargetKey(),
+                refundPolicy.getTargetKey().toString(),
                 refundPolicy.getRefundPeriodDays(),
                 refundPolicy.getRefundFeeType(),
                 refundFeeRateJpa,
@@ -39,11 +38,17 @@ public class RefundPolicyMapper {
         RefundFixedAmount fixedAmount = RefundFixedAmount.of(
                 refundPolicyEntity.getRefundFixedAmountJpa().getFixedAmount()
         );
+        TargetKey targetKey = switch (refundPolicyEntity.getRefundTargetType()) {
+            case CATEGORY -> new TargetKeyUUID(UUID.fromString(refundPolicyEntity.getTargetKey()));
+            case MERCHANT -> new TargetKeyLong(Long.parseLong(refundPolicyEntity.getTargetKey()));
+            case AUCTION_TYPE -> new TargetKeyString(refundPolicyEntity.getTargetKey());
+            case USER_TYPE -> null;
+        };
 
         return RefundPolicy.reconstruct(
                 refundPolicyEntity.getId(),
                 refundPolicyEntity.getRefundTargetType(),
-                refundPolicyEntity.getTargetKey(),
+                targetKey,
                 refundPolicyEntity.getRefundPeriodDays(),
                 refundPolicyEntity.getRefundFeeType(),
                 feeRate,

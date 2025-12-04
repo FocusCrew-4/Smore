@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -15,8 +16,8 @@ public class GetRefundPolicyResponseDto {
 
     private UUID id;
     private String targetType;
-    private UUID targetKey;
-    private Integer refundPeriodDays;
+    private String targetKey;
+    private Duration refundPeriodDays;
     private String feeType;
     private BigDecimal rate;
     private BigDecimal fixedAmount;
@@ -27,7 +28,7 @@ public class GetRefundPolicyResponseDto {
         return new GetRefundPolicyResponseDto(
                 refundPolicy.getId(),
                 refundPolicy.getRefundTargetType().toString(),
-                refundPolicy.getTargetKey(),
+                refundPolicy.getTargetKey().toString(),
                 refundPolicy.getRefundPeriodDays(),
                 refundPolicy.getRefundFeeType().toString(),
                 refundPolicy.getRefundFeeRate().value(),

@@ -1,7 +1,7 @@
 package com.smore.payment.refundpolicy.domain.model;
 
 public enum RefundTargetType {
-    CATEGORY, MERCHANT, AUCTION, COMPETITION, USER_TYPE;
+    CATEGORY, MERCHANT, AUCTION_TYPE, USER_TYPE;
 
     public static RefundTargetType of(String value) {
         try {

@@ -8,5 +8,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface RefundPolicyJpaRepository extends JpaRepository<RefundPolicyEntity, UUID> {
-    Optional<RefundPolicyEntity> findByRefundTargetTypeAndTargetKey(RefundTargetType refundTargetType, UUID targetKey);
+    Optional<RefundPolicyEntity> findByRefundTargetTypeAndTargetKey(RefundTargetType refundTargetType, String targetKey);
 }
