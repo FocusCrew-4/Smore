@@ -1,12 +1,12 @@
 package com.smore.seller.application.impl;
 
+import com.smore.seller.application.port.EventSerializerPort;
+import com.smore.seller.application.port.SellerTopicPort;
+import com.smore.seller.application.port.out.OutboxRepositoryPort;
 import com.smore.seller.application.usecase.SellerApprove;
 import com.smore.seller.domain.events.SellerRegisterV1Event;
 import com.smore.seller.domain.model.Seller;
 import com.smore.seller.domain.repository.SellerRepository;
-import com.smore.seller.infrastructure.kafka.SellerEventSerializer;
-import com.smore.seller.infrastructure.outbox.SellerOutbox;
-import com.smore.seller.infrastructure.outbox.SellerOutboxRepository;
 import java.time.Clock;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class SellerApproveImpl implements SellerApprove {
 
     private final SellerRepository repository;
-    private final SellerOutboxRepository outboxRepository;
     private final Clock clock;
-    private final SellerEventSerializer serializer;
+    private final OutboxRepositoryPort outboxRepository;
+    private final EventSerializerPort eventSerializer;
+    private final SellerTopicPort sellerTopic;
 
     @Override
     public void approveSeller(UUID uuid) {
@@ -41,13 +42,11 @@ public class SellerApproveImpl implements SellerApprove {
         seller.approveApply(clock);
         var event
             = SellerRegisterV1Event.create(seller.getMemberId(), UUID.randomUUID(), clock);
-        SellerOutbox outbox = new SellerOutbox(
-            "seller.register.v1",
+        outboxRepository.saveOutBox(
+            sellerTopic.getSellerRegisterTopic("v1"),
             seller.getMemberId(),
-            serializer.toJsonString(event),
-            clock
+            eventSerializer.serializeEvent(event)
         );
-        outboxRepository.save(outbox);
         repository.save(seller);
     }
 }
