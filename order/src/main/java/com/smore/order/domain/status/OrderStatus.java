@@ -4,7 +4,9 @@ public enum OrderStatus {
     CREATED("주문 생성"),
     COMPLETED("주문 완료"),
     FAILED("주문 실패"),
-    CANCELLED("주문 취소")
+    PARTIALLY_REFUNDED("부분 환불"),
+    REFUNDED("전체 환불"),
+    CANCELLED("주문 취소"),
     ;
 
     private final String description;
