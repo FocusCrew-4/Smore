@@ -1,4 +1,4 @@
-package com.smore.member.infrastructure.config;
+package com.smore.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
