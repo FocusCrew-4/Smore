@@ -8,5 +8,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface FeePolicyJpaRepository extends JpaRepository<FeePolicyEntity, UUID> {
-    Optional<FeePolicyEntity> findByTargetTypeAndTargetKey(TargetType targetType, UUID targetKey);
+    Optional<FeePolicyEntity> findByTargetTypeAndTargetKey(TargetType targetType, String targetKey);
 }

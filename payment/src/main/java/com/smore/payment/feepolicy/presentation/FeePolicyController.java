@@ -30,7 +30,7 @@ public class FeePolicyController {
     ) {
         UserContextHolder.set(userId);
 
-        UUID id = feePolicyService.createFeePolicy(CreateFeePolicyCommand.from(createFeePolicyDto));
+        UUID id = feePolicyService.createFeePolicy(createFeePolicyDto.toCommand());
 
         UserContextHolder.clear();
 
@@ -40,7 +40,7 @@ public class FeePolicyController {
     @GetMapping
     public ResponseEntity<?> getFeePolicy(@Valid @RequestBody GetFeePolicyRequestDto getFeePolicyRequestDto) {
 
-        FeePolicy feePolicy = feePolicyService.getFeePolicy(GetFeePolicyQuery.from(getFeePolicyRequestDto));
+        FeePolicy feePolicy = feePolicyService.getFeePolicy(getFeePolicyRequestDto.toQuery());
 
         return ResponseEntity.ok(ApiResponse.ok(GetFeePolicyResponseDto.from(feePolicy)));
     }

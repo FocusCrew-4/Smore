@@ -1,12 +1,13 @@
 package com.smore.payment.feepolicy.domain.model;
 
+
 import java.util.UUID;
 
 public class FeePolicy {
 
     private final UUID id;
     private final TargetType targetType;
-    private final UUID targetKey; // 카테고리ID, 판매자ID
+    private final TargetKey targetKey; // 카테고리ID, 판매자ID
     private final FeeType feeType;
     private final FeeRate rate;
     private final FixedAmount fixedAmount;
@@ -15,7 +16,7 @@ public class FeePolicy {
 
     protected FeePolicy(
         TargetType targetType,
-        UUID targetKey,
+        TargetKey targetKey,
         FeeType feeType,
         FeeRate rate,
         FixedAmount fixedAmount
@@ -34,7 +35,7 @@ public class FeePolicy {
 
     public static FeePolicy create(
             TargetType targetType,
-            UUID targetKey,
+            TargetKey targetKey,
             FeeType feeType,
             FeeRate rate,
             FixedAmount fixedAmount
@@ -45,7 +46,7 @@ public class FeePolicy {
     protected FeePolicy(
             UUID id,
             TargetType targetType,
-            UUID targetKey,
+            TargetKey targetKey,
             FeeType feeType,
             FeeRate rate,
             FixedAmount fixedAmount,
@@ -63,7 +64,7 @@ public class FeePolicy {
     public static FeePolicy reconstruct(
             UUID id,
             TargetType targetType,
-            UUID targetKey,
+            TargetKey targetKey,
             FeeType feeType,
             FeeRate rate,
             FixedAmount fixedAmount,
@@ -77,7 +78,7 @@ public class FeePolicy {
 
     public UUID getId() { return id; }
     public TargetType getTargetType() { return targetType; }
-    public UUID getTargetKey() { return targetKey; }
+    public TargetKey getTargetKey() { return targetKey; }
     public FeeType getFeeType() { return feeType; }
     public FeeRate getRate() { return rate; }
     public FixedAmount getFixedAmount() { return fixedAmount; }

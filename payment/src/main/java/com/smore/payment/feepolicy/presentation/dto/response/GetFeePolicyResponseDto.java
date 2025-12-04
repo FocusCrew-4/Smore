@@ -14,7 +14,7 @@ import java.util.UUID;
 public class GetFeePolicyResponseDto {
     private UUID id;
     private String targetType;
-    private UUID targetKey;
+    private String targetKey;
     private String feeType;
     private BigDecimal rate;
     private BigDecimal fixedAmount;
@@ -24,7 +24,7 @@ public class GetFeePolicyResponseDto {
         return new GetFeePolicyResponseDto(
                 feePolicy.getId(),
                 feePolicy.getTargetType().toString(),
-                feePolicy.getTargetKey(),
+                feePolicy.getTargetKey().getValueAsString(),
                 feePolicy.getFeeType().toString(),
                 feePolicy.getRate().value(),
                 feePolicy.getFixedAmount().value(),
