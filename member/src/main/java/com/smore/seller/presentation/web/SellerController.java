@@ -4,6 +4,7 @@ import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
 import com.smore.seller.application.result.SellerResult;
 import com.smore.seller.application.usecase.SellerApply;
+import com.smore.seller.application.usecase.SellerApprove;
 import com.smore.seller.application.usecase.SellerReject;
 import com.smore.seller.presentation.web.dto.request.SellerApplyRequestDto;
 import com.smore.seller.presentation.web.mapper.SellerControllerMapper;
@@ -27,9 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SellerController {
 
-    private final SellerApply sellerApply;
     private final SellerControllerMapper mapper;
+    private final SellerApply sellerApply;
     private final SellerReject sellerReject;
+    private final SellerApprove sellerApprove;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -62,7 +64,7 @@ public class SellerController {
         @RequestHeader("X-User-Role") String role,
         @PathVariable Long id
     ) {
-        if (role.equals("ADMIN")) {
+        if (!role.equals("ADMIN")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error("S401", "관리자만 사용가능합니다"));
         }
@@ -70,6 +72,21 @@ public class SellerController {
         sellerReject.rejectSeller(id);
 
         return ResponseEntity.ok(ApiResponse.ok("거절 성공"));
+    }
+
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<CommonResponse<?>> approveSeller(
+        @RequestHeader("X-User-Role") String role,
+        @PathVariable Long id
+    ) {
+        if (!role.equals("ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error("S401", "관리자만 사용가능합니다"));
+        }
+
+        sellerApprove.approveSeller(id);
+
+        return ResponseEntity.ok(ApiResponse.ok("승인 성공"));
     }
 
 }

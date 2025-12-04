@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.seller.application.command.ApplyCommand;
 import com.smore.seller.application.result.SellerResult;
 import com.smore.seller.application.usecase.SellerApply;
+import com.smore.seller.application.usecase.SellerApprove;
 import com.smore.seller.application.usecase.SellerReject;
 import com.smore.seller.domain.enums.SellerStatus;
 import com.smore.seller.presentation.web.dto.request.SellerApplyRequestDto;
@@ -50,6 +51,9 @@ class SellerControllerTest {
 
     @MockitoBean
     SellerControllerMapper mapper;
+
+    @MockitoBean
+    SellerApprove sellerApprove;
 
     @Nested
     @DisplayName("POST /api/v1/sellers")
