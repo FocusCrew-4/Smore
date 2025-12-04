@@ -22,7 +22,9 @@ public class Order {
     private Product product;
     private Integer quantity;
     private Integer totalAmount;
-    private Integer refundAmount;
+    private Integer refundReservedQuantity;
+    private Integer refundedQuantity;
+    private Integer refundedAmount;
     private Integer feeAmount;
     private UUID idempotencyKey;
     private OrderStatus orderStatus;
@@ -70,7 +72,9 @@ public class Order {
         Integer productPrice,
         Integer quantity,
         Integer totalAmount,
-        Integer refundAmount,
+        Integer refundReservedQuantity,
+        Integer refundedQuantity,
+        Integer refundedAmount,
         Integer feeAmount,
         UUID idempotencyKey,
         OrderStatus orderStatus,
@@ -92,7 +96,9 @@ public class Order {
             .product(product)
             .quantity(quantity)
             .totalAmount(totalAmount)
-            .refundAmount(refundAmount)
+            .refundReservedQuantity(refundReservedQuantity)
+            .refundedQuantity(refundedQuantity)
+            .refundedAmount(refundedAmount)
             .feeAmount(feeAmount)
             .idempotencyKey(idempotencyKey)
             .orderStatus(orderStatus)
