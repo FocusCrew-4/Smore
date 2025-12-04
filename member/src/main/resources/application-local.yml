@@ -76,3 +76,9 @@ springdoc:
 eureka:
   client:
     enabled: false
+
+topic:
+  produce:
+    seller-register:
+      v1: seller.register.v1
+      v2: seller.register.v2
