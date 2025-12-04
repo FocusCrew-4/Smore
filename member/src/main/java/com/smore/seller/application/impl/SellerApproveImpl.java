@@ -5,17 +5,19 @@ import com.smore.seller.domain.events.SellerRegisterV1Event;
 import com.smore.seller.domain.model.Seller;
 import com.smore.seller.domain.repository.SellerRepository;
 import com.smore.seller.infrastructure.kafka.SellerEventSerializer;
-import com.smore.seller.infrastructure.persistence.jpa.entity.SellerOutbox;
-import com.smore.seller.infrastructure.persistence.jpa.repository.SellerOutboxRepository;
+import com.smore.seller.infrastructure.outbox.SellerOutbox;
+import com.smore.seller.infrastructure.outbox.SellerOutboxRepository;
 import java.time.Clock;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class SellerApproveImpl implements SellerApprove {
 
     private final SellerRepository repository;

@@ -36,7 +36,7 @@ public class SellerKafkaTopicConfig {
     @Bean
     public NewTopic SellerRegisterV1Topic() {
         return TopicBuilder.name("seller.register.v1")
-            .partitions(1)
+            .partitions(2)
             .replicas(3)
             .build();
     }
@@ -44,7 +44,7 @@ public class SellerKafkaTopicConfig {
     @Bean
     public NewTopic SellerDisabledV1Topic() {
         return TopicBuilder.name("seller.disabled.v1")
-            .partitions(1)
+            .partitions(2)
             .replicas(3)
             .build();
     }
