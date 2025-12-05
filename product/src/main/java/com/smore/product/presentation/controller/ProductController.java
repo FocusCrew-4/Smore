@@ -6,6 +6,10 @@ import com.smore.product.application.service.ProductService;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.response.ProductResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +37,15 @@ public class ProductController {
             @PathVariable UUID productId
     ) {
         ProductResponse response = productService.getProduct(productId);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @GetMapping
+    public ResponseEntity<CommonResponse<Page<ProductResponse>>> findAll(
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        Page<ProductResponse> response = productService.findAll(pageable);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }
