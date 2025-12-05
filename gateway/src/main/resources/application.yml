@@ -17,7 +17,7 @@ spring:
             - id: member-service
               uri: lb://member-service
               predicates:
-                - Path=/api/v*/members/**
+                - Path=/api/v*/members/**,/api/v*/internal/members/**,/api/v*/sellers/**
 
             - id: auction-service
               uri: lb://auction-service

@@ -6,6 +6,7 @@ import com.smore.seller.infrastructure.persistence.jpa.entity.SellerJpa;
 import com.smore.seller.infrastructure.persistence.jpa.mapper.SellerJpaMapper;
 import com.smore.seller.infrastructure.persistence.jpa.repository.SellerJpaRepository;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -34,9 +35,8 @@ public class SellerRepositoryImpl implements SellerRepository {
 
     @Override
     public Seller findById(UUID id) {
-        SellerJpa sellerJpa = repository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("Seller with id " + id + " not found"));
-        return mapper.toDomain(sellerJpa);
+        Optional<SellerJpa> sellerJpa = repository.findById(id);
+        return sellerJpa.map(mapper::toDomain)
+            .orElse(null);
     }
-
 }

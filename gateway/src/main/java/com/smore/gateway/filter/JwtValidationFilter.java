@@ -45,9 +45,9 @@ public class JwtValidationFilter implements GlobalFilter, Ordered {
         Jwt jwt;
         // Jwt 자체를 검증
         try {
-            jwt = jwtValidation.validateJwt(bearerJwt);
+            jwt = jwtValidation.validateJwt(bearerJwt.replace("Bearer ", ""));
         } catch (JwtException e) {
-            log.error(e.getMessage());
+            log.error("fliter Jwt 검증단 오류 {}", e.getMessage());
             var response = exchange.getResponse();
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
