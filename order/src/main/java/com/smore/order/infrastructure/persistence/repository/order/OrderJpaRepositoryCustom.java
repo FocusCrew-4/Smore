@@ -16,4 +16,8 @@ public interface OrderJpaRepositoryCustom {
     int settingRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
         Integer refundReservedQuantity, Integer refundedQuantity,
         Collection<OrderStatus> statuses);
+
+    int settingRefundedReservation(UUID orderId, Integer refundQuantity,
+        Integer refundReservedQuantity, Integer refundedQuantity, Integer refundAmount,
+        OrderStatus status);
 }

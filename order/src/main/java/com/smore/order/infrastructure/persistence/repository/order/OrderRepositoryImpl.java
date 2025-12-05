@@ -113,4 +113,12 @@ public class OrderRepositoryImpl implements OrderRepository {
             statuses
         );
     }
+
+    @Override
+    public int settingRefundedReservation(UUID orderId, Integer refundQuantity,
+        Integer refundReservedQuantity, Integer refundedQuantity, Integer refundAmount,
+        OrderStatus status) {
+        return orderJpaRepository.settingRefundedReservation(orderId, refundQuantity,
+            refundReservedQuantity, refundedQuantity, refundAmount, status);
+    }
 }
