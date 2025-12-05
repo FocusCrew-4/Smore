@@ -2,6 +2,7 @@ package com.smore.member.infrastructure.kafka.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.member.application.service.usecase.MemberRoleChange;
+import com.smore.member.infrastructure.kafka.config.MemberTopicProperties;
 import com.smore.member.infrastructure.kafka.listener.dto.SellerRegisterV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ public class MemberSampleListener {
     private final ObjectMapper objectMapper;
 
     @KafkaListener(
-        topics = "seller.register.v1"
+        topics = "${member.topic.seller-register.v1}"
     )
     public void consume(String event, Acknowledgment ack) {
         try {
