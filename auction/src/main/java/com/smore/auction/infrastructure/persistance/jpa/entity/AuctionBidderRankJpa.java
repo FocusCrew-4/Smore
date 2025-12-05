@@ -46,4 +46,8 @@ public class AuctionBidderRankJpa {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
     private Long deletedBy;
+
+    public void belongToAuction(AuctionJpa auction) {
+        this.auction = auction;
+    }
 }
