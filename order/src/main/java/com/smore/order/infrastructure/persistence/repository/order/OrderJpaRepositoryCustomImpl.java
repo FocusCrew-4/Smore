@@ -58,7 +58,7 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
     }
 
     @Override
-    public int settingRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
+    public int updateRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
         Integer refundReservedQuantity, Integer refundedQuantity,
         Collection<OrderStatus> statuses) {
 
@@ -87,7 +87,7 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
     }
 
     @Override
-    public int settingRefundedReservation(UUID orderId, Integer refundQuantity,
+    public int applyRefundCompletion(UUID orderId, Integer refundQuantity,
         Integer refundReservedQuantity, Integer refundedQuantity, Integer refundAmount,
         OrderStatus status) {
 

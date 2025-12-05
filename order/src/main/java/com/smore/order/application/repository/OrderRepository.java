@@ -2,7 +2,6 @@ package com.smore.order.application.repository;
 
 import com.smore.order.domain.model.Order;
 import com.smore.order.domain.status.OrderStatus;
-import com.smore.order.domain.status.RefundStatus;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,11 +18,11 @@ public interface OrderRepository {
 
     Optional<Order> findByAllocationKeyAndUserId(UUID allocationKey, Long userId);
 
-    int settingRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
+    int updateRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
         Integer refundReservedQuantity, Integer refundedQuantity,
         Collection<OrderStatus> statuses);
 
-    int settingRefundedReservation(UUID orderId, Integer refundQuantity,
+    int applyRefundCompletion(UUID orderId, Integer refundQuantity,
         Integer refundReservedQuantity, Integer refundedQuantity,
         Integer refundAmount, OrderStatus status);
 

@@ -166,7 +166,7 @@ public class OrderService {
         }
 
 
-        int updated = orderRepository.settingRefundReservation(
+        int updated = orderRepository.updateRefundReservation(
             command.getOrderId(),
             command.getUserId(),
             command.getRefundQuantity(),
@@ -263,7 +263,7 @@ public class OrderService {
 
         OrderStatus status = order.calculateStatusAfterRefund(refund.getRefundQuantity());
 
-        updated = orderRepository.settingRefundedReservation(
+        updated = orderRepository.applyRefundCompletion(
             command.getOrderId(),
             refund.getRefundQuantity(),
             order.getRefundReservedQuantity(),
