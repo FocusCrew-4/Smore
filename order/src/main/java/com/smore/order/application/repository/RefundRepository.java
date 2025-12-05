@@ -7,11 +7,11 @@ import java.util.UUID;
 
 public interface RefundRepository {
 
-    Refund save(Refund refund);
-
     Refund findByIdempotencyKey(UUID idempotencyKey);
 
     Refund findById(UUID refundId);
+
+    Refund save(Refund refund);
 
     int complete(UUID refundId, RefundStatus status, LocalDateTime now);
 
