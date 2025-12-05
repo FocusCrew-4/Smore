@@ -1,8 +1,8 @@
 package com.smore.order.application.service;
 
-import com.smore.order.application.factory.OutboxCommandFactory;
+import com.smore.order.application.factory.OutboxHandlerFactory;
 import com.smore.order.application.repository.OutboxRepository;
-import com.smore.order.application.command.OutboxCommand;
+import com.smore.order.application.command.OutboxHandler;
 import com.smore.order.domain.model.Outbox;
 import com.smore.order.domain.status.EventStatus;
 import com.smore.order.domain.status.OutboxResult;
@@ -21,7 +21,7 @@ public class OutboxProcessor {
     private Integer maxRetryCount;
 
     private final OutboxRepository outboxRepository;
-    private final OutboxCommandFactory factory;
+    private final OutboxHandlerFactory factory;
 
     @Async("taskExecutor")
     public void outboxProcessor(Long outboxId) {
@@ -42,7 +42,7 @@ public class OutboxProcessor {
             return;
         }
 
-        OutboxCommand command = factory.from(fresh);
+        OutboxHandler command = factory.from(fresh);
         OutboxResult result = command.execute();
 
         // FIXME : 선점 상태이므로 상태 전이가 적용되지 않는다면 영원히 PROGRESS 상태가 됨 이에 대한 후속 처리 필요
