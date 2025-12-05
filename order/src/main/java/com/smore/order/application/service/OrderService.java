@@ -6,13 +6,13 @@ import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
 import com.smore.order.application.dto.RefundCommand;
+import com.smore.order.application.exception.RefundConflictException;
 import com.smore.order.application.exception.RefundReservationConflictException;
 import com.smore.order.application.repository.OrderRepository;
 import com.smore.order.application.repository.OutboxRepository;
 import com.smore.order.application.repository.RefundRepository;
 import com.smore.order.domain.event.CompletedOrderEvent;
 import com.smore.order.domain.event.CreatedOrderEvent;
-import com.smore.order.domain.event.FailedRefundEvent;
 import com.smore.order.domain.event.OrderEvent;
 import com.smore.order.domain.event.RefundFailedEvent;
 import com.smore.order.domain.event.RefundRequestEvent;
@@ -284,6 +284,70 @@ public class OrderService {
             AggregateType.ORDER,
             command.getOrderId(),
             EventType.REFUND_SUCCESS,
+            UUID.randomUUID(),
+            makePayload(event)
+        );
+
+        outboxRepository.save(outbox);
+    }
+
+    @Transactional
+    public void refundFail(FailedRefundCommand command) {
+
+        Refund refund = refundRepository.findById(command.getRefundId());
+
+        if (refund.getStatus() == RefundStatus.COMPLETED) {
+            return;
+        }
+
+        if (!refund.getOrderId().equals(command.getOrderId())) {
+            log.error("refund의 orderId와 이벤트의 command의 orderId가 일치하지 않습니다.");
+            throw new RefundConflictException(
+                "refund의 orderId와 이벤트의 command의 orderId가 일치하지 않습니다."
+            );
+        }
+
+        int updated = refundRepository.fail(
+            refund.getId(),
+            RefundStatus.FAILED,
+            LocalDateTime.now(clock)
+        );
+
+        if (updated == 0) {
+            log.error("환불 요청 실패 기록 하지 못함 orderid : {}, method : {} ", command.getOrderId(), "refundFail()");
+            throw new RefundReservationConflictException(
+                "환불 요청 실패를 기록하지 못했습니다. 다른 작업이 먼저 처리했고나 환불 상태가 변경되었습니다."
+            );
+        }
+
+        Order order = orderRepository.findById(command.getOrderId());
+
+        updated = orderRepository.refundFail(
+            command.getOrderId(),
+            refund.getRefundQuantity(),
+            order.getRefundReservedQuantity(),
+            order.getRefundedQuantity()
+        );
+
+        if (updated == 0) {
+            log.error("환불 요청 실패 기록 하지 못함 orderid : {}, method : {} ", command.getOrderId(), "refundFail()");
+            throw new RefundReservationConflictException(
+                "환불 요청 실패를 기록하지 못했습니다. 다른 작업이 먼저 처리했고나 환불 상태가 변경되었습니다."
+            );
+        }
+
+        RefundFailedEvent event = RefundFailedEvent.of(
+            command.getOrderId(),
+            refund.getId(),
+            refund.getUserId(),
+            command.getMessage(),
+            LocalDateTime.now(clock)
+        );
+
+        Outbox outbox = Outbox.create(
+            AggregateType.ORDER,
+            command.getOrderId(),
+            EventType.REFUND_FAIL,
             UUID.randomUUID(),
             makePayload(event)
         );
