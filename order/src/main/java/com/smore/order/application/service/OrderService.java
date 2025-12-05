@@ -21,7 +21,6 @@ import com.smore.order.domain.status.OrderStatus;
 import com.smore.order.domain.status.ServiceResult;
 import com.smore.order.infrastructure.persistence.exception.CompleteOrderFailException;
 import com.smore.order.presentation.dto.IsOrderCreatedResponse;
-import com.smore.order.presentation.dto.RefundRequest;
 import com.smore.order.presentation.dto.RefundResponse;
 import jakarta.transaction.Transactional;
 import java.time.Clock;
