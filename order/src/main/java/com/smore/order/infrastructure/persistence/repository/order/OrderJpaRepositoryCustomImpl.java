@@ -4,6 +4,7 @@ import static com.smore.order.infrastructure.persistence.entity.order.QOrderEnti
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.smore.order.domain.status.OrderStatus;
+import com.smore.order.domain.status.RefundStatus;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import jakarta.persistence.EntityManager;
 import java.util.Collection;
@@ -103,6 +104,27 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
                 orderEntity.id.eq(orderId),
                 orderEntity.refundReservedQuantity.eq(refundReservedQuantity),
                 orderEntity.refundedQuantity.eq(refundedQuantity)
+            )
+            .execute();
+
+        em.flush();
+        em.clear();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int refundFail(UUID orderId, Integer refundQuantity, Integer refundReservedQuantity,
+        Integer refundedQuantity) {
+
+        long updated = queryFactory
+            .update(orderEntity)
+            .set(orderEntity.refundReservedQuantity,
+                orderEntity.refundReservedQuantity.subtract(refundQuantity))
+            .where(
+                orderEntity.id.eq(orderId),
+                orderEntity.refundedQuantity.eq(refundedQuantity),
+                orderEntity.refundReservedQuantity.eq(refundReservedQuantity)
             )
             .execute();
 

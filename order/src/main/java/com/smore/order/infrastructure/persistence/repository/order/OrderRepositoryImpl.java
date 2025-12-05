@@ -3,6 +3,7 @@ package com.smore.order.infrastructure.persistence.repository.order;
 import com.smore.order.application.repository.OrderRepository;
 import com.smore.order.domain.model.Order;
 import com.smore.order.domain.status.OrderStatus;
+import com.smore.order.domain.status.RefundStatus;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOrderFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOrderException;
@@ -13,7 +14,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j(topic = "OrderRepositoryImpl")
 @Repository
@@ -120,5 +120,12 @@ public class OrderRepositoryImpl implements OrderRepository {
         OrderStatus status) {
         return orderJpaRepository.settingRefundedReservation(orderId, refundQuantity,
             refundReservedQuantity, refundedQuantity, refundAmount, status);
+    }
+
+    @Override
+    public int refundFail(UUID orderId, Integer refundQuantity, Integer refundReservedQuantity,
+        Integer refundedQuantity) {
+        return orderJpaRepository.refundFail(orderId, refundQuantity, refundReservedQuantity,
+            refundedQuantity);
     }
 }
