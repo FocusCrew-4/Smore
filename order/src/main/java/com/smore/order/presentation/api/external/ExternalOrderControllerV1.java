@@ -4,10 +4,13 @@ import static com.smore.order.presentation.auth.OrderRole.*;
 
 import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
+import com.smore.order.application.dto.ModifyOrderCommand;
 import com.smore.order.application.dto.RefundCommand;
 import com.smore.order.application.service.OrderService;
 import com.smore.order.presentation.auth.OrderRole;
 import com.smore.order.presentation.dto.IsOrderCreatedResponse;
+import com.smore.order.presentation.dto.ModifyOrderRequest;
+import com.smore.order.presentation.dto.ModifyOrderResponse;
 import com.smore.order.presentation.dto.RefundRequest;
 import com.smore.order.presentation.dto.RefundResponse;
 import jakarta.validation.Valid;
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,6 +72,34 @@ public class ExternalOrderControllerV1 implements ExternalOrderController {
         );
 
         RefundResponse response =  orderService.refund(command);
+
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @PatchMapping("/api/v1/external/orders/{orderId}")
+    public ResponseEntity<CommonResponse<?>> modify(
+        @RequestHeader("X-User-Id") Long requesterId,
+        @RequestHeader("X-User-Role") String role,
+        @PathVariable UUID orderId,
+        @Valid @RequestBody ModifyOrderRequest request
+    ) {
+
+        OrderRole orderRole = from(role);
+
+        if (orderRole.isNotAny(CONSUMER, SELLER, ADMIN)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error("5403", "접근 권한이 없습니다."));
+        }
+
+        ModifyOrderCommand command = ModifyOrderCommand.of(
+            orderId,
+            requesterId,
+            request.street(),
+            request.city(),
+            request.zipcode()
+        );
+
+        ModifyOrderResponse response = orderService.modify(command);
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
