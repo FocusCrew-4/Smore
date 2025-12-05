@@ -20,6 +20,7 @@ public class MemberSampleListener {
     private final MemberRoleChange memberRoleChange;
     private final ObjectMapper objectMapper;
 
+    // TODO: 멱등키를 통한 중복요청 처리 방지 관련 추가 필요
     @KafkaListener(
         topics = "${member.topic.seller-register.v1}"
     )
