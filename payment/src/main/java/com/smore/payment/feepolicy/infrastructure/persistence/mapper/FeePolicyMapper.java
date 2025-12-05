@@ -1,12 +1,12 @@
 package com.smore.payment.feepolicy.infrastructure.persistence.mapper;
 
-import com.smore.payment.feepolicy.domain.model.FeePolicy;
-import com.smore.payment.feepolicy.domain.model.FeeRate;
-import com.smore.payment.feepolicy.domain.model.FixedAmount;
+import com.smore.payment.feepolicy.domain.model.*;
 import com.smore.payment.feepolicy.infrastructure.persistence.model.FeePolicyEntity;
 import com.smore.payment.feepolicy.infrastructure.persistence.model.FeeRateJpa;
 import com.smore.payment.feepolicy.infrastructure.persistence.model.FixedAmountJpa;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class FeePolicyMapper {
@@ -22,7 +22,7 @@ public class FeePolicyMapper {
         return new FeePolicyEntity(
                 feePolicy.getId(),
                 feePolicy.getTargetType(),
-                feePolicy.getTargetKey(),
+                feePolicy.getTargetKey().getValueAsString(),
                 feePolicy.getFeeType(),
                 feeRateJpa,
                 fixedAmountJpa,
@@ -37,11 +37,15 @@ public class FeePolicyMapper {
         FixedAmount fixedAmount = new FixedAmount(
                 feePolicyEntity.getFixedAmount().getFixedAmount()
         );
-
+        TargetKey targetKey = switch (feePolicyEntity.getTargetType()) {
+            case CATEGORY -> new TargetKeyLong(Long.parseLong(feePolicyEntity.getTargetKey()));
+            case MERCHANT -> new TargetKeyUUID(UUID.fromString(feePolicyEntity.getTargetKey()));
+            case USER_TYPE -> null;
+        };
         return FeePolicy.reconstruct(
                 feePolicyEntity.getId(),
                 feePolicyEntity.getTargetType(),
-                feePolicyEntity.getTargetKey(),
+                targetKey,
                 feePolicyEntity.getFeeType(),
                 feeRate,
                 fixedAmount,
