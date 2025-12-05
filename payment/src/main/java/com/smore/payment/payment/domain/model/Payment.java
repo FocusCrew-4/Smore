@@ -41,15 +41,15 @@ public class Payment {
             UUID idempotencyKey,
             Long userId,
             BigDecimal amount,
-            PaymentStatus status,
-            PaymentMethod paymentMethod
+            PaymentMethod paymentMethod,
+            PaymentStatus status
     ) {
         this.id = UUID.randomUUID();
         this.idempotencyKey = idempotencyKey;
         this.userId = userId;
         this.amount = amount;
-        this.status = status;
         this.paymentMethod = paymentMethod;
+        this.status = status;
     }
 
 
@@ -58,8 +58,8 @@ public class Payment {
                 idempotencyKey,
                 userId,
                 amount,
-                PaymentStatus.REQUESTED,
-                paymentMethod
+                paymentMethod,
+                PaymentStatus.REQUESTED
         );
     }
 
@@ -68,15 +68,15 @@ public class Payment {
             UUID idempotencyKey,
             Long userId,
             BigDecimal amount,
-            PaymentStatus status,
-            PaymentMethod paymentMethod
+            PaymentMethod paymentMethod,
+            PaymentStatus status
     ) {
         this.id = id;
         this.idempotencyKey = idempotencyKey;
         this.userId = userId;
         this.amount = amount;
-        this.status = status;
         this.paymentMethod = paymentMethod;
+        this.status = status;
     }
 
     public static Payment reconstruct(
@@ -84,8 +84,8 @@ public class Payment {
             UUID idempotencyKey,
             Long userId,
             BigDecimal amount,
-            PaymentStatus status,
             PaymentMethod paymentMethod,
+            PaymentStatus status,
             LocalDateTime approvedAt,
             String cardCompany,
             String cardNumber,
@@ -104,7 +104,7 @@ public class Payment {
             String pgStatus,
             String pgMessage
     ) {
-        Payment payment = new Payment(id, idempotencyKey, userId, amount, status, paymentMethod);
+        Payment payment = new Payment(id, idempotencyKey, userId, amount, paymentMethod, status);
         payment.approvedAt = approvedAt;
         payment.cardCompany = cardCompany;
         payment.cardNumber = cardNumber;
@@ -128,4 +128,95 @@ public class Payment {
         return payment;
     }
 
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public PaymentStatus getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getApprovedAt() {
+        return approvedAt;
+    }
+
+    public String getCardCompany() {
+        return cardCompany;
+    }
+
+    public String getCardNumber() {
+        return cardNumber;
+    }
+
+    public Integer getInstallmentMonths() {
+        return installmentMonths;
+    }
+
+    public boolean isInterestFree() {
+        return interestFree;
+    }
+
+    public String getCardType() {
+        return cardType;
+    }
+
+    public String getOwnerType() {
+        return ownerType;
+    }
+
+    public String getCardCompanyCode() {
+        return cardCompanyCode;
+    }
+
+    public String getAcquirerCode() {
+        return acquirerCode;
+    }
+
+    public PaymentFailure getFailure() {
+        return failure;
+    }
+
+    public PaymentCancel getCancel() {
+        return cancel;
+    }
+
+    public PaymentRefund getRefund() {
+        return refund;
+    }
+
+    public String getPgProvider() {
+        return pgProvider;
+    }
+
+    public String getPgOrderId() {
+        return pgOrderId;
+    }
+
+    public String getPgTransactionKey() {
+        return pgTransactionKey;
+    }
+
+    public String getPgStatus() {
+        return pgStatus;
+    }
+
+    public String getPgMessage() {
+        return pgMessage;
+    }
 }

@@ -16,8 +16,15 @@ import java.util.UUID;
 @Getter
 public class PaymentEntity {
 
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
+
     @Id
     private UUID id;
+
+    @Column(name = "idempotency_key", nullable = false, updatable = false)
+    private UUID idempotencyKey;
 
     @Column(name = "user_id", nullable = false, updatable = false)
     private Long userId;
@@ -63,15 +70,15 @@ public class PaymentEntity {
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "reason", column = @Column(name = "failure_reason")),
-            @AttributeOverride(name = "occurredAt", column = @Column(name = "failed_at"))
+            @AttributeOverride(name = "failedAt", column = @Column(name = "failed_at"))
     })
     private PaymentFailureJpa failure;
 
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "reason", column = @Column(name = "cancel_reason")),
-            @AttributeOverride(name = "amount", column = @Column(name = "cancel_amount")),
-            @AttributeOverride(name = "occurredAt", column = @Column(name = "cancelled_at")),
+            @AttributeOverride(name = "cancelAmount", column = @Column(name = "cancel_amount")),
+            @AttributeOverride(name = "cancelledAt", column = @Column(name = "cancelled_at")),
             @AttributeOverride(name = "pgCancelTransactionId", column = @Column(name = "pg_cancel_transaction_id"))
     })
     private PaymentCancelJpa cancel;
@@ -79,8 +86,8 @@ public class PaymentEntity {
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "reason", column = @Column(name = "refund_reason")),
-            @AttributeOverride(name = "amount", column = @Column(name = "refund_amount")),
-            @AttributeOverride(name = "occurredAt", column = @Column(name = "refunded_at"))
+            @AttributeOverride(name = "refundAmount", column = @Column(name = "refund_amount")),
+            @AttributeOverride(name = "refundedAt", column = @Column(name = "refunded_at"))
     })
     private PaymentRefundJpa refund;
 
@@ -101,10 +108,11 @@ public class PaymentEntity {
 
     public PaymentEntity(
             UUID id,
+            UUID idempotencyKey,
             Long userId,
             BigDecimal amount,
-            PaymentStatus status,
             PaymentMethod paymentMethod,
+            PaymentStatus status,
             LocalDateTime approvedAt,
             String cardCompany,
             String cardNumber,
@@ -124,10 +132,11 @@ public class PaymentEntity {
             String pgMessage
     ) {
         this.id = id;
+        this.idempotencyKey = idempotencyKey;
         this.userId = userId;
         this.amount = amount;
-        this.status = status;
         this.paymentMethod = paymentMethod;
+        this.status = status;
         this.approvedAt = approvedAt;
         this.cardCompany = cardCompany;
         this.cardNumber = cardNumber;

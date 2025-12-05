@@ -4,7 +4,7 @@ public enum PaymentStatus {
     REQUESTED("요청됨"),
     APPROVED("승인됨"),
     FAILED("실패"),
-    CANCELED("취소됨"),
+    CANCELLED("취소됨"),
     REFUNDED("환불됨");
 
     private final String desc;

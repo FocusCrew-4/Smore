@@ -12,10 +12,10 @@ public record PaymentRefundJpa(
         String reason,
 
         @Column(name = "refund_amount")
-        BigDecimal amount,
+        BigDecimal refundAmount,
 
         @Column(name = "refunded_at")
-        LocalDateTime occurredAt
+        LocalDateTime refundedAt
 ) {
     public static PaymentRefundJpa of(
             String reason,

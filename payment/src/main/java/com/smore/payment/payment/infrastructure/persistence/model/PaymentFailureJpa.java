@@ -11,7 +11,7 @@ public record PaymentFailureJpa(
         String reason,
 
         @Column(name = "failed_at")
-        LocalDateTime occurredAt
+        LocalDateTime failedAt
 ) {
     public static PaymentFailureJpa of(String reason, LocalDateTime occurredAt) {
         return new PaymentFailureJpa(reason, occurredAt);

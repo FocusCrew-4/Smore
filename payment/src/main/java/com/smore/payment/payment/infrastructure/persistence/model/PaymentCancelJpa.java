@@ -12,10 +12,10 @@ public record PaymentCancelJpa(
         String reason,
 
         @Column(name = "cancel_amount")
-        BigDecimal amount,
+        BigDecimal cancelAmount,
 
         @Column(name = "cancelled_at")
-        LocalDateTime occurredAt,
+        LocalDateTime cancelledAt,
 
         @Column(name = "pg_cancel_transaction_id")
         String pgCancelTransactionId
