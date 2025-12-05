@@ -42,4 +42,16 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
 
         return (int) updated;
     }
+
+    @Override
+    public OrderEntity findByAllocationKeyAndUserId(UUID allocationKey, Long userId) {
+        return queryFactory
+            .select(orderEntity)
+            .from(orderEntity)
+            .where(
+                orderEntity.idempotencyKey.eq(allocationKey),
+                orderEntity.userId.eq(userId)
+            )
+            .fetchOne();
+    }
 }

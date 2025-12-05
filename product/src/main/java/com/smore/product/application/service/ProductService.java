@@ -1,5 +1,6 @@
 package com.smore.product.application.service;
 
+import com.smore.product.domain.entity.ProductStatus;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductStatusRequest;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class ProductService {
     private final ProductRepository productRepository;
 
+    @Transactional
     public ProductResponse createProduct(CreateProductRequest req) {
 
         if (req.getSaleType() == SaleType.LIMITED_TO_AUCTION
@@ -27,27 +29,28 @@ public class ProductService {
             throw new IllegalArgumentException("LIMITED_TO_AUCTION requires thresholdForAuction");
         }
 
-        Product p = Product.builder()
-                .sellerId(req.getSellerId())
-                .categoryId(req.getCategoryId())
-                .name(req.getName())
-                .description(req.getDescription())
-                .price(req.getPrice())
-                .stock(req.getStock())
-                .saleType(req.getSaleType())
-                .thresholdForAuction(req.getThresholdForAuction())
-                .build();
+        Product product = Product.create(
+                req.getSellerId(),
+                req.getCategoryId(),
+                req.getName(),
+                req.getDescription(),
+                req.getPrice(),
+                req.getStock(),
+                req.getSaleType(),
+                req.getThresholdForAuction()
+        );
 
-        productRepository.save(p);
+        productRepository.save(product);
 
-        return new ProductResponse(p);
+        return new ProductResponse(product);
     }
 
     public ProductResponse getProduct(UUID productId) {
-        Product p = productRepository.findById(productId)
+
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
-        return new ProductResponse(p);
+        return new ProductResponse(product);
     }
 
     public Page<ProductResponse> findAll(Pageable pageable) {
@@ -59,6 +62,22 @@ public class ProductService {
     public ProductResponse updateProduct(UUID productId, UpdateProductRequest req) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("상품 없음"));
+
+        if (product.getStatus() == ProductStatus.ON_SALE) {
+
+            if (req.getPrice() != null && !req.getPrice().equals(product.getPrice())) {
+                throw new IllegalStateException("판매 중인 상품은 가격을 변경할 수 없습니다.");
+            }
+
+            if (req.getSaleType() != null && req.getSaleType() != product.getSaleType()) {
+                throw new IllegalStateException("판매 중인 상품의 판매 유형은 변경할 수 없습니다.");
+            }
+
+            if (req.getThresholdForAuction() != null &&
+                    !req.getThresholdForAuction().equals(product.getThresholdForAuction())) {
+                throw new IllegalStateException("판매 중인 상품의 경매 전환 기준은 수정할 수 없습니다.");
+            }
+        }
 
         if (req.getName() != null) product.changeName(req.getName());
         if (req.getDescription() != null) product.changeDescription(req.getDescription());

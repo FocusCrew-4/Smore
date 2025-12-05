@@ -1,6 +1,7 @@
 package com.smore.order.application.repository;
 
 import com.smore.order.domain.model.Order;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface OrderRepository {
@@ -12,5 +13,7 @@ public interface OrderRepository {
     int markComplete(UUID orderId);
 
     Order findById(UUID orderId);
+
+    Optional<Order> findByAllocationKeyAndUserId(UUID allocationKey, Long userId);
 
 }
