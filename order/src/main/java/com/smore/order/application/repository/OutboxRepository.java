@@ -8,17 +8,18 @@ import org.springframework.data.domain.Pageable;
 
 public interface OutboxRepository {
 
-    Outbox save(Outbox outbox);
-
     Outbox findById(Long outboxId);
+
+    Page<Long> findPendingIds(Collection<EventStatus> states, Pageable pageable);
+
+    Outbox save(Outbox outbox);
 
     int claim(Long outboxId, EventStatus eventStatus);
 
     int markSent(Long outboxId, EventStatus eventStatus);
 
-    int makeRetry(Long outboxId, EventStatus eventStatus);
+    int markRetry(Long outboxId, EventStatus eventStatus);
 
-    int makeFail(Long outboxId, EventStatus eventStatus, Integer maxRetryCount);
+    int markFail(Long outboxId, EventStatus eventStatus, Integer maxRetryCount);
 
-    Page<Long> findPendingIds(Collection<EventStatus> states, Pageable pageable);
 }
