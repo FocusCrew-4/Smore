@@ -44,4 +44,21 @@ public class RefundJpaRepositoryCustomImpl implements RefundJpaRepositoryCustom 
 
         return (int) updated;
     }
+
+    @Override
+    public int fail(UUID id, RefundStatus refundStatus, LocalDateTime now) {
+        long updated = queryFactory
+            .update(refundEntity)
+            .set(refundEntity.status, refundStatus)
+            .where(
+                refundEntity.id.eq(id),
+                refundEntity.status.eq(RefundStatus.REQUESTED)
+            )
+            .execute();
+
+        em.flush();
+        em.clear();
+
+        return (int) updated;
+    }
 }

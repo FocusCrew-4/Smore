@@ -11,4 +11,6 @@ public interface RefundJpaRepositoryCustom {
 
     int complete(UUID refundId, RefundStatus status, LocalDateTime now);
 
+    int fail(UUID id, RefundStatus refundStatus, LocalDateTime now);
+
 }
