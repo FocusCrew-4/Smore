@@ -1,4 +1,4 @@
-package com.smore.order.domain.event;
+package com.smore.order.application.event.inbound;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

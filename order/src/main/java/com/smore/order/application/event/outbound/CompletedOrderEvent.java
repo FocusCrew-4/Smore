@@ -1,4 +1,4 @@
-package com.smore.order.domain.event;
+package com.smore.order.application.event.outbound;
 
 import com.smore.order.domain.status.OrderStatus;
 import java.time.LocalDateTime;
