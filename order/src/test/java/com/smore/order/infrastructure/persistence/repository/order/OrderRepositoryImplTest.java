@@ -87,8 +87,10 @@ class OrderRepositoryImplTest {
         Assertions.assertThat(findOrder.getAddress().city()).isEqualTo(city);
         Assertions.assertThat(findOrder.getAddress().zipcode()).isEqualTo(zipcode);
 
-        Assertions.assertThat(findOrder.getRefundAmount()).isNull();
-        Assertions.assertThat(findOrder.getFeeAmount()).isNull();
+        Assertions.assertThat(findOrder.getRefundReservedQuantity()).isZero();
+        Assertions.assertThat(findOrder.getRefundedQuantity()).isZero();
+        Assertions.assertThat(findOrder.getRefundedAmount()).isZero();
+        Assertions.assertThat(findOrder.getFeeAmount()).isZero();
         Assertions.assertThat(findOrder.getConfirmedAt()).isNull();
         Assertions.assertThat(findOrder.getCancelledAt()).isNull();
 
