@@ -25,17 +25,17 @@ public class JwtValidationImpl implements JwtValidation {
     @Override
     public Mono<Boolean> validateClaim(String token) {
 
-//        Mono<Boolean> memberResponse = webClient.build()
-//            // HTTP 메서드 종류 지정
-//            .method(HttpMethod.GET)
-//            // 요청을 보낼 uri 설정
-//            .uri("")
-//            // header 정보 설정
-//            .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-//            // retrieve 는 HTTP 요청을 보내고 서버의 응답을 비동기적으로 받기 위한 준비를 한다
-//            .retrieve()
-//            .bodyToMono(Boolean.class);
+        Mono<Boolean> memberResponse = webClient.build()
+            // HTTP 메서드 종류 지정
+            .method(HttpMethod.GET)
+            // 요청을 보낼 uri 설정
+            .uri("lb://member-service/api/v1/internal/members")
+            // header 정보 설정
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+            // retrieve 는 HTTP 요청을 보내고 서버의 응답을 비동기적으로 받기 위한 준비를 한다
+            .retrieve()
+            .bodyToMono(Boolean.class);
 
-        return Mono.just(true);
+        return memberResponse;
     }
 }
