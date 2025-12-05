@@ -50,7 +50,7 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
         return new ProductResponse(product);
-
+    }
     public Page<ProductResponse> findAll(Pageable pageable) {
         return productRepository.findAll(pageable)
                 .map(ProductResponse::new);
