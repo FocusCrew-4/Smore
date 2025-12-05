@@ -1,6 +1,7 @@
 package com.smore.payment.feepolicy.infrastructure.persistence.repository;
 
 import com.smore.payment.feepolicy.domain.model.FeePolicy;
+import com.smore.payment.feepolicy.domain.model.TargetKey;
 import com.smore.payment.feepolicy.domain.model.TargetType;
 import com.smore.payment.feepolicy.domain.repository.FeePolicyRepository;
 import com.smore.payment.feepolicy.infrastructure.persistence.mapper.FeePolicyMapper;
@@ -44,8 +45,8 @@ public class FeePolicyRepositoryImpl implements FeePolicyRepository {
     }
 
     @Override
-    public Optional<FeePolicy> findByTargetTypeAndTargetKey(TargetType targetType, UUID targetKey) {
-        return feePolicyJpaRepository.findByTargetTypeAndTargetKey(targetType, targetKey)
+    public Optional<FeePolicy> findByTargetTypeAndTargetKey(TargetType targetType, TargetKey targetKey) {
+        return feePolicyJpaRepository.findByTargetTypeAndTargetKey(targetType, targetKey.getValueAsString())
                 .map(feePolicyMapper::toDomainEntity);
     }
 }

@@ -1,4 +1,4 @@
-package com.smore.payment.feepolicy.infrastructure.config;
+package com.smore.payment.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

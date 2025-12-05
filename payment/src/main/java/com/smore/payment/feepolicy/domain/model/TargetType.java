@@ -1,5 +1,13 @@
 package com.smore.payment.feepolicy.domain.model;
 
 public enum TargetType {
-    CATEGORY, MERCHANT, USER_TYPE
+    CATEGORY, MERCHANT, USER_TYPE;
+
+    public static TargetType of(String value) {
+        try {
+            return TargetType.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid TargetType: " + value);
+        }
+    }
 }

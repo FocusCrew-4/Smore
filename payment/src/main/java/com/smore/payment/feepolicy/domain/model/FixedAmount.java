@@ -10,4 +10,8 @@ public record FixedAmount(BigDecimal value) {
         if (value.compareTo(BigDecimal.ZERO) < 0)
             throw new IllegalArgumentException("정액 수수료는 음수일 수 없습니다.");
     }
+
+    public static FixedAmount of(BigDecimal amount) {
+        return new FixedAmount(amount);
+    }
 }
