@@ -10,6 +10,7 @@ import com.smore.order.presentation.auth.OrderRole;
 import com.smore.order.presentation.dto.IsOrderCreatedResponse;
 import com.smore.order.presentation.dto.RefundRequest;
 import com.smore.order.presentation.dto.RefundResponse;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -49,7 +50,7 @@ public class ExternalOrderControllerV1 implements ExternalOrderController {
     public ResponseEntity<CommonResponse<?>> refundRequest(
         @RequestHeader("X-User-Id") Long requesterId,
         @RequestHeader("X-User-Role") String role,
-        @RequestBody RefundRequest request) {
+        @Valid @RequestBody RefundRequest request) {
 
         OrderRole orderRole = from(role);
 
