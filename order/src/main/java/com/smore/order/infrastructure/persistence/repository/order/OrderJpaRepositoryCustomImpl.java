@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.smore.order.domain.status.OrderStatus;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import jakarta.persistence.EntityManager;
+import java.util.Collection;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +29,7 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
 
     @Override
     public int markComplete(UUID orderId, OrderStatus status) {
-         long updated = queryFactory
+        long updated = queryFactory
             .update(orderEntity)
             .set(orderEntity.orderStatus, status)
             .where(
@@ -53,5 +54,34 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
                 orderEntity.userId.eq(userId)
             )
             .fetchOne();
+    }
+
+    @Override
+    public int settingRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
+        Integer refundReservedQuantity, Integer refundedQuantity,
+        Collection<OrderStatus> statuses) {
+
+        long updated = queryFactory
+            .update(orderEntity)
+            .set(orderEntity.refundReservedQuantity,
+                orderEntity.refundReservedQuantity.add(refundQuantity))
+            .where(
+                orderEntity.id.eq(orderId),
+                orderEntity.userId.eq(userId),
+                orderEntity.refundReservedQuantity.eq(refundReservedQuantity),
+                orderEntity.refundedQuantity.eq(refundedQuantity),
+                orderEntity.orderStatus.in(statuses),
+                orderEntity.quantity.goe(
+                    orderEntity.refundReservedQuantity
+                        .add(orderEntity.refundedQuantity)
+                        .add(refundQuantity)
+                )
+            )
+            .execute();
+
+        em.flush();
+        em.clear();
+
+        return (int) updated;
     }
 }

@@ -1,6 +1,8 @@
 package com.smore.order.application.repository;
 
 import com.smore.order.domain.model.Order;
+import com.smore.order.domain.status.OrderStatus;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,5 +17,9 @@ public interface OrderRepository {
     Order findById(UUID orderId);
 
     Optional<Order> findByAllocationKeyAndUserId(UUID allocationKey, Long userId);
+
+    int settingRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
+        Integer refundReservedQuantity, Integer refundedQuantity,
+        Collection<OrderStatus> statuses);
 
 }

@@ -7,6 +7,7 @@ import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOrderFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOrderException;
 import com.smore.order.infrastructure.persistence.mapper.OrderMapper;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -99,4 +100,17 @@ public class OrderRepositoryImpl implements OrderRepository {
         return Optional.ofNullable(entity).map(OrderMapper::toDomain);
     }
 
+    @Override
+    public int settingRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
+        Integer refundReservedQuantity, Integer refundedQuantity,
+        Collection<OrderStatus> statuses) {
+        return orderJpaRepository.settingRefundReservation(
+            orderId,
+            userId,
+            refundQuantity,
+            refundReservedQuantity,
+            refundedQuantity,
+            statuses
+        );
+    }
 }
