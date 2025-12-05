@@ -3,16 +3,17 @@ package com.smore.order.infrastructure.persistence.repository.order;
 import com.smore.order.application.repository.OrderRepository;
 import com.smore.order.domain.model.Order;
 import com.smore.order.domain.status.OrderStatus;
+import com.smore.order.infrastructure.persistence.entity.order.Address;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOrderFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOrderException;
 import com.smore.order.infrastructure.persistence.mapper.OrderMapper;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j(topic = "OrderRepositoryImpl")
 @Repository
@@ -33,35 +34,6 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         if (entity == null) return null;
         return OrderMapper.toDomain(entity);
-    }
-
-    @Override
-    public Order save(Order order) {
-        if (order == null){
-            log.error("order is Null : methodName = {}", "save()");
-            throw new IllegalArgumentException("order가 null 입니다.");
-        }
-
-        OrderEntity entity = orderJpaRepository.save(
-            OrderMapper.toEntityForCreate(order)
-        );
-
-        if (entity == null) {
-            log.error("entity is Null : methodName = {}", "save()");
-            throw new CreateOrderFailException("주문이 생성되지 않았습니다.");
-        }
-        return OrderMapper.toDomain(entity);
-    }
-
-    @Override
-    public int markComplete(UUID orderId) {
-
-        if (orderId == null) {
-            log.error("orderId is Null : methodName = {}", "markComplete()");
-            throw new IllegalArgumentException("주문 아이디가 null 입니다.");
-        }
-
-        return orderJpaRepository.markComplete(orderId, OrderStatus.COMPLETED);
     }
 
     @Override
@@ -99,4 +71,73 @@ public class OrderRepositoryImpl implements OrderRepository {
         return Optional.ofNullable(entity).map(OrderMapper::toDomain);
     }
 
+    @Override
+    public Order save(Order order) {
+        if (order == null){
+            log.error("order is Null : methodName = {}", "save()");
+            throw new IllegalArgumentException("order가 null 입니다.");
+        }
+
+        OrderEntity entity = orderJpaRepository.save(
+            OrderMapper.toEntityForCreate(order)
+        );
+
+        if (entity == null) {
+            log.error("entity is Null : methodName = {}", "save()");
+            throw new CreateOrderFailException("주문이 생성되지 않았습니다.");
+        }
+        return OrderMapper.toDomain(entity);
+    }
+
+    @Override
+    public int markComplete(UUID orderId) {
+
+        if (orderId == null) {
+            log.error("orderId is Null : methodName = {}", "markComplete()");
+            throw new IllegalArgumentException("주문 아이디가 null 입니다.");
+        }
+
+        return orderJpaRepository.markComplete(orderId, OrderStatus.COMPLETED);
+    }
+
+    @Override
+    public int updateRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
+        Integer refundReservedQuantity, Integer refundedQuantity,
+        Collection<OrderStatus> statuses) {
+        return orderJpaRepository.updateRefundReservation(
+            orderId,
+            userId,
+            refundQuantity,
+            refundReservedQuantity,
+            refundedQuantity,
+            statuses
+        );
+    }
+
+    @Override
+    public int applyRefundCompletion(UUID orderId, Integer refundQuantity,
+        Integer refundReservedQuantity, Integer refundedQuantity, Integer refundAmount,
+        OrderStatus status) {
+        return orderJpaRepository.applyRefundCompletion(orderId, refundQuantity,
+            refundReservedQuantity, refundedQuantity, refundAmount, status);
+    }
+
+    @Override
+    public int refundFail(UUID orderId, Integer refundQuantity, Integer refundReservedQuantity,
+        Integer refundedQuantity) {
+        return orderJpaRepository.refundFail(orderId, refundQuantity, refundReservedQuantity,
+            refundedQuantity);
+    }
+
+    @Override
+    public int update(Order order) {
+
+        Address newAddress = Address.of(
+            order.getAddress().street(),
+            order.getAddress().city(),
+            order.getAddress().zipcode()
+        );
+
+        return orderJpaRepository.update(order.getId(), order.getUserId(), newAddress);
+    }
 }

@@ -23,6 +23,37 @@ public class OutboxRepositoryImpl implements OutboxRepository {
     private final OutboxJpaRepository outboxJpaRepository;
 
     @Override
+    public Outbox findById(Long outboxId) {
+
+        if (outboxId == null) {
+            log.error("outboxId is Null : method = {}", "findById()");
+            throw new IllegalArgumentException("outboxId가 null입니다.");
+        }
+
+        OutboxEntity entity = outboxJpaRepository.findById(outboxId).orElseThrow(
+            () -> new NotFoundOutboxException("outbox를 찾을 수 없습니다.")
+        );
+
+        return OutboxMapper.toDomain(entity);
+    }
+
+    @Override
+    public Page<Long> findPendingIds(Collection<EventStatus> states, Pageable pageable) {
+
+        if (states == null || states.isEmpty()) {
+            log.error("states가 유효하지 않습니다. : method = {}", "findPendingIds()");
+            throw new IllegalArgumentException("states가 유효하지 않습니다.");
+        }
+
+        if (pageable == null) {
+            log.error("pageable이 유효하지 않습니다. : method = {}", "findPendingIds()");
+            throw new IllegalArgumentException("pageable이 유효하지 않습니다.");
+        }
+
+        return outboxJpaRepository.findPendingIds(states, pageable);
+    }
+
+    @Override
     public Outbox save(Outbox outbox) {
 
         if (outbox == null) {
@@ -37,21 +68,6 @@ public class OutboxRepositoryImpl implements OutboxRepository {
             log.error("entity is Null : method = {}", "save()");
             throw new CreateOutboxFailException("이벤트를 outbox에 저장하지 못했습니다.");
         }
-        return OutboxMapper.toDomain(entity);
-    }
-
-    @Override
-    public Outbox findById(Long outboxId) {
-
-        if (outboxId == null) {
-            log.error("outboxId is Null : method = {}", "findById()");
-            throw new IllegalArgumentException("outboxId가 null입니다.");
-        }
-
-        OutboxEntity entity = outboxJpaRepository.findById(outboxId).orElseThrow(
-            () -> new NotFoundOutboxException("outbox를 찾을 수 없습니다.")
-        );
-
         return OutboxMapper.toDomain(entity);
     }
 
@@ -81,19 +97,19 @@ public class OutboxRepositoryImpl implements OutboxRepository {
 
     @Transactional
     @Override
-    public int makeRetry(Long outboxId, EventStatus eventStatus) {
+    public int markRetry(Long outboxId, EventStatus eventStatus) {
 
         if (outboxId == null) {
             log.error("outboxId is Null : method = {}", "makeRetry()");
             throw new IllegalArgumentException("outboxId가 null입니다.");
         }
 
-        return outboxJpaRepository.makeRetry(outboxId, eventStatus);
+        return outboxJpaRepository.markRetry(outboxId, eventStatus);
     }
 
     @Transactional
     @Override
-    public int makeFail(Long outboxId, EventStatus eventStatus, Integer maxRetryCount) {
+    public int markFail(Long outboxId, EventStatus eventStatus, Integer maxRetryCount) {
 
         if (outboxId == null) {
             log.error("outboxId is Null : method = {}", "claim()");
@@ -105,22 +121,6 @@ public class OutboxRepositoryImpl implements OutboxRepository {
             throw new IllegalArgumentException("maxRetryCount 값은 필수이며 양수여야 합니다.");
         }
 
-        return outboxJpaRepository.makeFail(outboxId, eventStatus, maxRetryCount);
-    }
-
-    @Override
-    public Page<Long> findPendingIds(Collection<EventStatus> states, Pageable pageable) {
-
-        if (states == null || states.isEmpty()) {
-            log.error("states가 유효하지 않습니다. : method = {}", "findPendingIds()");
-            throw new IllegalArgumentException("states가 유효하지 않습니다.");
-        }
-
-        if (pageable == null) {
-            log.error("pageable이 유효하지 않습니다. : method = {}", "findPendingIds()");
-            throw new IllegalArgumentException("pageable이 유효하지 않습니다.");
-        }
-
-        return outboxJpaRepository.findPendingIds(states, pageable);
+        return outboxJpaRepository.markFail(outboxId, eventStatus, maxRetryCount);
     }
 }

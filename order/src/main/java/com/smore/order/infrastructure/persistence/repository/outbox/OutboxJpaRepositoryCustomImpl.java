@@ -21,6 +21,30 @@ public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom 
     private final EntityManager em;
 
     @Override
+    public Page<Long> findPendingIds(Collection<EventStatus> states, Pageable pageable) {
+
+        List<Long> content = queryFactory
+            .select(outboxEntity.id)
+            .from(outboxEntity)
+            .where(
+                outboxEntity.eventStatus.in(states)
+            )
+            .orderBy(outboxEntity.createdAt.asc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+            .select(outboxEntity.count())
+            .from(outboxEntity)
+            .where(
+                outboxEntity.eventStatus.in(states)
+            );
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
     public int claim(Long outboxId, EventStatus eventStatus) {
 
         long updated = queryFactory
@@ -56,7 +80,7 @@ public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom 
     }
 
     @Override
-    public int makeRetry(Long outboxId, EventStatus eventStatus) {
+    public int markRetry(Long outboxId, EventStatus eventStatus) {
         long updated = queryFactory
             .update(outboxEntity)
             .set(outboxEntity.eventStatus, eventStatus)
@@ -74,7 +98,7 @@ public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom 
     }
 
     @Override
-    public int makeFail(Long outboxId, EventStatus eventStatus, Integer maxRetryCount) {
+    public int markFail(Long outboxId, EventStatus eventStatus, Integer maxRetryCount) {
         long updated = queryFactory
             .update(outboxEntity)
             .set(outboxEntity.eventStatus, eventStatus)
@@ -91,27 +115,4 @@ public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom 
         return (int) updated;
     }
 
-    @Override
-    public Page<Long> findPendingIds(Collection<EventStatus> states, Pageable pageable) {
-
-        List<Long> content = queryFactory
-            .select(outboxEntity.id)
-            .from(outboxEntity)
-            .where(
-                outboxEntity.eventStatus.in(states)
-            )
-            .orderBy(outboxEntity.createdAt.asc())
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .fetch();
-
-        JPAQuery<Long> countQuery = queryFactory
-            .select(outboxEntity.count())
-            .from(outboxEntity)
-            .where(
-                outboxEntity.eventStatus.in(states)
-            );
-
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
-    }
 }
