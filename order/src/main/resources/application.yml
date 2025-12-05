@@ -44,7 +44,7 @@ topic:
     completed: order.completed.v1
     refund: order.refund.v1
     refund-success: order.refund-success.v1
-
+    refund-fail: order.refund-fail.v1
   bid:
     order:
       request: bid.order.request.v1
@@ -52,6 +52,7 @@ topic:
   payment:
     completed: payment.completed.v1
     refund-completed: payment.refund-completed.v1
+    refund-failed: payment.refund-failed.v1
 
 consumer:
   group:
