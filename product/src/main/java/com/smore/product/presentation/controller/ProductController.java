@@ -5,6 +5,7 @@ import com.smore.common.response.CommonResponse;
 import com.smore.product.application.service.ProductService;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductRequest;
+import com.smore.product.presentation.dto.request.UpdateProductStatusRequest;
 import com.smore.product.presentation.dto.response.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -57,5 +58,15 @@ public class ProductController {
     ) {
         ProductResponse response = productService.updateProduct(productId, request);
         return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @PatchMapping("/{productId}/status")
+    public ResponseEntity<CommonResponse<ProductResponse>> updateStatus(
+            @PathVariable UUID productId,
+            @RequestBody UpdateProductStatusRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.ok(productService.updateProductStatus(productId, request))
+        );
     }
 }

@@ -126,4 +126,8 @@ public class Product {
     public void changeThreshold(Integer threshold) {
         this.thresholdForAuction = threshold;
     }
+
+    public void changeStatus(ProductStatus status) {
+        this.status = status;
+    }
 }
