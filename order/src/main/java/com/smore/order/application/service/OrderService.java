@@ -235,7 +235,7 @@ public class OrderService {
 
         Refund refund = refundRepository.findById(command.getRefundId());
 
-        if (refund.getStatus() == RefundStatus.COMPLETED) {
+        if (refund.isCompleted()) {
             return;
         }
 
@@ -296,11 +296,11 @@ public class OrderService {
 
         Refund refund = refundRepository.findById(command.getRefundId());
 
-        if (refund.getStatus() == RefundStatus.COMPLETED) {
+        if (refund.isCompleted()) {
             return;
         }
 
-        if (!refund.getOrderId().equals(command.getOrderId())) {
+        if (refund.notEqualOrderId(command.getOrderId())) {
             log.error("refund의 orderId와 이벤트의 command의 orderId가 일치하지 않습니다.");
             throw new RefundConflictException(
                 "refund의 orderId와 이벤트의 command의 orderId가 일치하지 않습니다."

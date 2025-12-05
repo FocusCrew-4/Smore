@@ -89,6 +89,14 @@ public class Refund {
             .build();
     }
 
+    public boolean isCompleted() {
+        return status == RefundStatus.COMPLETED;
+    }
+
+    public boolean notEqualOrderId(UUID orderId) {
+        return !this.orderId.equals(orderId);
+    }
+
     private static Integer calculateRefundAmount(Integer productPrice, Integer refundQuantity) {
         return productPrice * refundQuantity;
     }
