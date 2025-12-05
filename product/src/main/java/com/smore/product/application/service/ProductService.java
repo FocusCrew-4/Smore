@@ -20,7 +20,7 @@ public class ProductService {
             throw new IllegalArgumentException("LIMITED_TO_AUCTION requires thresholdForAuction");
         }
 
-        Product p = Product.builder()
+        Product product = Product.builder()
                 .sellerId(req.getSellerId())
                 .categoryId(req.getCategoryId())
                 .name(req.getName())
@@ -31,8 +31,8 @@ public class ProductService {
                 .thresholdForAuction(req.getThresholdForAuction())
                 .build();
 
-        productRepository.save(p);
+        productRepository.save(product);
 
-        return new ProductResponse(p);
+        return new ProductResponse(product);
     }
 }
