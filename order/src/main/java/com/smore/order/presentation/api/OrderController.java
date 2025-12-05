@@ -1,6 +1,7 @@
 package com.smore.order.presentation.api;
 
 import com.smore.common.response.CommonResponse;
+import com.smore.order.presentation.dto.RefundRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
@@ -15,5 +16,10 @@ public interface OrderController {
         @NotBlank @RequestHeader("X-User-Role") String role,
         @NotNull(message = "allocationToken은 필수값입니다.") @PathVariable UUID allocationToken
     );
+
+    ResponseEntity<CommonResponse<?>> refundRequest(
+        @RequestHeader("X-User-Id") Long requesterId,
+        @RequestHeader("X-User-Role") String role,
+        RefundRequest request);
 
 }
