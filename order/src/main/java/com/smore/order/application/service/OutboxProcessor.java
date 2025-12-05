@@ -34,7 +34,7 @@ public class OutboxProcessor {
         Outbox fresh = outboxRepository.findById(outboxId);
 
         if (fresh.isExceededRetry(maxRetryCount)) {
-            int result = outboxRepository.makeFail(fresh.getId(), EventStatus.FAILED, maxRetryCount);
+            int result = outboxRepository.markFail(fresh.getId(), EventStatus.FAILED, maxRetryCount);
             if (result == 0) {
                 log.error("재시도 횟수 초과 후, outbox 상태 전환 실패 outboxId : {}, domain : {}, eventType : {}",
                     fresh.getId(), fresh.getAggregateType(), fresh.getEventType());
@@ -54,7 +54,7 @@ public class OutboxProcessor {
                 return;
             }
         } else {
-            updated = outboxRepository.makeRetry(fresh.getId(), EventStatus.PENDING);
+            updated = outboxRepository.markRetry(fresh.getId(), EventStatus.PENDING);
             if (updated == 0) {
                 log.error("카프카에 이벤트 발행 실패 후, outbox 상태 전환 실패 outboxId : {}, domain : {}, eventType : {}",
                     fresh.getId(), fresh.getAggregateType(), fresh.getEventType());

@@ -1,7 +1,5 @@
 package com.smore.order.infrastructure.persistence.repository.outbox;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.smore.order.application.repository.OutboxRepository;
 import com.smore.order.domain.model.Outbox;
 import com.smore.order.domain.status.AggregateType;
@@ -149,7 +147,7 @@ class OutboxRepositoryImplTest {
 
     @DisplayName("makeRetry를 호출하면 상태가 변경되고 retryCount가 1 증가한다.")
     @Test
-    void makeRetryTest() {
+    void markRetryTest() {
         // given
         Outbox outbox = Outbox.create(
             AggregateType.ORDER,
@@ -167,7 +165,7 @@ class OutboxRepositoryImplTest {
         int beforeRetryCount = before.getRetryCount();
 
         // when
-        int result = outboxRepository.makeRetry(saveOutbox.getId(), EventStatus.PROCESSING);
+        int result = outboxRepository.markRetry(saveOutbox.getId(), EventStatus.PROCESSING);
 
         Outbox fresh = outboxRepository.findById(saveOutbox.getId());
 
@@ -179,10 +177,10 @@ class OutboxRepositoryImplTest {
 
     @DisplayName("makeRetry 호출할 때 outboxId가 null인 경우 IllegalArgumentException가 발생하고 상태를 변경하지 못한다.")
     @Test
-    void makeRetryTestWithException() {
+    void markRetryTestWithException() {
         // when // then
         Assertions.assertThatThrownBy(
-                () -> outboxRepository.makeRetry(null, EventStatus.PROCESSING)
+                () -> outboxRepository.markRetry(null, EventStatus.PROCESSING)
             )
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("outboxId가 null입니다.");
@@ -190,7 +188,7 @@ class OutboxRepositoryImplTest {
 
     @DisplayName("retryCount가 maxRetryCount 이상인 상태에서 makeFail을 호출하면 EventStatus 값이 FAIL이 된다.")
     @Test
-    void makeFailTest() {
+    void markFailTest() {
         // given
         Outbox outbox = Outbox.create(
             AggregateType.ORDER,
@@ -204,12 +202,12 @@ class OutboxRepositoryImplTest {
 
         outboxRepository.claim(saveOutbox.getId(), EventStatus.PROCESSING);
 
-        outboxRepository.makeRetry(saveOutbox.getId(), EventStatus.PROCESSING);
+        outboxRepository.markRetry(saveOutbox.getId(), EventStatus.PROCESSING);
 
         int maxRetryCount = 1;
 
         // when
-        int result = outboxRepository.makeFail(saveOutbox.getId(), EventStatus.FAILED, maxRetryCount);
+        int result = outboxRepository.markFail(saveOutbox.getId(), EventStatus.FAILED, maxRetryCount);
 
         Outbox fresh = outboxRepository.findById(saveOutbox.getId());
 
@@ -221,10 +219,10 @@ class OutboxRepositoryImplTest {
 
     @DisplayName("makeFail 호출할 때 outboxId가 null인 경우 IllegalArgumentException가 발생하고 상태를 변경하지 못한다.")
     @Test
-    void makeFailTestWithNullIdException() {
+    void markFailTestWithNullIdException() {
         // when // then
         Assertions.assertThatThrownBy(
-                () -> outboxRepository.makeFail(null, EventStatus.FAILED, 1)
+                () -> outboxRepository.markFail(null, EventStatus.FAILED, 1)
             )
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("outboxId가 null입니다.");
@@ -232,7 +230,7 @@ class OutboxRepositoryImplTest {
 
     @DisplayName("makeFail 호출할 때 maxRetryCount가 null이거나 1보다 작으면 IllegalArgumentException가 발생한다.")
     @Test
-    void makeFailTestWithInvalidMaxRetryCountException() {
+    void markFailTestWithInvalidMaxRetryCountException() {
         // given
         Outbox outbox = Outbox.create(
             AggregateType.ORDER,
@@ -245,14 +243,14 @@ class OutboxRepositoryImplTest {
 
         // when // then
         Assertions.assertThatThrownBy(
-                () -> outboxRepository.makeFail(saveOutbox.getId(), EventStatus.FAILED, null)
+                () -> outboxRepository.markFail(saveOutbox.getId(), EventStatus.FAILED, null)
             )
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("maxRetryCount 값은 필수이며 양수여야 합니다.");
 
         // when // then
         Assertions.assertThatThrownBy(
-                () -> outboxRepository.makeFail(saveOutbox.getId(), EventStatus.FAILED, 0)
+                () -> outboxRepository.markFail(saveOutbox.getId(), EventStatus.FAILED, 0)
             )
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("maxRetryCount 값은 필수이며 양수여야 합니다.");
