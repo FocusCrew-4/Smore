@@ -9,9 +9,9 @@ public interface OrderJpaRepositoryCustom {
 
     OrderEntity findByIdempotencyKey(UUID idempotencyKey);
 
-    int markComplete(UUID orderId, OrderStatus status);
-
     OrderEntity findByAllocationKeyAndUserId(UUID allocationKey, Long userId);
+
+    int markComplete(UUID orderId, OrderStatus status);
 
     int updateRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
         Integer refundReservedQuantity, Integer refundedQuantity,

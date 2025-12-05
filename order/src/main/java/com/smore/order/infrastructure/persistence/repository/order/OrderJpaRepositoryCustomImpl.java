@@ -29,6 +29,18 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
     }
 
     @Override
+    public OrderEntity findByAllocationKeyAndUserId(UUID allocationKey, Long userId) {
+        return queryFactory
+            .select(orderEntity)
+            .from(orderEntity)
+            .where(
+                orderEntity.idempotencyKey.eq(allocationKey),
+                orderEntity.userId.eq(userId)
+            )
+            .fetchOne();
+    }
+
+    @Override
     public int markComplete(UUID orderId, OrderStatus status) {
         long updated = queryFactory
             .update(orderEntity)
@@ -43,18 +55,6 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
         em.clear();
 
         return (int) updated;
-    }
-
-    @Override
-    public OrderEntity findByAllocationKeyAndUserId(UUID allocationKey, Long userId) {
-        return queryFactory
-            .select(orderEntity)
-            .from(orderEntity)
-            .where(
-                orderEntity.idempotencyKey.eq(allocationKey),
-                orderEntity.userId.eq(userId)
-            )
-            .fetchOne();
     }
 
     @Override

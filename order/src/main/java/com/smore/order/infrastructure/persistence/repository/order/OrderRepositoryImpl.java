@@ -36,35 +36,6 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Order save(Order order) {
-        if (order == null){
-            log.error("order is Null : methodName = {}", "save()");
-            throw new IllegalArgumentException("order가 null 입니다.");
-        }
-
-        OrderEntity entity = orderJpaRepository.save(
-            OrderMapper.toEntityForCreate(order)
-        );
-
-        if (entity == null) {
-            log.error("entity is Null : methodName = {}", "save()");
-            throw new CreateOrderFailException("주문이 생성되지 않았습니다.");
-        }
-        return OrderMapper.toDomain(entity);
-    }
-
-    @Override
-    public int markComplete(UUID orderId) {
-
-        if (orderId == null) {
-            log.error("orderId is Null : methodName = {}", "markComplete()");
-            throw new IllegalArgumentException("주문 아이디가 null 입니다.");
-        }
-
-        return orderJpaRepository.markComplete(orderId, OrderStatus.COMPLETED);
-    }
-
-    @Override
     public Order findById(UUID orderId) {
 
         if (orderId == null) {
@@ -97,6 +68,35 @@ public class OrderRepositoryImpl implements OrderRepository {
             .findByAllocationKeyAndUserId(allocationKey, userId);
 
         return Optional.ofNullable(entity).map(OrderMapper::toDomain);
+    }
+
+    @Override
+    public Order save(Order order) {
+        if (order == null){
+            log.error("order is Null : methodName = {}", "save()");
+            throw new IllegalArgumentException("order가 null 입니다.");
+        }
+
+        OrderEntity entity = orderJpaRepository.save(
+            OrderMapper.toEntityForCreate(order)
+        );
+
+        if (entity == null) {
+            log.error("entity is Null : methodName = {}", "save()");
+            throw new CreateOrderFailException("주문이 생성되지 않았습니다.");
+        }
+        return OrderMapper.toDomain(entity);
+    }
+
+    @Override
+    public int markComplete(UUID orderId) {
+
+        if (orderId == null) {
+            log.error("orderId is Null : methodName = {}", "markComplete()");
+            throw new IllegalArgumentException("주문 아이디가 null 입니다.");
+        }
+
+        return orderJpaRepository.markComplete(orderId, OrderStatus.COMPLETED);
     }
 
     @Override

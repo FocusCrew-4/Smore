@@ -10,13 +10,13 @@ public interface OrderRepository {
 
     Order findByIdempotencyKey(UUID idempotencyKey);
 
-    Order save(Order order);
-
-    int markComplete(UUID orderId);
-
     Order findById(UUID orderId);
 
     Optional<Order> findByAllocationKeyAndUserId(UUID allocationKey, Long userId);
+
+    Order save(Order order);
+
+    int markComplete(UUID orderId);
 
     int updateRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
         Integer refundReservedQuantity, Integer refundedQuantity,
