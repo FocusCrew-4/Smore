@@ -3,6 +3,7 @@ package com.smore.product.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -45,16 +46,57 @@ public class Product {
     private LocalDateTime deletedAt;
     private Long deletedBy;
 
-    @PrePersist
-    public void onCreate() {
-        this.status = ProductStatus.ON_SALE;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+    public static Product create(
+            Long sellerId,
+            UUID categoryId,
+            String name,
+            String description,
+            int price,
+            int stock,
+            SaleType saleType,
+            Integer thresholdForAuction
+    ) {
+        LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
+
+        return Product.builder()
+                .sellerId(sellerId)
+                .categoryId(categoryId)
+                .name(name)
+                .description(description)
+                .price(price)
+                .stock(stock)
+                .saleType(saleType)
+                .thresholdForAuction(thresholdForAuction)
+                .status(ProductStatus.ON_SALE)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
     }
 
-    @PreUpdate
-    public void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+    public void update(
+            String name,
+            String description,
+            Integer price,
+            Integer stock,
+            UUID categoryId,
+            SaleType saleType,
+            Integer thresholdForAuction
+    ) {
+        if (name != null) this.name = name;
+        if (description != null) this.description = description;
+        if (price != null) this.price = price;
+        if (stock != null) this.stock = stock;
+        if (categoryId != null) this.categoryId = categoryId;
+        if (saleType != null) this.saleType = saleType;
+        if (thresholdForAuction != null) this.thresholdForAuction = thresholdForAuction;
+
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
+    }
+
+    public void softDelete(Long requesterId) {
+        this.status = ProductStatus.INACTIVE;
+        this.deletedAt = LocalDateTime.now(Clock.systemUTC());
+        this.deletedBy = requesterId;
     }
 
     public void changeName(String name) {

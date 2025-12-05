@@ -7,6 +7,7 @@ import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOrderFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOrderException;
 import com.smore.order.infrastructure.persistence.mapper.OrderMapper;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -78,4 +79,24 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         return OrderMapper.toDomain(entity);
     }
+
+    @Override
+    public Optional<Order> findByAllocationKeyAndUserId(UUID allocationKey, Long userId) {
+
+        if (allocationKey == null) {
+            log.error("allocationKey is Null : methodName = {}", "findByAllocationKeyAndUserId()");
+            throw new IllegalArgumentException("allocationKey가 null 입니다.");
+        }
+
+        if (userId == null) {
+            log.error("userId is Null : methodName = {}", "findByAllocationKeyAndUserId()");
+            throw new IllegalArgumentException("userId가 null 입니다.");
+        }
+
+        OrderEntity entity = orderJpaRepository
+            .findByAllocationKeyAndUserId(allocationKey, userId);
+
+        return Optional.ofNullable(entity).map(OrderMapper::toDomain);
+    }
+
 }
