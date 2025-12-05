@@ -4,6 +4,7 @@ import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
 import com.smore.product.application.service.ProductService;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
+import com.smore.product.presentation.dto.request.UpdateProductRequest;
 import com.smore.product.presentation.dto.response.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,6 +47,15 @@ public class ProductController {
             Pageable pageable
     ) {
         Page<ProductResponse> response = productService.findAll(pageable);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @PatchMapping("/{productId}")
+    public ResponseEntity<CommonResponse<ProductResponse>> update(
+            @PathVariable UUID productId,
+            @RequestBody UpdateProductRequest request
+    ) {
+        ProductResponse response = productService.updateProduct(productId, request);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }
