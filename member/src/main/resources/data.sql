@@ -20,3 +20,25 @@ VALUES
     ('00000000-0000-0000-0000-000000000004', 5, '444-44-444444', 'DELETED', NOW(), NOW(), NOW(), 1),
     ('00000000-0000-0000-0000-000000000005', 6, '555-55-555555', 'BANNED', NOW(), NOW(), NOW(), 1)
 ON CONFLICT DO NOTHING;
+--
+-- -- Seed: seller outbox pending 230 rows
+-- INSERT INTO p_seller_outbox (
+--     created_at,
+--     error_message,
+--     event_type,
+--     member_id,
+--     payload,
+--     processed_at,
+--     retry_count,
+--     status
+-- )
+-- SELECT
+--     NOW(),
+--     NULL,
+--     'seller.register.v1',
+--     200000 + g,                             -- dummy member id
+--     json_build_object('seed', g)::json,     -- dummy payload
+--     NULL,
+--     0,
+--     'PENDING'
+-- FROM generate_series(1, 230) g;

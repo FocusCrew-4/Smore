@@ -23,6 +23,10 @@ public class SellerApplyImpl implements SellerApply {
     @Override
     public SellerResult sellerApply(ApplyCommand applyCommand) {
 
+        if (repository.findByMemberId(applyCommand.requesterId()) != null) {
+            throw new IllegalStateException("이미 존재하는 요청자 입니다");
+        }
+
         Seller newSeller = Seller.apply(
             applyCommand.requesterId(),
             applyCommand.accountNum(),
