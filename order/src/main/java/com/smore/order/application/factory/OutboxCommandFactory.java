@@ -3,6 +3,7 @@ package com.smore.order.application.factory;
 import com.smore.order.application.command.CompletedOrderCommand;
 import com.smore.order.application.command.CreatedOrderCommand;
 import com.smore.order.application.command.OutboxCommand;
+import com.smore.order.application.command.RefundFailedCommand;
 import com.smore.order.application.command.RefundRequestCommand;
 import com.smore.order.application.command.RefundSuccessCommand;
 import com.smore.order.domain.model.Outbox;
@@ -29,13 +30,16 @@ public class OutboxCommandFactory {
     @Value("${topic.order.refund-success}")
     private String refundSuccessTopic;
 
+    @Value("${topic.order.refund-fail}")
+    private String refundFailTopic;
+
     public OutboxCommand from(Outbox outbox) {
         return switch (outbox.getEventType()) {
             case ORDER_CREATED -> new CreatedOrderCommand(orderCreatedTopic, kafkaTemplate, outbox);
             case ORDER_COMPLETED -> new CompletedOrderCommand(orderCompletedTopic, kafkaTemplate, outbox);
             case REFUND_REQUEST -> new RefundRequestCommand(refundRequestTopic, kafkaTemplate, outbox);
             case REFUND_SUCCESS -> new RefundSuccessCommand(refundSuccessTopic, kafkaTemplate, outbox);
-            case REFUND_FAIL -> null;
+            case REFUND_FAIL -> new RefundFailedCommand(refundFailTopic, kafkaTemplate, outbox);
             default -> throw new IllegalArgumentException(
                 "지원되지 않은 이벤트입니다." + outbox.getEventType()
             );
