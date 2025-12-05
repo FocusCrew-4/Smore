@@ -8,9 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CompletedRefundEvent {
+public class PaymentRefundFailedEvent {
+
     private UUID orderId;
     private UUID refundId;
     private Integer refundAmount;
+    private String message;
 
 }

@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class BidRequestEvent {
+public class BidWinnerConfirmedEvent {
 
     private Long userId;
     private UUID productId;

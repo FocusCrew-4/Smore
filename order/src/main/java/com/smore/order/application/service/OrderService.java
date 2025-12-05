@@ -11,12 +11,12 @@ import com.smore.order.application.exception.RefundReservationConflictException;
 import com.smore.order.application.repository.OrderRepository;
 import com.smore.order.application.repository.OutboxRepository;
 import com.smore.order.application.repository.RefundRepository;
-import com.smore.order.application.event.outbound.CompletedOrderEvent;
-import com.smore.order.application.event.outbound.CreatedOrderEvent;
+import com.smore.order.application.event.outbound.OrderCompletedEvent;
+import com.smore.order.application.event.outbound.OrderCreatedEvent;
 import com.smore.order.application.event.outbound.OrderEvent;
-import com.smore.order.application.event.outbound.RefundFailedEvent;
-import com.smore.order.application.event.outbound.RefundRequestEvent;
-import com.smore.order.application.event.outbound.SuccessRefundEvent;
+import com.smore.order.application.event.outbound.OrderRefundFailedEvent;
+import com.smore.order.application.event.outbound.OrderRefundRequestEvent;
+import com.smore.order.application.event.outbound.OrderRefundSucceededEvent;
 import com.smore.order.domain.model.Order;
 import com.smore.order.domain.model.Outbox;
 import com.smore.order.domain.model.Refund;
@@ -71,7 +71,7 @@ public class OrderService {
         );
         Order saveOrder = orderRepository.save(createOrder);
 
-        CreatedOrderEvent event = CreatedOrderEvent.of(
+        OrderCreatedEvent event = OrderCreatedEvent.of(
             saveOrder.getId(),
             saveOrder.getUserId(),
             saveOrder.getTotalAmount(),
@@ -108,7 +108,7 @@ public class OrderService {
             throw new CompleteOrderFailException("주문 완료 상태로 변경하지 못했습니다.");
         }
 
-        CompletedOrderEvent event = CompletedOrderEvent.of(
+        OrderCompletedEvent event = OrderCompletedEvent.of(
             order.getId(),
             order.getUserId(),
             OrderStatus.COMPLETED,
@@ -195,7 +195,7 @@ public class OrderService {
 
         Refund savedRefund = refundRepository.save(newRefund);
 
-        RefundRequestEvent event = RefundRequestEvent.of(
+        OrderRefundRequestEvent event = OrderRefundRequestEvent.of(
             savedRefund.getOrderId(),
             order.getUserId(),
             savedRefund.getId(),
@@ -279,7 +279,7 @@ public class OrderService {
             );
         }
 
-        SuccessRefundEvent event = SuccessRefundEvent.of(
+        OrderRefundSucceededEvent event = OrderRefundSucceededEvent.of(
             refund.getOrderId(),
             order.getUserId(),
             order.getIdempotencyKey(),
@@ -343,7 +343,7 @@ public class OrderService {
             );
         }
 
-        RefundFailedEvent event = RefundFailedEvent.of(
+        OrderRefundFailedEvent event = OrderRefundFailedEvent.of(
             command.getOrderId(),
             refund.getId(),
             refund.getUserId(),

@@ -10,23 +10,26 @@ import lombok.Getter;
 @Getter
 @Builder(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class SuccessRefundEvent implements OrderEvent {
+public class OrderCreatedEvent implements OrderEvent {
+
     private final UUID orderId;
     private final Long userId;
-    private final UUID allocationKey;
-    private final Integer refundAmount;
+    private final Integer totalAmount;
+    private final UUID idempotencyKey;
     private final LocalDateTime publishedAt;
+    private final LocalDateTime expiresAt;
 
-    public static SuccessRefundEvent of(
-        UUID orderId, Long userId, UUID allocationKey, Integer refundAmount,
-        LocalDateTime now) {
+    public static OrderCreatedEvent of(
+        UUID orderId, Long userId, Integer totalAmount, UUID idempotencyKey,
+        LocalDateTime now, LocalDateTime expiresAt) {
 
-        return SuccessRefundEvent.builder()
+        return OrderCreatedEvent.builder()
             .orderId(orderId)
             .userId(userId)
-            .allocationKey(allocationKey)
-            .refundAmount(refundAmount)
+            .totalAmount(totalAmount)
+            .idempotencyKey(idempotencyKey)
             .publishedAt(now)
+            .expiresAt(expiresAt)
             .build();
     }
 }
