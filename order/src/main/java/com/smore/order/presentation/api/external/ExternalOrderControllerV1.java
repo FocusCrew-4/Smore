@@ -64,11 +64,11 @@ public class ExternalOrderControllerV1 implements ExternalOrderController {
         }
 
         RefundCommand command = RefundCommand.of(
-            request.getOrderId(),
+            request.orderId(),
             requesterId,
-            request.getRefundQuantity(),
-            request.getReason(),
-            request.getIdempotencyKey()
+            request.refundQuantity(),
+            request.reason(),
+            request.idempotencyKey()
         );
 
         RefundResponse response =  orderService.refund(command);
