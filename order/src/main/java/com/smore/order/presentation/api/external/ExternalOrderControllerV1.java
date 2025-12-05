@@ -1,4 +1,4 @@
-package com.smore.order.presentation.api;
+package com.smore.order.presentation.api.external;
 
 import static com.smore.order.presentation.auth.OrderRole.*;
 
@@ -17,16 +17,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class OrderControllerV1 implements OrderController {
+public class ExternalOrderControllerV1 implements ExternalOrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/api/v1/orders/by-token/{allocationToken}")
+    @GetMapping("/api/v1/external/orders/by-token/{allocationToken}")
     public ResponseEntity<CommonResponse<?>> isOrderCreated(
         @RequestHeader("X-User-Id") Long requesterId,
         @RequestHeader("X-User-Role") String role,
@@ -44,11 +45,11 @@ public class OrderControllerV1 implements OrderController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
-    @PostMapping("/api/v1/orders/refund")
+    @PostMapping("/api/v1/external/orders/refund")
     public ResponseEntity<CommonResponse<?>> refundRequest(
         @RequestHeader("X-User-Id") Long requesterId,
         @RequestHeader("X-User-Role") String role,
-        RefundRequest request) {
+        @RequestBody RefundRequest request) {
 
         OrderRole orderRole = from(role);
 

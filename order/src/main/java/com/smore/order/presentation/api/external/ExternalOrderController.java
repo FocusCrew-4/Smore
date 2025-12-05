@@ -1,4 +1,4 @@
-package com.smore.order.presentation.api;
+package com.smore.order.presentation.api.external;
 
 import com.smore.common.response.CommonResponse;
 import com.smore.order.presentation.dto.RefundRequest;
@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-public interface OrderController {
+public interface ExternalOrderController {
 
     ResponseEntity<CommonResponse<?>> isOrderCreated(
         @NotNull(message = "userId는 필수값입니다.") @RequestHeader("X-User-Id") Long requesterId,
