@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
+import com.smore.order.application.dto.FailedRefundCommand;
 import com.smore.order.application.dto.RefundCommand;
 import com.smore.order.application.exception.RefundReservationConflictException;
 import com.smore.order.application.repository.OrderRepository;
@@ -11,7 +12,9 @@ import com.smore.order.application.repository.OutboxRepository;
 import com.smore.order.application.repository.RefundRepository;
 import com.smore.order.domain.event.CompletedOrderEvent;
 import com.smore.order.domain.event.CreatedOrderEvent;
+import com.smore.order.domain.event.FailedRefundEvent;
 import com.smore.order.domain.event.OrderEvent;
+import com.smore.order.domain.event.RefundFailedEvent;
 import com.smore.order.domain.event.RefundRequestEvent;
 import com.smore.order.domain.event.SuccessRefundEvent;
 import com.smore.order.domain.model.Order;
@@ -181,6 +184,7 @@ public class OrderService {
 
         Refund newRefund = Refund.create(
             command.getOrderId(),
+            command.getUserId(),
             order.getProduct().productId(),
             order.getProduct().productPrice(),
             command.getRefundQuantity(),

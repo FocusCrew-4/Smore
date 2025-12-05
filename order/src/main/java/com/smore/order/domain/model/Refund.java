@@ -15,6 +15,7 @@ public class Refund {
 
     private UUID id;
     private UUID orderId;
+    private Long userId;
     private UUID productId;
     private Integer refundQuantity;
     private Integer refundAmount;
@@ -26,6 +27,7 @@ public class Refund {
 
     public static Refund create(
         UUID orderId,
+        Long userId,
         UUID productId, Integer productPrice,
         Integer refundQuantity,
         UUID idempotencyKey,
@@ -47,6 +49,7 @@ public class Refund {
 
         return Refund.builder()
             .orderId(orderId)
+            .userId(userId)
             .productId(productId)
             .refundQuantity(refundQuantity)
             .refundAmount(refundAmount)
@@ -60,6 +63,7 @@ public class Refund {
     public static Refund of(
         UUID id,
         UUID orderId,
+        Long userId,
         UUID productId,
         Integer refundQuantity,
         Integer refundAmount,
@@ -73,6 +77,7 @@ public class Refund {
         return Refund.builder()
             .id(id)
             .orderId(orderId)
+            .userId(userId)
             .productId(productId)
             .refundQuantity(refundQuantity)
             .refundAmount(refundAmount)

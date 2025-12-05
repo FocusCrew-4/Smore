@@ -16,6 +16,7 @@ public final class RefundMapper {
 
         return RefundEntity.create(
             refund.getOrderId(),
+            refund.getUserId(),
             refund.getProductId(),
             refund.getRefundQuantity(),
             refund.getRefundAmount(),
@@ -34,6 +35,7 @@ public final class RefundMapper {
         return Refund.of(
             entity.getId(),
             entity.getOrderId(),
+            entity.getUserId(),
             entity.getProductId(),
             entity.getRefundQuantity(),
             entity.getRefundAmount(),

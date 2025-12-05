@@ -40,6 +40,9 @@ public class RefundEntity extends BaseEntity {
     @Column(name = "order_id", nullable = false, updatable = false)
     private UUID orderId;
 
+    @Column(name = "user_id", nullable = false, updatable = false)
+    private Long userId;
+
     @Column(name = "product_id", nullable = false, updatable = false)
     private UUID productId;
 
@@ -67,6 +70,7 @@ public class RefundEntity extends BaseEntity {
 
     public static RefundEntity create(
         UUID orderId,
+        Long userId,
         UUID productId,
         Integer refundQuantity, Integer refundAmount,
         UUID idempotencyKey,
@@ -87,6 +91,7 @@ public class RefundEntity extends BaseEntity {
 
         return RefundEntity.builder()
             .orderId(orderId)
+            .userId(userId)
             .productId(productId)
             .refundQuantity(refundQuantity)
             .refundAmount(refundAmount)
