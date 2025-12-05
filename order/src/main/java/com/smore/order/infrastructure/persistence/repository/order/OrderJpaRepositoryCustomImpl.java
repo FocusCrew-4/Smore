@@ -4,7 +4,7 @@ import static com.smore.order.infrastructure.persistence.entity.order.QOrderEnti
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.smore.order.domain.status.OrderStatus;
-import com.smore.order.domain.status.RefundStatus;
+import com.smore.order.infrastructure.persistence.entity.order.Address;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import jakarta.persistence.EntityManager;
 import java.util.Collection;
@@ -125,6 +125,24 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
                 orderEntity.id.eq(orderId),
                 orderEntity.refundedQuantity.eq(refundedQuantity),
                 orderEntity.refundReservedQuantity.eq(refundReservedQuantity)
+            )
+            .execute();
+
+        em.flush();
+        em.clear();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int update(UUID orderId, Long userId, Address address) {
+
+        long updated = queryFactory
+            .update(orderEntity)
+            .set(orderEntity.address, address)
+            .where(
+                orderEntity.id.eq(orderId),
+                orderEntity.userId.eq(userId)
             )
             .execute();
 

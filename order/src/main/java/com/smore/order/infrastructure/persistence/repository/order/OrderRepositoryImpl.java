@@ -3,6 +3,7 @@ package com.smore.order.infrastructure.persistence.repository.order;
 import com.smore.order.application.repository.OrderRepository;
 import com.smore.order.domain.model.Order;
 import com.smore.order.domain.status.OrderStatus;
+import com.smore.order.infrastructure.persistence.entity.order.Address;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOrderFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOrderException;
@@ -126,5 +127,17 @@ public class OrderRepositoryImpl implements OrderRepository {
         Integer refundedQuantity) {
         return orderJpaRepository.refundFail(orderId, refundQuantity, refundReservedQuantity,
             refundedQuantity);
+    }
+
+    @Override
+    public int update(Order order) {
+
+        Address newAddress = Address.of(
+            order.getAddress().street(),
+            order.getAddress().city(),
+            order.getAddress().zipcode()
+        );
+
+        return orderJpaRepository.update(order.getId(), order.getUserId(), newAddress);
     }
 }

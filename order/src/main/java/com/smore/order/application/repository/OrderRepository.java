@@ -28,4 +28,6 @@ public interface OrderRepository {
 
     int refundFail(UUID orderId, Integer refundQuantity, Integer refundReservedQuantity,
         Integer refundedQuantity);
+
+    int update(Order order);
 }
