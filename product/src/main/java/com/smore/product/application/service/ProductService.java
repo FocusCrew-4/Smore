@@ -1,5 +1,6 @@
 package com.smore.product.application.service;
 
+import com.smore.product.domain.entity.ProductStatus;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductRequest;
 import com.smore.product.presentation.dto.response.ProductResponse;
@@ -60,6 +61,22 @@ public class ProductService {
     public ProductResponse updateProduct(UUID productId, UpdateProductRequest req) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("상품 없음"));
+
+        if (product.getStatus() == ProductStatus.ON_SALE) {
+
+            if (req.getPrice() != null && !req.getPrice().equals(product.getPrice())) {
+                throw new IllegalStateException("판매 중인 상품은 가격을 변경할 수 없습니다.");
+            }
+
+            if (req.getSaleType() != null && req.getSaleType() != product.getSaleType()) {
+                throw new IllegalStateException("판매 중인 상품의 판매 유형은 변경할 수 없습니다.");
+            }
+
+            if (req.getThresholdForAuction() != null &&
+                    !req.getThresholdForAuction().equals(product.getThresholdForAuction())) {
+                throw new IllegalStateException("판매 중인 상품의 경매 전환 기준은 수정할 수 없습니다.");
+            }
+        }
 
         if (req.getName() != null) product.changeName(req.getName());
         if (req.getDescription() != null) product.changeDescription(req.getDescription());
