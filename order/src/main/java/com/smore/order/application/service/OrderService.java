@@ -239,6 +239,13 @@ public class OrderService {
             return;
         }
 
+        if (refund.notEqualOrderId(command.getOrderId())) {
+            log.error("refund의 orderId와 이벤트의 command의 orderId가 일치하지 않습니다.");
+            throw new RefundConflictException(
+                "refund의 orderId와 이벤트의 command의 orderId가 일치하지 않습니다."
+            );
+        }
+
         int updated = refundRepository.complete(
             refund.getId(),
             RefundStatus.COMPLETED,
