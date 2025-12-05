@@ -17,9 +17,7 @@ public abstract class RoleSelector<T extends RoleSupportable> {
     }
 
     protected T select(Role role) {
-        if (role.equals(Role.SELLER) || role.equals(Role.CONSUMER)) {
-            role = Role.USER;
-        }
+        role = role.normalizeToUser();
         if (!roleMap.containsKey(role)) {
             throw new RuntimeException("권한이 없습니다");
         }

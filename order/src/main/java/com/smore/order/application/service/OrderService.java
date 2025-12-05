@@ -15,9 +15,11 @@ import com.smore.order.domain.status.EventType;
 import com.smore.order.domain.status.OrderStatus;
 import com.smore.order.domain.status.ServiceResult;
 import com.smore.order.infrastructure.persistence.exception.CompleteOrderFailException;
+import com.smore.order.presentation.dto.IsOrderCreatedResponse;
 import jakarta.transaction.Transactional;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -112,6 +114,17 @@ public class OrderService {
         outboxRepository.save(outbox);
 
         return ServiceResult.SUCCESS;
+    }
+
+    public IsOrderCreatedResponse isOrderCreated(UUID allocationKey, Long userId) {
+
+        Optional<Order> order = orderRepository.findByAllocationKeyAndUserId(
+            allocationKey, userId);
+        if (order.isEmpty()) {
+            return IsOrderCreatedResponse.notFoundOrder();
+        }
+
+        return IsOrderCreatedResponse.from(order.get());
     }
 
     // TODO: 나중에 클래스로 분리할 예정

@@ -17,4 +17,15 @@ public enum Role {
     public String desc() {
         return desc;
     }
+
+    public boolean isNONE() {
+        return this == NONE;
+    }
+
+    public Role normalizeToUser() {
+        if (this == CONSUMER ||  this == SELLER) {
+            return USER;
+        }
+        return this;
+    }
 }
