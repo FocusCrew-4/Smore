@@ -1,6 +1,7 @@
 package com.smore.seller.infrastructure.kafka;
 
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,10 +11,12 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaAdmin;
 
 @Configuration
+@RequiredArgsConstructor
 public class SellerKafkaTopicConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
+    private final SellerTopicProperties topicProperties;
 
     @Bean
     /*
@@ -35,7 +38,7 @@ public class SellerKafkaTopicConfig {
     // 판매자 상태변경과 등록은 자주 일어나는 이벤트는 아니기 때문에 파티션 2
     @Bean
     public NewTopic SellerRegisterV1Topic() {
-        return TopicBuilder.name("seller.register.v1")
+        return TopicBuilder.name(topicProperties.getSellerRegister().get("v1"))
             .partitions(2)
             .replicas(3)
             .build();

@@ -13,7 +13,7 @@ import lombok.Getter;
 public class Member {
 
     private final Long id;
-    private final Role role;
+    private Role role;
     private Credential credential;
     private String nickname;
     private Integer auctionCancelCount;
@@ -51,6 +51,10 @@ public class Member {
             throw new IllegalArgumentException("nickname cannot be null or empty");
         }
         this.nickname = nickname;
+    }
+
+    public void toSeller() {
+        this.role = Role.SELLER;
     }
 
     public void changeEmail(String email) {

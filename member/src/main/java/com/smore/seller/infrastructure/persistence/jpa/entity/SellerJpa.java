@@ -2,6 +2,7 @@ package com.smore.seller.infrastructure.persistence.jpa.entity;
 
 import com.smore.seller.domain.enums.SellerStatus;
 import com.smore.seller.infrastructure.persistence.jpa.vo.MoneyEmbeddable;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -27,6 +28,7 @@ public class SellerJpa {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(unique = true)
     private Long memberId;
     private String accountNum;
     @Enumerated(EnumType.STRING)
