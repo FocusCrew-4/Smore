@@ -1,4 +1,4 @@
-package com.smore.seller.infrastructure.persistence.jpa.entity;
+package com.smore.seller.infrastructure.outbox;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +15,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "p_seller_outbox")
@@ -28,11 +30,13 @@ public class SellerOutbox {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 발행될 카프카 토픽명
     private String eventType;
 
+    // partition key 로 사용 (kafka key)
     private Long memberId;
 
-    @Lob
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json")
     private String payload;
 
