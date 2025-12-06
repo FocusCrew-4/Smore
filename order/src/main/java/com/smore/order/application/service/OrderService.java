@@ -39,9 +39,13 @@ import jakarta.transaction.Transactional;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Slf4j(topic = "OrderService")
@@ -54,6 +58,12 @@ public class OrderService {
     private final RefundRepository refundRepository;
     private final ObjectMapper objectMapper;
     private final Clock clock;
+
+    private static final Set<String> ALLOWED_SORTS = Set.of(
+        "createdAt",
+        "totalAmount",
+        "orderedAt"
+    );
 
     @Transactional
     public void createOrder(CreateOrderCommand command) {
@@ -475,6 +485,24 @@ public class OrderService {
         Order order = orderRepository.findById(orderId);
 
         return OrderInfo.of(order);
+    }
+
+    public Page<OrderInfo> searchOrderList(Long userId, UUID productId, Pageable pageable) {
+
+        validateSort(pageable);
+
+        Page<Order> orderPage = orderRepository.findAll(userId, productId, pageable);
+
+        return orderPage.map(OrderInfo::of);
+    }
+
+    private Pageable validateSort(Pageable pageable) {
+        for (Sort.Order order : pageable.getSort()) {
+            if (!ALLOWED_SORTS.contains(order.getProperty())) {
+                throw new IllegalArgumentException("정렬 불가 필드: " + order.getProperty());
+            }
+        }
+        return pageable;
     }
 
     // TODO: 나중에 클래스로 분리할 예정

@@ -2,12 +2,12 @@ package com.smore.order.application.repository;
 
 import com.smore.order.domain.model.Order;
 import com.smore.order.domain.status.OrderStatus;
-import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface OrderRepository {
 
@@ -20,6 +20,8 @@ public interface OrderRepository {
     Optional<Order> findByIdIncludingDeleted(UUID orderId);
 
     Order save(Order order);
+
+    Page<Order> findAll(Long userId, UUID productId, Pageable pageable);
 
     int markComplete(UUID orderId);
 
