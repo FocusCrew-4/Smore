@@ -31,4 +31,10 @@ public interface ExternalOrderController {
         @PathVariable UUID orderId,
         @Valid @RequestBody ModifyOrderRequest request
     );
+
+    ResponseEntity<CommonResponse<?>> delete(
+        @RequestHeader("X-User-Id") Long requesterId,
+        @RequestHeader("X-User-Role") String role,
+        @PathVariable UUID orderId
+    );
 }
