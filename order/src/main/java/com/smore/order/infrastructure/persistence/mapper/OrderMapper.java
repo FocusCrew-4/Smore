@@ -55,7 +55,11 @@ public final class OrderMapper {
             entity.getCancelledAt(),
             entity.getAddress().getStreet(),
             entity.getAddress().getCity(),
-            entity.getAddress().getZipcode()
+            entity.getAddress().getZipcode(),
+            entity.getCreatedAt(),
+            entity.getUpdatedAt(),
+            entity.getDeletedAt(),
+            entity.getDeletedBy()
         );
     }
 }
