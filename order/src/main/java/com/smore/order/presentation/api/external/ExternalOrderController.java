@@ -7,10 +7,14 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface ExternalOrderController {
 
@@ -42,5 +46,14 @@ public interface ExternalOrderController {
         @RequestHeader("X-User-Id") Long requesterId,
         @RequestHeader("X-User-Role") String role,
         @PathVariable UUID orderId
+    );
+
+    ResponseEntity<CommonResponse<?>> searchOrderList(
+        @RequestHeader("X-User-Id") Long requesterId,
+        @RequestHeader("X-User-Role") String role,
+        @RequestParam(required = false) Long userId,
+        @RequestParam(required = false) UUID productId,
+        @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+        Pageable pageable
     );
 }
