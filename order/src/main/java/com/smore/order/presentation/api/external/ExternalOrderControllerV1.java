@@ -12,6 +12,7 @@ import com.smore.order.presentation.dto.DeleteOrderResponse;
 import com.smore.order.presentation.dto.IsOrderCreatedResponse;
 import com.smore.order.presentation.dto.ModifyOrderRequest;
 import com.smore.order.presentation.dto.ModifyOrderResponse;
+import com.smore.order.presentation.dto.OrderInfo;
 import com.smore.order.presentation.dto.RefundRequest;
 import com.smore.order.presentation.dto.RefundResponse;
 import jakarta.validation.Valid;
@@ -121,6 +122,25 @@ public class ExternalOrderControllerV1 implements ExternalOrderController {
         }
 
         DeleteOrderResponse response = orderService.delete(orderId, requesterId);
+
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @GetMapping("/api/v1/external/orders/{orderId}")
+    public ResponseEntity<CommonResponse<?>> searchOrderOne(
+        @RequestHeader("X-User-Id") Long requesterId,
+        @RequestHeader("X-User-Role") String role,
+        @PathVariable UUID orderId
+    ) {
+
+        OrderRole orderRole = from(role);
+
+        if (orderRole.isNotAny(CONSUMER, SELLER, ADMIN)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error("5403", "접근 권한이 없습니다."));
+        }
+
+        OrderInfo response = orderService.searchOrderOne(orderId);
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }

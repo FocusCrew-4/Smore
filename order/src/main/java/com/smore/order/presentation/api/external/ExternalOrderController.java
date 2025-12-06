@@ -37,4 +37,10 @@ public interface ExternalOrderController {
         @RequestHeader("X-User-Role") String role,
         @PathVariable UUID orderId
     );
+
+    ResponseEntity<CommonResponse<?>> searchOrderOne(
+        @RequestHeader("X-User-Id") Long requesterId,
+        @RequestHeader("X-User-Role") String role,
+        @PathVariable UUID orderId
+    );
 }
