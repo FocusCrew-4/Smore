@@ -33,6 +33,7 @@ import com.smore.order.infrastructure.persistence.exception.UpdateOrderFailExcep
 import com.smore.order.presentation.dto.DeleteOrderResponse;
 import com.smore.order.presentation.dto.IsOrderCreatedResponse;
 import com.smore.order.presentation.dto.ModifyOrderResponse;
+import com.smore.order.presentation.dto.OrderInfo;
 import com.smore.order.presentation.dto.RefundResponse;
 import jakarta.transaction.Transactional;
 import java.time.Clock;
@@ -467,6 +468,13 @@ public class OrderService {
             now,
             userId
         );
+    }
+
+    public OrderInfo searchOrderOne(UUID orderId) {
+
+        Order order = orderRepository.findById(orderId);
+
+        return OrderInfo.of(order);
     }
 
     // TODO: 나중에 클래스로 분리할 예정
