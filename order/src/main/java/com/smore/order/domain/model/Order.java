@@ -163,6 +163,14 @@ public class Order {
         return this.address.equals(address);
     }
 
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
+
+    public boolean isUndeletable() {
+        return this.orderStatus != OrderStatus.CONFIRMED;
+    }
+
     private static Integer calculateTotalPrice(Integer price, Integer quantity) {
         return price * quantity;
     }
