@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,7 +54,12 @@ public interface ExternalOrderController {
         @RequestHeader("X-User-Role") String role,
         @RequestParam(required = false) Long userId,
         @RequestParam(required = false) UUID productId,
-        @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+        @PageableDefault(size = 20)
+        @SortDefault.SortDefaults({
+            @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC),
+            @SortDefault(sort = "orderedAt", direction = Sort.Direction.DESC),
+            @SortDefault(sort = "totalAmount", direction = Sort.Direction.DESC)
+        })
         Pageable pageable
     );
 }
