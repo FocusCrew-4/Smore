@@ -1,8 +1,22 @@
 package com.smore.order.application.exception;
 
-public class RefundConflictException extends RuntimeException {
+import com.smore.common.error.ErrorCode;
+import com.smore.order.infrastructure.error.OrderException;
 
-    public RefundConflictException(String message) {
-        super(message);
+
+public class OrderIdMisMatchException extends OrderException {
+
+    public OrderIdMisMatchException(ErrorCode errorCode) {
+        super(errorCode);
+    }
+
+    @Override
+    public ErrorCode getErrorCode() {
+        return super.getErrorCode();
+    }
+
+    @Override
+    public String getTriggeredBy() {
+        return super.getTriggeredBy();
     }
 }
