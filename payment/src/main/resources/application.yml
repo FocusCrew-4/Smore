@@ -26,6 +26,36 @@ spring:
       uri: mongodb://mongo_user:mongo_pass@mongo:27017/my_mongo_db?authSource=admin
       auto-index-creation: true
 
+  kafka:
+    # 여러 브로커 (docker-compose에 매핑된 외부 포트)
+    bootstrap-servers: localhost:19092,localhost:29092,localhost:39092
+
+    # --- Consumer 설정 ---
+    consumer:
+      group-id: payment-service-group  # consumer group 명, 필요에 따라 바꿔
+      auto-offset-reset: earliest      # 브로커에 기록된 오프셋이 유효하지 않다면 earliest부터 읽기
+      enable-auto-commit: false        # 자동 커밋 끄기 (수동 커밋 사용)
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      # 트랜잭션 메시지일 때 commit된 것만 읽기
+      properties:
+        isolation.level: read_committed
+
+    listener:
+      # 수동 커밋(Acknowledgment) 가능하게 설정
+      ack-mode: MANUAL
+      concurrency: 3  # 소비자 스레드 수, 필요에 따라 조정
+
+    # --- Producer 설정 ---
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all         # 리더 + 모든 ISR이 쓰기에 성공할 때까지 기다림
+      retries: 10       # 실패 시 재시도 수
+      # (선택) idempotence 활성화: 중복 방지용
+      properties:
+        enable.idempotence: true
+
 server:
   port: 4400
 
