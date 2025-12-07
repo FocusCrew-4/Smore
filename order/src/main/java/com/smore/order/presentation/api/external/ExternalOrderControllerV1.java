@@ -17,6 +17,7 @@ import com.smore.order.presentation.dto.RefundRequest;
 import com.smore.order.presentation.dto.RefundResponse;
 import jakarta.validation.Valid;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -45,8 +48,8 @@ public class ExternalOrderControllerV1 implements ExternalOrderController {
 
     @GetMapping("/api/v1/external/orders/by-token/{allocationToken}")
     public ResponseEntity<CommonResponse<?>> isOrderCreated(
-        @RequestHeader("X-User-Id") Long requesterId,
-        @RequestHeader("X-User-Role") String role,
+        @NotNull @RequestHeader("X-User-Id") Long requesterId,
+        @NotBlank @RequestHeader("X-User-Role") String role,
         @PathVariable UUID allocationToken
     ) {
         OrderRole orderRole = from(role);
@@ -63,8 +66,8 @@ public class ExternalOrderControllerV1 implements ExternalOrderController {
 
     @PostMapping("/api/v1/external/orders/refund")
     public ResponseEntity<CommonResponse<?>> refundRequest(
-        @RequestHeader("X-User-Id") Long requesterId,
-        @RequestHeader("X-User-Role") String role,
+        @NotNull @RequestHeader("X-User-Id") Long requesterId,
+        @NotBlank @RequestHeader("X-User-Role") String role,
         @Valid @RequestBody RefundRequest request) {
 
         OrderRole orderRole = from(role);
@@ -89,8 +92,8 @@ public class ExternalOrderControllerV1 implements ExternalOrderController {
 
     @PatchMapping("/api/v1/external/orders/{orderId}")
     public ResponseEntity<CommonResponse<?>> modify(
-        @RequestHeader("X-User-Id") Long requesterId,
-        @RequestHeader("X-User-Role") String role,
+        @NotNull @RequestHeader("X-User-Id") Long requesterId,
+        @NotBlank @RequestHeader("X-User-Role") String role,
         @PathVariable UUID orderId,
         @Valid @RequestBody ModifyOrderRequest request
     ) {
@@ -117,8 +120,8 @@ public class ExternalOrderControllerV1 implements ExternalOrderController {
 
     @DeleteMapping("/api/v1/external/orders/{orderId}")
     public ResponseEntity<CommonResponse<?>> delete(
-        @RequestHeader("X-User-Id") Long requesterId,
-        @RequestHeader("X-User-Role") String role,
+        @NotNull @RequestHeader("X-User-Id") Long requesterId,
+        @NotBlank @RequestHeader("X-User-Role") String role,
         @PathVariable UUID orderId
     ) {
 
@@ -136,8 +139,8 @@ public class ExternalOrderControllerV1 implements ExternalOrderController {
 
     @GetMapping("/api/v1/external/orders/{orderId}")
     public ResponseEntity<CommonResponse<?>> searchOrderOne(
-        @RequestHeader("X-User-Id") Long requesterId,
-        @RequestHeader("X-User-Role") String role,
+        @NotNull @RequestHeader("X-User-Id") Long requesterId,
+        @NotBlank @RequestHeader("X-User-Role") String role,
         @PathVariable UUID orderId
     ) {
 
@@ -155,8 +158,8 @@ public class ExternalOrderControllerV1 implements ExternalOrderController {
 
     @GetMapping("/api/v1/external/orders")
     public ResponseEntity<CommonResponse<?>> searchOrderList(
-        @RequestHeader("X-User-Id") Long requesterId,
-        @RequestHeader("X-User-Role") String role,
+        @NotNull @RequestHeader("X-User-Id") Long requesterId,
+        @NotBlank @RequestHeader("X-User-Role") String role,
         @RequestParam(required = false) Long userId,
         @RequestParam(required = false) UUID productId,
         @PageableDefault(size = 20)
