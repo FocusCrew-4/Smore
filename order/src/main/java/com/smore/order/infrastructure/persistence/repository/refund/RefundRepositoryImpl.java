@@ -3,6 +3,7 @@ package com.smore.order.infrastructure.persistence.repository.refund;
 import com.smore.order.application.repository.RefundRepository;
 import com.smore.order.domain.model.Refund;
 import com.smore.order.domain.status.RefundStatus;
+import com.smore.order.infrastructure.error.OrderErrorCode;
 import com.smore.order.infrastructure.persistence.entity.order.RefundEntity;
 import com.smore.order.infrastructure.persistence.exception.NotFoundRefundException;
 import com.smore.order.infrastructure.persistence.mapper.RefundMapper;
@@ -35,7 +36,7 @@ public class RefundRepositoryImpl implements RefundRepository {
     public Refund findById(UUID refundId) {
 
         RefundEntity entity = refundJpaRepository.findById(refundId).orElseThrow(
-            () -> new NotFoundRefundException("환불 정보를 찾을 수 없습니다.")
+            () -> new NotFoundRefundException(OrderErrorCode.NOT_FOUND_REFUND)
         );
         return RefundMapper.toDomain(entity);
     }

@@ -92,7 +92,7 @@ public class EventListener {
 
             ack.acknowledge();
         } catch (Exception e) {
-            // TODO: DLQ/알람 처리 등 재시도 한계 초과 시 후속 조치 필요
+            // TODO: DLQ/백오프 처리 추가하여 동일 메시지 무한 재시도 방지
             log.error("refundCompleted 처리 실패 : {}", message, e);
         }
     }
@@ -118,6 +118,7 @@ public class EventListener {
 
             ack.acknowledge();
         } catch (Exception e) {
+            // TODO: DLQ/백오프 처리 추가하여 동일 메시지 무한 재시도 방지
             log.error("refundFailed 처리 실패 : {}", message, e);
         }
     }
