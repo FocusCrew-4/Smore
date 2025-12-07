@@ -1,10 +1,12 @@
+server:
+  port: 5500
+
 spring:
   application:
     name: order-service
 
-
   config:
-    import: ""           # configserver import 완전 해제
+    import: ""
   cloud:
     config:
       enabled: false
@@ -12,14 +14,9 @@ spring:
       enabled: false
 
   kafka:
-    bootstrap-servers: localhost:19092,localhost:29092,localhost:39092
-
-    # 기본 직렬화/역직렬화 설정 (문자열)
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-
-      # 신뢰성 관련 (acks=all + 재시도 + idempotence)
       acks: all
       retries: 10
       properties:
@@ -28,14 +25,8 @@ spring:
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
-      # 컨슈머 그룹 ID (서비스 단위로 나눠서)
       group-id: order-service-consumer-group
-
-      # 처음 시작 시 어디서부터 읽을지
-      auto-offset-reset: earliest   # 필요에 따라 latest 로 변경 가능
-
-      # 자동 커밋 끄고 수동 커밋으로 가는 것도 실무에서 많이 씀
+      auto-offset-reset: earliest
       enable-auto-commit: false
 
 topic:
@@ -58,7 +49,6 @@ consumer:
   group:
     payment: payment-consumer-group
     bid: bid-consumer-group
-
 
 retry:
   count:
