@@ -21,8 +21,9 @@ public class ProductTopicListener {
     private final AuctionCreate auctionCreate;
     private final AuctionAppMapper appMapper;
 
+    // TODO: 실패시 처리로직 등 추가구현 필요
     @KafkaListener(
-        topics = "${product.topic.auction-started.v1}"
+        topics = "${product.topic.auction-pending-start.v1}"
     )
     public void productAuctionStartedV1(String event, Acknowledgment ack) {
         try {

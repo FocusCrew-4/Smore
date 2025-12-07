@@ -76,5 +76,5 @@ eureka:
 
 product:
   topic:
-    auction-started:
-      v1: product.auctionStarted.v1
+    auction-pending-start:
+      v1: product.auctionPendingStart.v1
