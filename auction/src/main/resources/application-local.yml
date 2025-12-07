@@ -7,7 +7,7 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:postgresql://localhost:5432/member
+    url: jdbc:postgresql://localhost:5432/auction
     username: root
     password: root
     driver-class-name: org.postgresql.Driver

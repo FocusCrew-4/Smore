@@ -26,8 +26,13 @@ public class ProductTopicListener {
     )
     public void productAuctionStartedV1(String event, Acknowledgment ack) {
         try {
+
+            log.info("Received event {}", event);
+
             var auctionStartedV1
                 = objectMapper.readValue(event, AuctionStartedV1.class);
+
+            log.info("AuctionStartedV1 received {}", auctionStartedV1);
 
             auctionCreate.create(appMapper.toCommand(auctionStartedV1));
 

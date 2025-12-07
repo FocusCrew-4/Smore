@@ -11,7 +11,7 @@ import lombok.Getter;
 public class AuctionBidderRank {
 
     private final UUID id;
-    private final UUID auctionId;
+    private final Auction auction;
     private Bidder bidder;
 
     private LocalDateTime createdAt;

@@ -12,7 +12,6 @@ public interface AuctionBidderRankJpaMapper {
 
     AuctionBidderRankJpa toEntity(AuctionBidderRank auctionBidderRank);
 
-    @Mapping(target = "auctionId", source = "auction.id")
     AuctionBidderRank toDomain(AuctionBidderRankJpa bidderRankJpa);
 
     BidderEmbeddable toEntity(Bidder bidder);
