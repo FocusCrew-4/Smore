@@ -1,14 +1,13 @@
 package com.smore.payment.feepolicy.domain.model;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
 import java.util.UUID;
 
 public class FeePolicy {
 
     private final UUID id;
     private final TargetType targetType;
-    private final UUID targetKey; // 카테고리ID, 판매자ID
+    private final TargetKey targetKey; // 카테고리ID, 판매자ID
     private final FeeType feeType;
     private final FeeRate rate;
     private final FixedAmount fixedAmount;
@@ -17,7 +16,7 @@ public class FeePolicy {
 
     protected FeePolicy(
         TargetType targetType,
-        UUID targetKey,
+        TargetKey targetKey,
         FeeType feeType,
         FeeRate rate,
         FixedAmount fixedAmount
@@ -36,7 +35,7 @@ public class FeePolicy {
 
     public static FeePolicy create(
             TargetType targetType,
-            UUID targetKey,
+            TargetKey targetKey,
             FeeType feeType,
             FeeRate rate,
             FixedAmount fixedAmount
@@ -47,7 +46,7 @@ public class FeePolicy {
     protected FeePolicy(
             UUID id,
             TargetType targetType,
-            UUID targetKey,
+            TargetKey targetKey,
             FeeType feeType,
             FeeRate rate,
             FixedAmount fixedAmount,
@@ -65,7 +64,7 @@ public class FeePolicy {
     public static FeePolicy reconstruct(
             UUID id,
             TargetType targetType,
-            UUID targetKey,
+            TargetKey targetKey,
             FeeType feeType,
             FeeRate rate,
             FixedAmount fixedAmount,
@@ -79,16 +78,16 @@ public class FeePolicy {
 
     public UUID getId() { return id; }
     public TargetType getTargetType() { return targetType; }
-    public UUID getTargetKey() { return targetKey; }
+    public TargetKey getTargetKey() { return targetKey; }
     public FeeType getFeeType() { return feeType; }
     public FeeRate getRate() { return rate; }
     public FixedAmount getFixedAmount() { return fixedAmount; }
     public boolean isActive() { return active; }
 
-    private void validate(FeeType feeType, FeeRate rate, FixedAmount fixedAmount) {
+    private void validate(FeeType feeType, FeeRate feeRate, FixedAmount fixedAmount) {
         switch (feeType) {
             case RATE -> {
-                if (rate == null)
+                if (feeRate == null)
                     throw new IllegalArgumentException("정률 수수료(rate)가 반드시 필요합니다.");
             }
             case FIXED -> {
@@ -96,18 +95,10 @@ public class FeePolicy {
                     throw new IllegalArgumentException("정액 수수료(fixedAmount)가 반드시 필요합니다.");
             }
             case MIXED -> {
-                if (rate == null || fixedAmount == null)
+                if (feeRate == null || fixedAmount == null)
                     throw new IllegalArgumentException("혼합 수수료는 정률(rate)과 정액(fixed)이 모두 필요합니다.");
             }
         }
-    }
-
-    public BigDecimal calculateFee(BigDecimal amount) {
-        return switch (feeType) {
-            case RATE -> rate.apply(amount);
-            case FIXED -> fixedAmount.value();
-            case MIXED -> rate.apply(amount).add(fixedAmount.value());
-        };
     }
 
     // 정책 활성화

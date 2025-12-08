@@ -1,3 +1,4 @@
 CREATE DATABASE member;
 CREATE DATABASE d_order;
+CREATE DATABASE auction;
 

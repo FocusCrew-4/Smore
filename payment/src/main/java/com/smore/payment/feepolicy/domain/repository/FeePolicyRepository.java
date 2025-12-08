@@ -1,6 +1,7 @@
 package com.smore.payment.feepolicy.domain.repository;
 
 import com.smore.payment.feepolicy.domain.model.FeePolicy;
+import com.smore.payment.feepolicy.domain.model.TargetKey;
 import com.smore.payment.feepolicy.domain.model.TargetType;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +16,5 @@ public interface FeePolicyRepository {
 
     void delete(FeePolicy feePolicy, UUID userId);
 
-    Optional<FeePolicy> findByTargetTypeAndTargetKey(TargetType targetType, UUID uuid);
+    Optional<FeePolicy> findByTargetTypeAndTargetKey(TargetType targetType, TargetKey targetKey);
 }
