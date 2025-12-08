@@ -35,7 +35,7 @@ public class AuctionJpa {
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "id", column = @Column(name = "product_id")),
-        @AttributeOverride(name = "price", column = @Column(name = "product_price"))
+        @AttributeOverride(name = "price", column = @Column(name = "product_price", precision = 19, scale = 2))
     })
     private ProductEmbeddable product;
 
