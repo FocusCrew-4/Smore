@@ -7,7 +7,10 @@ import com.smore.product.domain.repository.ProductRepository;
 import com.smore.product.presentation.dto.request.UpdateProductStatusRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -15,10 +18,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-@SpringBootTest(properties = {
-        "spring.cloud.config.enabled=false",
-        "eureka.client.enabled=false"
-})
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+
+@SpringBootTest
 class ProductServiceConcurrencyTest {
 
     @Autowired
