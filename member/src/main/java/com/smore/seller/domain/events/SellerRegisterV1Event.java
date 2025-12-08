@@ -11,7 +11,7 @@ import lombok.Getter;
 public class SellerRegisterV1Event {
     Long memberId;
     UUID idempotencyKey;
-    LocalDateTime dateTime;
+    LocalDateTime createdAt;
 
     public static SellerRegisterV1Event create(
         Long memberId,
