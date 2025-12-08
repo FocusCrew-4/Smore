@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -23,8 +24,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "p_seller")
+@Table(
+    name = "p_seller",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "uk_p_seller_member_id",
+            columnNames = {"member_id"}
+        )
+    })
 public class SellerJpa {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
