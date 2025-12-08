@@ -1,5 +1,6 @@
 package com.smore.payment.payment.presentation;
 
+import com.smore.payment.payment.application.PaymentService;
 import com.smore.payment.payment.domain.model.Payment;
 import com.smore.payment.payment.presentation.dto.request.ApprovePaymentRequestDto;
 import com.smore.payment.payment.presentation.dto.response.ApprovePaymentResponseDto;

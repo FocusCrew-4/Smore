@@ -10,6 +10,7 @@ public class Payment {
     private final UUID id;
     private final UUID idempotencyKey;
     private final Long userId;
+    private final UUID orderId;  // ← 추가됨
     private final BigDecimal amount;
     private final PaymentMethod paymentMethod;
     private PaymentStatus status;
@@ -22,10 +23,9 @@ public class Payment {
     private boolean interestFree;
     private String cardType;
     private String ownerType;
-    private String cardCompanyCode;
     private String acquirerCode;
 
-    // 실패 / 취소 / 환불
+    // 실패 / 취소 / 환불 정보
     private PaymentFailure failure;
     private PaymentCancel cancel;
     private PaymentRefund refund;
@@ -40,6 +40,7 @@ public class Payment {
     protected Payment(
             UUID idempotencyKey,
             Long userId,
+            UUID orderId,
             BigDecimal amount,
             PaymentMethod paymentMethod,
             PaymentStatus status
@@ -47,16 +48,57 @@ public class Payment {
         this.id = UUID.randomUUID();
         this.idempotencyKey = idempotencyKey;
         this.userId = userId;
+        this.orderId = orderId;
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.status = status;
     }
+    public static Payment createFinalPayment(
+            UUID idempotencyKey,
+            Long userId,
+            UUID orderId,
+            BigDecimal amount,
+            PaymentMethod paymentMethod,
+            PgApproveResult result)
+    {
+        Payment payment = new Payment(
+                idempotencyKey,
+                userId,
+                orderId,
+                amount,
+                paymentMethod,
+                PaymentStatus.APPROVED
+        );
 
+        payment.approvedAt = result.approvedAt();
 
-    public static Payment create(UUID idempotencyKey, Long userId, BigDecimal amount, PaymentMethod paymentMethod) {
+        payment.cardCompany = result.cardCompany();
+        payment.cardNumber = result.cardNumber();
+        payment.installmentMonths = result.installmentMonths();
+        payment.interestFree = result.interestFree();
+        payment.cardType = result.cardType();
+        payment.ownerType = result.ownerType();
+        payment.acquirerCode = result.acquirerCode();
+
+        payment.pgProvider = result.pgProvider();
+        payment.pgOrderId = result.pgOrderId();
+        payment.pgTransactionKey = result.pgTransactionKey();
+        payment.pgStatus = result.pgStatus();
+        payment.pgMessage = "Success";
+
+        return payment;
+    }
+    public static Payment create(
+            UUID idempotencyKey,
+            Long userId,
+            UUID orderId,
+            BigDecimal amount,
+            PaymentMethod paymentMethod
+    ) {
         return new Payment(
                 idempotencyKey,
                 userId,
+                orderId,
                 amount,
                 paymentMethod,
                 PaymentStatus.REQUESTED
@@ -67,6 +109,7 @@ public class Payment {
             UUID id,
             UUID idempotencyKey,
             Long userId,
+            UUID orderId,
             BigDecimal amount,
             PaymentMethod paymentMethod,
             PaymentStatus status
@@ -74,6 +117,7 @@ public class Payment {
         this.id = id;
         this.idempotencyKey = idempotencyKey;
         this.userId = userId;
+        this.orderId = orderId;
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.status = status;
@@ -83,6 +127,7 @@ public class Payment {
             UUID id,
             UUID idempotencyKey,
             Long userId,
+            UUID orderId,
             BigDecimal amount,
             PaymentMethod paymentMethod,
             PaymentStatus status,
@@ -93,7 +138,6 @@ public class Payment {
             boolean interestFree,
             String cardType,
             String ownerType,
-            String cardCompanyCode,
             String acquirerCode,
             PaymentFailure failure,
             PaymentCancel cancel,
@@ -104,7 +148,8 @@ public class Payment {
             String pgStatus,
             String pgMessage
     ) {
-        Payment payment = new Payment(id, idempotencyKey, userId, amount, paymentMethod, status);
+        Payment payment = new Payment(id, idempotencyKey, userId, orderId, amount, paymentMethod, status);
+
         payment.approvedAt = approvedAt;
         payment.cardCompany = cardCompany;
         payment.cardNumber = cardNumber;
@@ -112,7 +157,6 @@ public class Payment {
         payment.interestFree = interestFree;
         payment.cardType = cardType;
         payment.ownerType = ownerType;
-        payment.cardCompanyCode = cardCompanyCode;
         payment.acquirerCode = acquirerCode;
 
         payment.failure = failure;
@@ -128,95 +172,32 @@ public class Payment {
         return payment;
     }
 
-    public UUID getId() {
-        return id;
-    }
 
-    public UUID getIdempotencyKey() {
-        return idempotencyKey;
-    }
 
-    public Long getUserId() {
-        return userId;
-    }
+    public UUID getId() { return id; }
+    public UUID getOrderId() { return orderId; }
+    public UUID getIdempotencyKey() { return idempotencyKey; }
+    public Long getUserId() { return userId; }
+    public BigDecimal getAmount() { return amount; }
+    public PaymentMethod getPaymentMethod() { return paymentMethod; }
+    public PaymentStatus getStatus() { return status; }
+    public LocalDateTime getApprovedAt() { return approvedAt; }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
+    public String getCardCompany() { return cardCompany; }
+    public String getCardNumber() { return cardNumber; }
+    public Integer getInstallmentMonths() { return installmentMonths; }
+    public boolean isInterestFree() { return interestFree; }
+    public String getCardType() { return cardType; }
+    public String getOwnerType() { return ownerType; }
+    public String getAcquirerCode() { return acquirerCode; }
 
-    public PaymentMethod getPaymentMethod() {
-        return paymentMethod;
-    }
+    public PaymentFailure getFailure() { return failure; }
+    public PaymentCancel getCancel() { return cancel; }
+    public PaymentRefund getRefund() { return refund; }
 
-    public PaymentStatus getStatus() {
-        return status;
-    }
-
-    public LocalDateTime getApprovedAt() {
-        return approvedAt;
-    }
-
-    public String getCardCompany() {
-        return cardCompany;
-    }
-
-    public String getCardNumber() {
-        return cardNumber;
-    }
-
-    public Integer getInstallmentMonths() {
-        return installmentMonths;
-    }
-
-    public boolean isInterestFree() {
-        return interestFree;
-    }
-
-    public String getCardType() {
-        return cardType;
-    }
-
-    public String getOwnerType() {
-        return ownerType;
-    }
-
-    public String getCardCompanyCode() {
-        return cardCompanyCode;
-    }
-
-    public String getAcquirerCode() {
-        return acquirerCode;
-    }
-
-    public PaymentFailure getFailure() {
-        return failure;
-    }
-
-    public PaymentCancel getCancel() {
-        return cancel;
-    }
-
-    public PaymentRefund getRefund() {
-        return refund;
-    }
-
-    public String getPgProvider() {
-        return pgProvider;
-    }
-
-    public String getPgOrderId() {
-        return pgOrderId;
-    }
-
-    public String getPgTransactionKey() {
-        return pgTransactionKey;
-    }
-
-    public String getPgStatus() {
-        return pgStatus;
-    }
-
-    public String getPgMessage() {
-        return pgMessage;
-    }
+    public String getPgProvider() { return pgProvider; }
+    public String getPgOrderId() { return pgOrderId; }
+    public String getPgTransactionKey() { return pgTransactionKey; }
+    public String getPgStatus() { return pgStatus; }
+    public String getPgMessage() { return pgMessage; }
 }

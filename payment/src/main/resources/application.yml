@@ -25,6 +25,9 @@ spring:
     mongodb:
       uri: mongodb://mongo_user:mongo_pass@mongo:27017/my_mongo_db?authSource=admin
       auto-index-creation: true
+    redis:
+      host: redis-stack
+      port: 6379
 
   kafka:
     # 여러 브로커 (docker-compose에 매핑된 외부 포트)

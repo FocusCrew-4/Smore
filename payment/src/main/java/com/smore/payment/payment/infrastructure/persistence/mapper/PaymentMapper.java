@@ -14,13 +14,15 @@ import org.springframework.stereotype.Component;
 public class PaymentMapper {
 
     public PaymentEntity toEntity(Payment payment) {
-        PaymentFailureJpa paymentFailureJpa = (payment.getFailure() == null)
+
+        PaymentFailureJpa failureJpa = (payment.getFailure() == null)
                 ? null
                 : PaymentFailureJpa.of(
                 payment.getFailure().reason(),
                 payment.getFailure().failedAt()
         );
-        PaymentCancelJpa paymentCancelJpa = (payment.getCancel() == null)
+
+        PaymentCancelJpa cancelJpa = (payment.getCancel() == null)
                 ? null
                 : PaymentCancelJpa.of(
                 payment.getCancel().reason(),
@@ -28,32 +30,37 @@ public class PaymentMapper {
                 payment.getCancel().cancelledAt(),
                 payment.getCancel().pgCancelTransactionId()
         );
-        PaymentRefundJpa paymentRefundJpa = (payment.getRefund() == null)
+
+        PaymentRefundJpa refundJpa = (payment.getRefund() == null)
                 ? null
                 : PaymentRefundJpa.of(
                 payment.getRefund().reason(),
                 payment.getRefund().refundAmount(),
                 payment.getRefund().refundedAt()
         );
+
         return new PaymentEntity(
                 payment.getId(),
                 payment.getIdempotencyKey(),
                 payment.getUserId(),
+                payment.getOrderId(),
                 payment.getAmount(),
                 payment.getPaymentMethod(),
                 payment.getStatus(),
                 payment.getApprovedAt(),
+
                 payment.getCardCompany(),
                 payment.getCardNumber(),
                 payment.getInstallmentMonths(),
                 payment.isInterestFree(),
                 payment.getCardType(),
                 payment.getOwnerType(),
-                payment.getCardCompanyCode(),
                 payment.getAcquirerCode(),
-                paymentFailureJpa,
-                paymentCancelJpa,
-                paymentRefundJpa,
+
+                failureJpa,
+                cancelJpa,
+                refundJpa,
+
                 payment.getPgProvider(),
                 payment.getPgOrderId(),
                 payment.getPgTransactionKey(),
@@ -61,53 +68,60 @@ public class PaymentMapper {
                 payment.getPgMessage()
         );
     }
+    public Payment toDomainEntity(PaymentEntity e) {
 
-    public Payment toDomainEntity(PaymentEntity paymentEntity) {
-        PaymentFailure paymentFailure = (paymentEntity.getFailure() == null)
+        PaymentFailure failure = (e.getFailure() == null)
                 ? null
                 : PaymentFailure.of(
-                paymentEntity.getFailure().reason(),
-                paymentEntity.getFailure().failedAt()
+                e.getFailure().reason(),
+                e.getFailure().failedAt()
         );
-        PaymentCancel paymentCancel =(paymentEntity.getCancel() == null)
+
+        PaymentCancel cancel = (e.getCancel() == null)
                 ? null
                 : PaymentCancel.of(
-                paymentEntity.getCancel().reason(),
-                paymentEntity.getCancel().cancelAmount(),
-                paymentEntity.getCancel().cancelledAt(),
-                paymentEntity.getCancel().pgCancelTransactionId()
+                e.getCancel().reason(),
+                e.getCancel().cancelAmount(),
+                e.getCancel().cancelledAt(),
+                e.getCancel().pgCancelTransactionId()
         );
-        PaymentRefund paymentRefund = (paymentEntity.getRefund() == null)
+
+        PaymentRefund refund = (e.getRefund() == null)
                 ? null
                 : PaymentRefund.of(
-                paymentEntity.getRefund().reason(),
-                paymentEntity.getRefund().refundAmount(),
-                paymentEntity.getRefund().refundedAt()
+                e.getRefund().reason(),
+                e.getRefund().refundAmount(),
+                e.getRefund().refundedAt()
         );
+
         return Payment.reconstruct(
-                paymentEntity.getId(),
-                paymentEntity.getIdempotencyKey(),
-                paymentEntity.getUserId(),
-                paymentEntity.getAmount(),
-                paymentEntity.getPaymentMethod(),
-                paymentEntity.getStatus(),
-                paymentEntity.getApprovedAt(),
-                paymentEntity.getCardCompany(),
-                paymentEntity.getCardNumber(),
-                paymentEntity.getInstallmentMonths(),
-                paymentEntity.isInterestFree(),
-                paymentEntity.getCardType(),
-                paymentEntity.getOwnerType(),
-                paymentEntity.getCardCompanyCode(),
-                paymentEntity.getAcquirerCode(),
-                paymentFailure,
-                paymentCancel,
-                paymentRefund,
-                paymentEntity.getPgProvider(),
-                paymentEntity.getPgOrderId(),
-                paymentEntity.getPgTransactionKey(),
-                paymentEntity.getPgStatus(),
-                paymentEntity.getPgMessage()
+                e.getId(),
+                e.getIdempotencyKey(),
+                e.getUserId(),
+                e.getOrderId(),
+                e.getAmount(),
+                e.getPaymentMethod(),
+                e.getStatus(),
+                e.getApprovedAt(),
+
+                e.getCardCompany(),
+                e.getCardNumber(),
+                e.getInstallmentMonths(),
+                e.isInterestFree(),
+                e.getCardType(),
+                e.getOwnerType(),
+                e.getAcquirerCode(),
+
+                failure,
+                cancel,
+                refund,
+
+                e.getPgProvider(),
+                e.getPgOrderId(),
+                e.getPgTransactionKey(),
+                e.getPgStatus(),
+                e.getPgMessage()
         );
     }
 }
+

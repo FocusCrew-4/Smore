@@ -29,6 +29,9 @@ public class PaymentEntity {
     @Column(name = "user_id", nullable = false, updatable = false)
     private Long userId;
 
+    @Column(name = "order_id", nullable = false, updatable = false)
+    private UUID orderId;
+
     @Column(name = "amount", nullable = false, updatable = false)
     private BigDecimal amount;
 
@@ -60,9 +63,6 @@ public class PaymentEntity {
 
     @Column(name = "owner_type")
     private String ownerType;
-
-    @Column(name = "card_company_code")
-    private String cardCompanyCode;
 
     @Column(name = "acquirer_code")
     private String acquirerCode;
@@ -110,6 +110,7 @@ public class PaymentEntity {
             UUID id,
             UUID idempotencyKey,
             Long userId,
+            UUID orderId,
             BigDecimal amount,
             PaymentMethod paymentMethod,
             PaymentStatus status,
@@ -120,7 +121,6 @@ public class PaymentEntity {
             boolean interestFree,
             String cardType,
             String ownerType,
-            String cardCompanyCode,
             String acquirerCode,
             PaymentFailureJpa failure,
             PaymentCancelJpa cancel,
@@ -134,6 +134,7 @@ public class PaymentEntity {
         this.id = id;
         this.idempotencyKey = idempotencyKey;
         this.userId = userId;
+        this.orderId = orderId;
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.status = status;
@@ -144,7 +145,6 @@ public class PaymentEntity {
         this.interestFree = interestFree;
         this.cardType = cardType;
         this.ownerType = ownerType;
-        this.cardCompanyCode = cardCompanyCode;
         this.acquirerCode = acquirerCode;
         this.failure = failure;
         this.cancel = cancel;
