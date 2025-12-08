@@ -2,6 +2,7 @@ package com.smore.order.application.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smore.order.application.dto.CompletedPaymentCommand;
 import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
@@ -110,7 +111,10 @@ public class OrderService {
     }
 
     @Transactional
-    public ServiceResult completeOrder(UUID orderId) {
+    public ServiceResult completeOrder(CompletedPaymentCommand command) {
+
+        UUID orderId = command.getOrderId();
+        String paymentId = command.getPaymentId();
 
         Order order = orderRepository.findById(orderId);
 
@@ -119,7 +123,7 @@ public class OrderService {
             return ServiceResult.SUCCESS;
         }
 
-        int updated = orderRepository.markComplete(orderId);
+        int updated = orderRepository.completePayment(orderId, paymentId);
 
         if (updated == 0) {
             log.error("주문 완료 상태로 변경하지 못했습니다. orderId = {}, methodName = {}", orderId, "completeOrder");
@@ -205,6 +209,7 @@ public class OrderService {
             command.getUserId(),
             order.getProduct().productId(),
             order.getProduct().productPrice(),
+            order.getPaymentId(),
             command.getRefundQuantity(),
             command.getIdempotencyKey(),
             command.getReason(),
@@ -217,8 +222,10 @@ public class OrderService {
             savedRefund.getOrderId(),
             order.getUserId(),
             savedRefund.getId(),
+            savedRefund.getPaymentId(),
             savedRefund.getRefundAmount(),
             savedRefund.getIdempotencyKey(),
+            command.getReason(),
             LocalDateTime.now(clock)
         );
 
@@ -335,6 +342,7 @@ public class OrderService {
         int updated = refundRepository.fail(
             refund.getId(),
             RefundStatus.FAILED,
+            command.getMessage(),
             LocalDateTime.now(clock)
         );
 
