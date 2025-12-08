@@ -93,7 +93,7 @@ public class ProductService {
     @Transactional
     public ProductResponse updateProductStatus(UUID productId, UpdateProductStatusRequest req) {
 
-        Product product = productRepository.findById(productId)
+        Product product = productRepository.findByIdForUpdate(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
         if (req.getStatus() == null) {
