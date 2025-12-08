@@ -2,6 +2,7 @@ package com.smore.seller.domain.enums;
 
 public enum SellerStatus {
     PENDING("승인 대기"),
+    REJECTED("승인 거절"),
     ACTIVE("활성 판매자"),
     INACTIVE("비활성 판매자"),
     DELETED("삭제된 판매자"),

@@ -7,7 +7,7 @@ import com.smore.member.domain.enums.Role;
 import com.smore.member.domain.model.Member;
 import com.smore.member.domain.repository.MemberRepository;
 import com.smore.member.domain.vo.Credential;
-import com.smore.member.infrastructure.config.TestContainerConfig;
+import com.smore.config.TestContainerConfig;
 import com.smore.member.infrastructure.persistence.config.QuerydslConfig;
 import com.smore.member.infrastructure.persistence.jpa.mapper.MemberJpaMapperImpl;
 import java.time.LocalDateTime;
