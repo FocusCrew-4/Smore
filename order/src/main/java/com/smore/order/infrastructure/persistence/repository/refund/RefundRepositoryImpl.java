@@ -60,7 +60,7 @@ public class RefundRepositoryImpl implements RefundRepository {
     }
 
     @Override
-    public int fail(UUID id, RefundStatus refundStatus, LocalDateTime now) {
-        return refundJpaRepository.fail(id, refundStatus, now);
+    public int fail(UUID id, RefundStatus refundStatus, String message, LocalDateTime now) {
+        return refundJpaRepository.fail(id, refundStatus, message, now);
     }
 }
