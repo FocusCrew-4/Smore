@@ -139,6 +139,18 @@ public class Order {
         return OrderStatus.PARTIALLY_REFUNDED;
     }
 
+    public void changeAddressInfo(String street, String city, String zipcode) {
+        Address address = new Address(street, city, zipcode);
+    }
+
+    public boolean notEqualUserId(Long userId) {
+        return this.userId != userId;
+    }
+
+    public boolean equalAddress(Address address) {
+        return this.address.equals(address);
+    }
+
     private static Integer calculateTotalPrice(Integer price, Integer quantity) {
         return price * quantity;
     }

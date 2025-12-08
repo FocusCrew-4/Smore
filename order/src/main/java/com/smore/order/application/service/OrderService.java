@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
+import com.smore.order.application.dto.ModifyOrderCommand;
 import com.smore.order.application.dto.RefundCommand;
 import com.smore.order.application.exception.RefundConflictException;
 import com.smore.order.application.exception.RefundReservationConflictException;
@@ -25,8 +26,11 @@ import com.smore.order.domain.status.EventType;
 import com.smore.order.domain.status.OrderStatus;
 import com.smore.order.domain.status.RefundStatus;
 import com.smore.order.domain.status.ServiceResult;
+import com.smore.order.domain.vo.Address;
 import com.smore.order.infrastructure.persistence.exception.CompleteOrderFailException;
+import com.smore.order.infrastructure.persistence.exception.UpdateOrderFailException;
 import com.smore.order.presentation.dto.IsOrderCreatedResponse;
+import com.smore.order.presentation.dto.ModifyOrderResponse;
 import com.smore.order.presentation.dto.RefundResponse;
 import jakarta.transaction.Transactional;
 import java.time.Clock;
@@ -360,6 +364,56 @@ public class OrderService {
         );
 
         outboxRepository.save(outbox);
+    }
+
+    @Transactional
+    public ModifyOrderResponse modify(ModifyOrderCommand command) {
+
+        Order order = orderRepository.findById(command.getOrderId());
+
+        if (order.notEqualUserId(command.getUserId())) {
+            return ModifyOrderResponse.fail(
+                command.getOrderId(),
+                "주문자와 주문 수정자가 일치하지 않습니다."
+            );
+        }
+
+        if (order.equalAddress(command.getAddress())) {
+            return ModifyOrderResponse.success(
+                order.getId(),
+                order.getAddress().street(),
+                order.getAddress().city(),
+                order.getAddress().zipcode(),
+                order.getAddress().street(),
+                order.getAddress().city(),
+                order.getAddress().zipcode()
+            );
+        }
+
+        Address beforeAddress = order.getAddress();
+
+        order.changeAddressInfo(
+            command.getAddress().street(),
+            command.getAddress().city(),
+            command.getAddress().zipcode()
+        );
+
+        int updated = orderRepository.update(order);
+
+        if (updated == 0) {
+            log.error("주문 정보 수정 실패 orderid : {}, method : {} ", command.getOrderId(), "modify()");
+            throw new UpdateOrderFailException("주문 정보 수정 실패");
+        }
+
+        return ModifyOrderResponse.success(
+            order.getId(),
+            beforeAddress.street(),
+            beforeAddress.city(),
+            beforeAddress.zipcode(),
+            command.getAddress().street(),
+            command.getAddress().city(),
+            command.getAddress().zipcode()
+        );
     }
 
     // TODO: 나중에 클래스로 분리할 예정
