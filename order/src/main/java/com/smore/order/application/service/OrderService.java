@@ -2,6 +2,7 @@ package com.smore.order.application.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
 import com.smore.order.application.dto.RefundCommand;
 import com.smore.order.application.exception.RefundReservationConflictException;
@@ -12,12 +13,14 @@ import com.smore.order.domain.event.CompletedOrderEvent;
 import com.smore.order.domain.event.CreatedOrderEvent;
 import com.smore.order.domain.event.OrderEvent;
 import com.smore.order.domain.event.RefundRequestEvent;
+import com.smore.order.domain.event.SuccessRefundEvent;
 import com.smore.order.domain.model.Order;
 import com.smore.order.domain.model.Outbox;
 import com.smore.order.domain.model.Refund;
 import com.smore.order.domain.status.AggregateType;
 import com.smore.order.domain.status.EventType;
 import com.smore.order.domain.status.OrderStatus;
+import com.smore.order.domain.status.RefundStatus;
 import com.smore.order.domain.status.ServiceResult;
 import com.smore.order.infrastructure.persistence.exception.CompleteOrderFailException;
 import com.smore.order.presentation.dto.IsOrderCreatedResponse;
@@ -220,6 +223,68 @@ public class OrderService {
             savedRefund.getRequestedAt(),
             "환불 접수에 성공했습니다."
         );
+    }
+
+
+    @Transactional
+    public void refundSuccess(CompletedRefundCommand command) {
+
+        Refund refund = refundRepository.findById(command.getRefundId());
+
+        if (refund.getStatus() == RefundStatus.COMPLETED) {
+            return;
+        }
+
+        int updated = refundRepository.complete(
+            refund.getId(),
+            RefundStatus.COMPLETED,
+            LocalDateTime.now(clock)
+        );
+
+        if (updated == 0) {
+            log.error("환불 완료 실패 orderid : {}, method : {} ", command.getOrderId(), "refundSuccess()");
+            throw new RefundReservationConflictException(
+                "환불 완료가 실패했습니다. 다른 환불 완료가 먼저 처리되었거나 주문 상태가 변경되었습니다."
+            );
+        }
+
+        Order order = orderRepository.findById(command.getOrderId());
+
+        OrderStatus status = order.calculateStatusAfterRefund(refund.getRefundQuantity());
+
+        updated = orderRepository.settingRefundedReservation(
+            command.getOrderId(),
+            refund.getRefundQuantity(),
+            order.getRefundReservedQuantity(),
+            order.getRefundedQuantity(),
+            command.getRefundAmount(),
+            status
+        );
+
+        if (updated == 0) {
+            log.error("환불 완료 실패 orderid : {}, method : {} ", command.getOrderId(), "refundSuccess()");
+            throw new RefundReservationConflictException(
+                "환불 완료가 실패했습니다. 다른 환불 완료가 먼저 처리되었거나 주문 상태가 변경되었습니다."
+            );
+        }
+
+        SuccessRefundEvent event = SuccessRefundEvent.of(
+            refund.getOrderId(),
+            order.getUserId(),
+            order.getIdempotencyKey(),
+            command.getRefundAmount(),
+            LocalDateTime.now(clock)
+        );
+
+        Outbox outbox = Outbox.create(
+            AggregateType.ORDER,
+            command.getOrderId(),
+            EventType.REFUND_SUCCESS,
+            UUID.randomUUID(),
+            makePayload(event)
+        );
+
+        outboxRepository.save(outbox);
     }
 
     // TODO: 나중에 클래스로 분리할 예정

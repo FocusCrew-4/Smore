@@ -43,6 +43,7 @@ topic:
     created: order.created.v1
     completed: order.completed.v1
     refund: order.refund.v1
+    refund-success: order.refund-success.v1
 
   bid:
     order:
@@ -50,6 +51,7 @@ topic:
 
   payment:
     completed: payment.completed.v1
+    refund-completed: payment.refund-completed.v1
 
 consumer:
   group:

@@ -84,4 +84,31 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
 
         return (int) updated;
     }
+
+    @Override
+    public int settingRefundedReservation(UUID orderId, Integer refundQuantity,
+        Integer refundReservedQuantity, Integer refundedQuantity, Integer refundAmount,
+        OrderStatus status) {
+
+        long updated = queryFactory
+            .update(orderEntity)
+            .set(orderEntity.refundReservedQuantity,
+                orderEntity.refundReservedQuantity.subtract(refundQuantity))
+            .set(orderEntity.refundedQuantity,
+                orderEntity.refundedQuantity.add(refundQuantity))
+            .set(orderEntity.refundedAmount,
+                orderEntity.refundedAmount.add(refundAmount))
+            .set(orderEntity.orderStatus, status)
+            .where(
+                orderEntity.id.eq(orderId),
+                orderEntity.refundReservedQuantity.eq(refundReservedQuantity),
+                orderEntity.refundedQuantity.eq(refundedQuantity)
+            )
+            .execute();
+
+        em.flush();
+        em.clear();
+
+        return (int) updated;
+    }
 }

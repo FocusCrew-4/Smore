@@ -1,11 +1,12 @@
 package com.smore.order.application.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smore.order.application.command.CompletedOrderCommand;
+import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
 import com.smore.order.application.service.OrderService;
 import com.smore.order.domain.event.BidRequestEvent;
 import com.smore.order.domain.event.CompletedPaymentEvent;
+import com.smore.order.domain.event.CompletedRefundEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -68,4 +69,30 @@ public class EventListener {
             log.error("PaymentCompleted 처리 실패 : {}", message, e);
         }
     }
+
+    @KafkaListener(
+        topics = "${topic.payment.refund-completed}",
+        groupId = "${consumer.group.payment}",
+        concurrency = "3"
+    )
+    public void refundCompleted(String message, Acknowledgment ack) {
+        try {
+            CompletedRefundEvent event = objectMapper.readValue(message,
+                CompletedRefundEvent.class);
+
+            CompletedRefundCommand command = CompletedRefundCommand.of(
+                event.getOrderId(),
+                event.getRefundId(),
+                event.getRefundAmount()
+            );
+
+            service.refundSuccess(command);
+
+            ack.acknowledge();
+        } catch (Exception e) {
+            // TODO: DLQ/알람 처리 등 재시도 한계 초과 시 후속 조치 필요
+            log.error("refundCompleted 처리 실패 : {}", message, e);
+        }
+    }
+    
 }

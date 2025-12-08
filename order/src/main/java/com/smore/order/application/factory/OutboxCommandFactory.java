@@ -4,6 +4,7 @@ import com.smore.order.application.command.CompletedOrderCommand;
 import com.smore.order.application.command.CreatedOrderCommand;
 import com.smore.order.application.command.OutboxCommand;
 import com.smore.order.application.command.RefundRequestCommand;
+import com.smore.order.application.command.RefundSuccessCommand;
 import com.smore.order.domain.model.Outbox;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,13 +26,16 @@ public class OutboxCommandFactory {
     @Value("${topic.order.refund}")
     private String refundRequestTopic;
 
+    @Value("${topic.order.refund-success}")
+    private String refundSuccessTopic;
+
     public OutboxCommand from(Outbox outbox) {
         return switch (outbox.getEventType()) {
             case ORDER_CREATED -> new CreatedOrderCommand(orderCreatedTopic, kafkaTemplate, outbox);
             case ORDER_COMPLETED -> new CompletedOrderCommand(orderCompletedTopic, kafkaTemplate, outbox);
             case REFUND_REQUEST -> new RefundRequestCommand(refundRequestTopic, kafkaTemplate, outbox);
-            case ORDER_FAILED -> null;
-            case ORDER_CANCELLED -> null;
+            case REFUND_SUCCESS -> new RefundSuccessCommand(refundSuccessTopic, kafkaTemplate, outbox);
+            case REFUND_FAIL -> null;
             default -> throw new IllegalArgumentException(
                 "지원되지 않은 이벤트입니다." + outbox.getEventType()
             );

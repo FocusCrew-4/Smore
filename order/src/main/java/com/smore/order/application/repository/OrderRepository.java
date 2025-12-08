@@ -22,4 +22,7 @@ public interface OrderRepository {
         Integer refundReservedQuantity, Integer refundedQuantity,
         Collection<OrderStatus> statuses);
 
+    int settingRefundedReservation(UUID orderId, Integer refundQuantity,
+        Integer refundReservedQuantity, Integer refundedQuantity,
+        Integer refundAmount, OrderStatus status);
 }

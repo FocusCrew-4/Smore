@@ -122,6 +122,23 @@ public class Order {
         return noRemainingQuantity || !orderStatus.isRefundable();
     }
 
+    public OrderStatus calculateStatusAfterRefund(Integer additionalRefundQuantity) {
+        if (additionalRefundQuantity <= 0) {
+            throw new IllegalArgumentException("환불 수량은 1개 이상이어야 합니다.");
+        }
+
+        Integer newRefunded = refundedQuantity + additionalRefundQuantity;
+        if (newRefunded > this.quantity) {
+            throw new IllegalStateException("전체 주문 수량을 초과하여 환불할 수 없습니다.");
+        }
+
+        if (newRefunded == quantity) {
+            return OrderStatus.REFUNDED;
+        }
+
+        return OrderStatus.PARTIALLY_REFUNDED;
+    }
+
     private static Integer calculateTotalPrice(Integer price, Integer quantity) {
         return price * quantity;
     }
