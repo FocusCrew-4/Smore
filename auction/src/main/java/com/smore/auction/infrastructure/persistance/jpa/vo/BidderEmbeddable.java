@@ -4,6 +4,7 @@ import com.smore.auction.domain.enums.BidderStatus;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BidderEmbeddable {
     private Long id;
-    private Long price;
+    private BigDecimal price;
     private Integer quantity;
     @Enumerated(EnumType.STRING)
     private BidderStatus status;

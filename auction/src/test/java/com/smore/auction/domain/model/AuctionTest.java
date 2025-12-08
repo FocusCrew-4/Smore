@@ -1,18 +1,16 @@
 package com.smore.auction.domain.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.smore.auction.config.TestClockConfig;
-import com.smore.auction.config.TestContainerConfig;
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.UUID;
-import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
 class AuctionTest {
 
@@ -27,7 +25,7 @@ class AuctionTest {
         // when
         var test = Auction.create(
             productIdFix,
-            1000L,
+            BigDecimal.valueOf(1000L),
             10L,
             1L,
             clock
@@ -39,7 +37,7 @@ class AuctionTest {
             () -> assertEquals(productIdFix, test.getProduct().id()),
             () -> assertEquals(10L, test.getStock()),
             () -> assertEquals(1L, test.getSellerId()),
-            () -> assertEquals(1000L, test.getProduct().price())
+            () -> assertEquals(BigDecimal.valueOf(1000L), test.getProduct().price())
         );
     }
 }
