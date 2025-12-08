@@ -11,7 +11,7 @@ spring:
     config:
       enabled: false
     discovery:
-      enabled: false
+      enabled: true
 
   kafka:
     producer:
