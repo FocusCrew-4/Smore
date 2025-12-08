@@ -76,4 +76,8 @@ public class Member {
     public boolean isMe(Long memberId) {
         return this.id.equals(memberId);
     }
+
+    public boolean isSameRole(Role role) {
+        return this.role == role;
+    }
 }
