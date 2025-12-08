@@ -166,4 +166,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     public int delete(UUID orderId, Long userId, LocalDateTime now) {
         return orderJpaRepository.delete(orderId, userId, now);
     }
+
+    @Override
+    public int completePayment(UUID orderId, String paymentId) {
+        return orderJpaRepository.completePayment(orderId, paymentId);
+    }
 }

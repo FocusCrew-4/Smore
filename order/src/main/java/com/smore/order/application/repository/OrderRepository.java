@@ -39,4 +39,6 @@ public interface OrderRepository {
     int update(Order order);
 
     int delete(UUID orderId, Long userId, LocalDateTime now);
+
+    int completePayment(UUID orderId, String paymentId);
 }
