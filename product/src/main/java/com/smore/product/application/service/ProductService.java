@@ -3,6 +3,7 @@ package com.smore.product.application.service;
 import com.smore.product.domain.entity.ProductStatus;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductRequest;
+import com.smore.product.presentation.dto.request.UpdateProductStatusRequest;
 import com.smore.product.presentation.dto.response.ProductResponse;
 import com.smore.product.domain.entity.Product;
 import com.smore.product.domain.entity.SaleType;
@@ -85,6 +86,21 @@ public class ProductService {
         if (req.getCategoryId() != null) product.changeCategory(req.getCategoryId());
         if (req.getSaleType() != null) product.changeSaleType(req.getSaleType());
         if (req.getThresholdForAuction() != null) product.changeThreshold(req.getThresholdForAuction());
+
+        return new ProductResponse(product);
+    }
+
+    @Transactional
+    public ProductResponse updateProductStatus(UUID productId, UpdateProductStatusRequest req) {
+
+        Product product = productRepository.findByIdForUpdate(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        if (req.getStatus() == null) {
+            throw new IllegalArgumentException("상태 값이 필요합니다.");
+        }
+
+        product.changeStatus(req.getStatus());
 
         return new ProductResponse(product);
     }
