@@ -1,6 +1,7 @@
 package com.smore.order.application.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smore.order.application.dto.CompletedPaymentCommand;
 import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
@@ -64,7 +65,13 @@ public class EventListener {
             PaymentCompletedEvent event = objectMapper.readValue(message,
                 PaymentCompletedEvent.class);
 
-            service.completeOrder(event.getOrderId());
+            CompletedPaymentCommand command = CompletedPaymentCommand.of(
+                event.getOrderId(),
+                event.getPaymentId(),
+                event.getTotalAmount()
+            );
+
+            service.completeOrder(command);
 
             ack.acknowledge();
         } catch (Exception e) {
