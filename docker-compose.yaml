@@ -257,6 +257,16 @@ services:
     networks:
       - msa-network
 
+  auction-service:
+    container_name: auction-service
+    build: ./auction/.
+    ports:
+      - "6600:6600"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - msa-network
+
 
 volumes:
   kafka-1-data:

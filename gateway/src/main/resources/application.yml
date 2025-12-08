@@ -24,6 +24,14 @@ spring:
               predicates:
                - Path=/api/v*/auctions/**
 
+            # TODO: 어떻게 동작하는건지 정리하기
+            - id: auction-ws
+              uri: lb:ws://auction-service
+              predicates:
+                - Path=/ws-auction/**
+              filters:
+                - RewritePath=/ws-auction/(?<segment>.*),/ws-auction/${segment}
+
             - id: product-service
               uri: lb://product-service
               predicates:
