@@ -14,4 +14,6 @@ public interface RefundRepository {
     Refund findById(UUID refundId);
 
     int complete(UUID refundId, RefundStatus status, LocalDateTime now);
+
+    int fail(UUID id, RefundStatus refundStatus, LocalDateTime now);
 }

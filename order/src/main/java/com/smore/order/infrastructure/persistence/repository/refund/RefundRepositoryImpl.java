@@ -57,4 +57,9 @@ public class RefundRepositoryImpl implements RefundRepository {
             refundId, status, now
         );
     }
+
+    @Override
+    public int fail(UUID id, RefundStatus refundStatus, LocalDateTime now) {
+        return refundJpaRepository.fail(id, refundStatus, now);
+    }
 }
