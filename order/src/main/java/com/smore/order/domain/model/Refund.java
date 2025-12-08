@@ -13,14 +13,17 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Refund {
 
+    // BigDecimal
     private UUID id;
     private UUID orderId;
     private Long userId;
     private UUID productId;
+    private String paymentId;
     private Integer refundQuantity;
     private Integer refundAmount;
     private UUID idempotencyKey;
     private String reason;
+    private String refundFailReason;
     private RefundStatus status;
     private LocalDateTime requestedAt;
     private LocalDateTime completedAt;
@@ -29,6 +32,7 @@ public class Refund {
         UUID orderId,
         Long userId,
         UUID productId, Integer productPrice,
+        String paymentId,
         Integer refundQuantity,
         UUID idempotencyKey,
         String reason,
@@ -44,6 +48,7 @@ public class Refund {
         if (idempotencyKey == null) throw new IllegalArgumentException("환불 요청의 멱등키는 필수값입니다.");
         if (reason == null || reason.isBlank()) throw new IllegalArgumentException("환불 사유는 필수값입니다.");
         if (now == null) throw new IllegalArgumentException("환불 요청 시각(requestedAt)은 필수값입니다.");
+        if (paymentId == null) throw new IllegalArgumentException("paymentId는 필수값입니다.");
 
         Integer refundAmount = calculateRefundAmount(productPrice, refundQuantity);
 
@@ -51,6 +56,7 @@ public class Refund {
             .orderId(orderId)
             .userId(userId)
             .productId(productId)
+            .paymentId(paymentId)
             .refundQuantity(refundQuantity)
             .refundAmount(refundAmount)
             .idempotencyKey(idempotencyKey)
@@ -65,10 +71,12 @@ public class Refund {
         UUID orderId,
         Long userId,
         UUID productId,
+        String paymentId,
         Integer refundQuantity,
         Integer refundAmount,
         UUID idempotencyKey,
         String reason,
+        String refundFailReason,
         RefundStatus status,
         LocalDateTime requestedAt,
         LocalDateTime completedAt
@@ -79,10 +87,12 @@ public class Refund {
             .orderId(orderId)
             .userId(userId)
             .productId(productId)
+            .paymentId(paymentId)
             .refundQuantity(refundQuantity)
             .refundAmount(refundAmount)
             .idempotencyKey(idempotencyKey)
             .reason(reason)
+            .refundFailReason(refundFailReason)
             .status(status)
             .requestedAt(requestedAt)
             .completedAt(completedAt)
