@@ -12,10 +12,9 @@ import org.springframework.stereotype.Repository;
 public class OutboxRepositoryPortImpl implements OutboxRepositoryPort {
 
     private final SellerOutboxRepository repository;
-    private final Clock clock;
-
+    // TODO: repo 에서 new 를 통해서 새로운 객체를 받아오는 것은 SRP 에 어긋난다 추후 DTO 와 mapper 를 통해 분리필요
     @Override
-    public void saveOutBox(String topic, Long key, String payload) {
+    public void saveOutBox(String topic, Long key, String payload, Clock clock) {
         SellerOutbox sellerOutbox = new SellerOutbox(
             topic,
             key,

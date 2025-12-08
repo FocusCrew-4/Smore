@@ -1,4 +1,4 @@
-package com.smore.order.domain.event;
+package com.smore.order.application.event.inbound;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class BidRequestEvent {
+public class BidWinnerConfirmedEvent {
 
     private Long userId;
     private UUID productId;

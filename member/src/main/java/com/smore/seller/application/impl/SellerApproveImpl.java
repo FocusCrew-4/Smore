@@ -45,7 +45,8 @@ public class SellerApproveImpl implements SellerApprove {
         outboxRepository.saveOutBox(
             sellerTopic.getSellerRegisterTopic("v1"),
             seller.getMemberId(),
-            eventSerializer.serializeEvent(event)
+            eventSerializer.serializeEvent(event),
+            clock
         );
         repository.save(seller);
     }
