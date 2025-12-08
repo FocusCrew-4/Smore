@@ -1,6 +1,8 @@
 package com.smore.product.application.service;
 
+import com.smore.product.domain.entity.Product;
 import com.smore.product.domain.entity.ProductStatus;
+import com.smore.product.domain.entity.SaleType;
 import com.smore.product.domain.repository.ProductRepository;
 import com.smore.product.presentation.dto.request.UpdateProductStatusRequest;
 import org.junit.jupiter.api.Test;
@@ -23,9 +25,24 @@ class ProductServiceConcurrencyTest {
 
     @Test
     void concurrent_status_update_test() throws Exception {
-        // 테스트용 상품 ID
-        UUID productId = UUID.fromString("여기에-테스트-상품-UUID");
 
+        // 1) 테스트용 상품 생성
+        Product saved = productRepository.save(
+                Product.builder()
+                        .sellerId(1L)
+                        .categoryId(UUID.randomUUID())
+                        .name("테스트 상품")
+                        .description("테스트 설명")
+                        .price(1000)
+                        .stock(10)
+                        .saleType(SaleType.NORMAL)
+                        .status(ProductStatus.ON_SALE)
+                        .build()
+        );
+
+        UUID productId = saved.getId();   // 생성된 ID 사용
+
+        // 2) 동시에 상태 변경 실행
         ExecutorService executor = Executors.newFixedThreadPool(10);
 
         Runnable task1 = () ->
@@ -44,6 +61,7 @@ class ProductServiceConcurrencyTest {
         executor.shutdown();
         executor.awaitTermination(5, TimeUnit.SECONDS);
 
+        // 3) 최종 결과 확인
         var result = productRepository.findById(productId).orElseThrow();
         System.out.println("최종 상태 = " + result.getStatus());
     }
