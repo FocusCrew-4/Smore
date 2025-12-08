@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,7 +34,7 @@ class ProductServiceConcurrencyTest {
                         .categoryId(UUID.randomUUID())
                         .name("테스트 상품")
                         .description("테스트 설명")
-                        .price(1000)
+                        .price(BigDecimal.valueOf(10000))
                         .stock(10)
                         .saleType(SaleType.NORMAL)
                         .status(ProductStatus.ON_SALE)

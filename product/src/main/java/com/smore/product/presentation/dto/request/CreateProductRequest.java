@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 @Getter
 @NoArgsConstructor
@@ -28,7 +29,7 @@ public class CreateProductRequest {
     private String description;
 
     @Positive(message = "가격은 0보다 큰 값이어야 합니다.")
-    private int price;
+    private BigDecimal price;
 
     @PositiveOrZero(message = "재고는 0 이상이어야 합니다.")
     private int stock;
