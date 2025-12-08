@@ -1,6 +1,5 @@
 package com.smore.seller.infrastructure.adaptor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.seller.application.port.EventSerializerPort;
 import com.smore.seller.infrastructure.kafka.SellerEventSerializer;
 import lombok.RequiredArgsConstructor;
