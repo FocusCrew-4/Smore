@@ -42,6 +42,7 @@ public final class OrderMapper {
             entity.getProduct().getProductId(),
             entity.getProduct().getProductPrice(),
             entity.getQuantity(),
+            entity.getPaymentId(),
             entity.getTotalAmount(),
             entity.getRefundReservedQuantity(),
             entity.getRefundedQuantity(),

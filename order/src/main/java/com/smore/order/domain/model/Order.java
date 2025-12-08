@@ -1,6 +1,6 @@
 package com.smore.order.domain.model;
 
-
+// paymentId (추가)
 import com.smore.order.domain.status.CancelState;
 import com.smore.order.domain.status.OrderStatus;
 import com.smore.order.domain.vo.Address;
@@ -21,6 +21,7 @@ public class Order {
     private Long userId;
     private Product product;
     private Integer quantity;
+    private String paymentId;
     private Integer totalAmount;
     private Integer refundReservedQuantity;
     private Integer refundedQuantity;
@@ -75,6 +76,7 @@ public class Order {
         UUID productId,
         Integer productPrice,
         Integer quantity,
+        String paymentId,
         Integer totalAmount,
         Integer refundReservedQuantity,
         Integer refundedQuantity,
@@ -104,6 +106,7 @@ public class Order {
             .product(product)
             .quantity(quantity)
             .totalAmount(totalAmount)
+            .paymentId(paymentId)
             .refundReservedQuantity(refundReservedQuantity)
             .refundedQuantity(refundedQuantity)
             .refundedAmount(refundedAmount)
@@ -152,7 +155,7 @@ public class Order {
     }
 
     public void changeAddressInfo(String street, String city, String zipcode) {
-        Address address = new Address(street, city, zipcode);
+        this.address = new Address(street, city, zipcode);
     }
 
     public boolean notEqualUserId(Long userId) {

@@ -50,6 +50,9 @@ public class OrderEntity extends BaseEntity {
     @Column(name = "total_amount", nullable = false)
     private Integer totalAmount;
 
+    @Column(name = "payment_id")
+    private String paymentId;
+
     @Column(name = "refund_reserved_quantity")
     private Integer refundReservedQuantity;
 
