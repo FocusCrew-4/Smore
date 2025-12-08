@@ -1,4 +1,4 @@
-package com.smore.order.domain.event;
+package com.smore.order.application.event.outbound;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -10,26 +10,29 @@ import lombok.Getter;
 @Getter
 @Builder(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class CreatedOrderEvent implements OrderEvent{
+public class OrderRefundRequestEvent implements OrderEvent {
 
     private final UUID orderId;
     private final Long userId;
-    private final Integer totalAmount;
+    private final UUID refundId;
+    private final Integer refundAmount;
     private final UUID idempotencyKey;
     private final LocalDateTime publishedAt;
-    private final LocalDateTime expiresAt;
 
-    public static CreatedOrderEvent of(
-        UUID orderId, Long userId, Integer totalAmount, UUID idempotencyKey,
-        LocalDateTime now, LocalDateTime expiresAt) {
+    public static OrderRefundRequestEvent of(
+        UUID orderId, Long userId,
+        UUID refundId, Integer refundAmount,
+        UUID idempotencyKey,
+        LocalDateTime publishedAt
+    ) {
 
-        return CreatedOrderEvent.builder()
+        return OrderRefundRequestEvent.builder()
             .orderId(orderId)
             .userId(userId)
-            .totalAmount(totalAmount)
+            .refundId(refundId)
+            .refundAmount(refundAmount)
             .idempotencyKey(idempotencyKey)
-            .publishedAt(now)
-            .expiresAt(expiresAt)
+            .publishedAt(publishedAt)
             .build();
     }
 }

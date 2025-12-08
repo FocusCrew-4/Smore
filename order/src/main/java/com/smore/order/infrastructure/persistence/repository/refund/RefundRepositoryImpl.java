@@ -20,16 +20,6 @@ public class RefundRepositoryImpl implements RefundRepository {
     private final RefundJpaRepository refundJpaRepository;
 
     @Override
-    public Refund save(Refund refund) {
-
-        RefundEntity entity =  refundJpaRepository.save(
-            RefundMapper.toEntityForCreate(refund)
-        );
-
-        return RefundMapper.toDomain(entity);
-    }
-
-    @Override
     public Refund findByIdempotencyKey(UUID idempotencyKey) {
 
         RefundEntity entity = refundJpaRepository.findByIdempotencyKey(idempotencyKey);
@@ -47,6 +37,16 @@ public class RefundRepositoryImpl implements RefundRepository {
         RefundEntity entity = refundJpaRepository.findById(refundId).orElseThrow(
             () -> new NotFoundRefundException("환불 정보를 찾을 수 없습니다.")
         );
+        return RefundMapper.toDomain(entity);
+    }
+
+    @Override
+    public Refund save(Refund refund) {
+
+        RefundEntity entity =  refundJpaRepository.save(
+            RefundMapper.toEntityForCreate(refund)
+        );
+
         return RefundMapper.toDomain(entity);
     }
 

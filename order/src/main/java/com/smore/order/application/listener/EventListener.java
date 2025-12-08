@@ -5,10 +5,10 @@ import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
 import com.smore.order.application.service.OrderService;
-import com.smore.order.domain.event.BidRequestEvent;
-import com.smore.order.domain.event.CompletedPaymentEvent;
-import com.smore.order.domain.event.CompletedRefundEvent;
-import com.smore.order.domain.event.FailedRefundEvent;
+import com.smore.order.application.event.inbound.BidWinnerConfirmedEvent;
+import com.smore.order.application.event.inbound.PaymentCompletedEvent;
+import com.smore.order.application.event.inbound.PaymentRefundSucceededEvent;
+import com.smore.order.application.event.inbound.PaymentRefundFailedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -28,11 +28,11 @@ public class EventListener {
         groupId = "${consumer.group.bid}",
         concurrency = "3"
     )
-    public void bidRequest(String message, Acknowledgment ack) {
+    public void bidWinnerConfirmed(String message, Acknowledgment ack) {
         try {
 
-            BidRequestEvent event = objectMapper.readValue(message,
-                BidRequestEvent.class);
+            BidWinnerConfirmedEvent event = objectMapper.readValue(message,
+                BidWinnerConfirmedEvent.class);
 
             CreateOrderCommand command = CreateOrderCommand.create(
                 event.getUserId(),
@@ -61,8 +61,8 @@ public class EventListener {
     )
     public void paymentCompleted(String message, Acknowledgment ack) {
         try {
-            CompletedPaymentEvent event = objectMapper.readValue(message,
-                CompletedPaymentEvent.class);
+            PaymentCompletedEvent event = objectMapper.readValue(message,
+                PaymentCompletedEvent.class);
 
             service.completeOrder(event.getOrderId());
 
@@ -77,10 +77,10 @@ public class EventListener {
         groupId = "${consumer.group.payment}",
         concurrency = "3"
     )
-    public void refundCompleted(String message, Acknowledgment ack) {
+    public void paymentRefundSucceeded(String message, Acknowledgment ack) {
         try {
-            CompletedRefundEvent event = objectMapper.readValue(message,
-                CompletedRefundEvent.class);
+            PaymentRefundSucceededEvent event = objectMapper.readValue(message,
+                PaymentRefundSucceededEvent.class);
 
             CompletedRefundCommand command = CompletedRefundCommand.of(
                 event.getOrderId(),
@@ -102,10 +102,10 @@ public class EventListener {
         groupId = "${consumer.group.payment}",
         concurrency = "3"
     )
-    public void refundFailed(String message, Acknowledgment ack) {
+    public void paymentRefundFailed(String message, Acknowledgment ack) {
         try {
-            FailedRefundEvent event = objectMapper.readValue(message,
-                FailedRefundEvent.class);
+            PaymentRefundFailedEvent event = objectMapper.readValue(message,
+                PaymentRefundFailedEvent.class);
 
             FailedRefundCommand command = FailedRefundCommand.of(
                 event.getOrderId(),

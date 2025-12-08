@@ -1,4 +1,4 @@
-package com.smore.order.domain.event;
+package com.smore.order.application.event.inbound;
 
 import java.util.UUID;
 import lombok.Getter;
@@ -8,11 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FailedRefundEvent {
-
+public class PaymentRefundSucceededEvent {
     private UUID orderId;
     private UUID refundId;
     private Integer refundAmount;
-    private String message;
 
 }

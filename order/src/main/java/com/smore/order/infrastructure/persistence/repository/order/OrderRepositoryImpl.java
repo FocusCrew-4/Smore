@@ -3,7 +3,6 @@ package com.smore.order.infrastructure.persistence.repository.order;
 import com.smore.order.application.repository.OrderRepository;
 import com.smore.order.domain.model.Order;
 import com.smore.order.domain.status.OrderStatus;
-import com.smore.order.domain.status.RefundStatus;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOrderFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOrderException;
@@ -34,35 +33,6 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         if (entity == null) return null;
         return OrderMapper.toDomain(entity);
-    }
-
-    @Override
-    public Order save(Order order) {
-        if (order == null){
-            log.error("order is Null : methodName = {}", "save()");
-            throw new IllegalArgumentException("order가 null 입니다.");
-        }
-
-        OrderEntity entity = orderJpaRepository.save(
-            OrderMapper.toEntityForCreate(order)
-        );
-
-        if (entity == null) {
-            log.error("entity is Null : methodName = {}", "save()");
-            throw new CreateOrderFailException("주문이 생성되지 않았습니다.");
-        }
-        return OrderMapper.toDomain(entity);
-    }
-
-    @Override
-    public int markComplete(UUID orderId) {
-
-        if (orderId == null) {
-            log.error("orderId is Null : methodName = {}", "markComplete()");
-            throw new IllegalArgumentException("주문 아이디가 null 입니다.");
-        }
-
-        return orderJpaRepository.markComplete(orderId, OrderStatus.COMPLETED);
     }
 
     @Override
@@ -101,10 +71,39 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public int settingRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
+    public Order save(Order order) {
+        if (order == null){
+            log.error("order is Null : methodName = {}", "save()");
+            throw new IllegalArgumentException("order가 null 입니다.");
+        }
+
+        OrderEntity entity = orderJpaRepository.save(
+            OrderMapper.toEntityForCreate(order)
+        );
+
+        if (entity == null) {
+            log.error("entity is Null : methodName = {}", "save()");
+            throw new CreateOrderFailException("주문이 생성되지 않았습니다.");
+        }
+        return OrderMapper.toDomain(entity);
+    }
+
+    @Override
+    public int markComplete(UUID orderId) {
+
+        if (orderId == null) {
+            log.error("orderId is Null : methodName = {}", "markComplete()");
+            throw new IllegalArgumentException("주문 아이디가 null 입니다.");
+        }
+
+        return orderJpaRepository.markComplete(orderId, OrderStatus.COMPLETED);
+    }
+
+    @Override
+    public int updateRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
         Integer refundReservedQuantity, Integer refundedQuantity,
         Collection<OrderStatus> statuses) {
-        return orderJpaRepository.settingRefundReservation(
+        return orderJpaRepository.updateRefundReservation(
             orderId,
             userId,
             refundQuantity,
@@ -115,10 +114,10 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public int settingRefundedReservation(UUID orderId, Integer refundQuantity,
+    public int applyRefundCompletion(UUID orderId, Integer refundQuantity,
         Integer refundReservedQuantity, Integer refundedQuantity, Integer refundAmount,
         OrderStatus status) {
-        return orderJpaRepository.settingRefundedReservation(orderId, refundQuantity,
+        return orderJpaRepository.applyRefundCompletion(orderId, refundQuantity,
             refundReservedQuantity, refundedQuantity, refundAmount, status);
     }
 

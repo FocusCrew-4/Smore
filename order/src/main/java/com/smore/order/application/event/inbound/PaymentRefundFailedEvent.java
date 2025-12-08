@@ -1,7 +1,5 @@
-package com.smore.order.domain.event;
+package com.smore.order.application.event.inbound;
 
-import com.smore.order.domain.status.RefundStatus;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,9 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CompletedRefundEvent {
+public class PaymentRefundFailedEvent {
+
     private UUID orderId;
     private UUID refundId;
     private Integer refundAmount;
+    private String message;
 
 }

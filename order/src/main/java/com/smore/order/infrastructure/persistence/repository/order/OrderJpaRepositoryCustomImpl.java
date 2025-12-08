@@ -29,6 +29,18 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
     }
 
     @Override
+    public OrderEntity findByAllocationKeyAndUserId(UUID allocationKey, Long userId) {
+        return queryFactory
+            .select(orderEntity)
+            .from(orderEntity)
+            .where(
+                orderEntity.idempotencyKey.eq(allocationKey),
+                orderEntity.userId.eq(userId)
+            )
+            .fetchOne();
+    }
+
+    @Override
     public int markComplete(UUID orderId, OrderStatus status) {
         long updated = queryFactory
             .update(orderEntity)
@@ -46,19 +58,7 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
     }
 
     @Override
-    public OrderEntity findByAllocationKeyAndUserId(UUID allocationKey, Long userId) {
-        return queryFactory
-            .select(orderEntity)
-            .from(orderEntity)
-            .where(
-                orderEntity.idempotencyKey.eq(allocationKey),
-                orderEntity.userId.eq(userId)
-            )
-            .fetchOne();
-    }
-
-    @Override
-    public int settingRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
+    public int updateRefundReservation(UUID orderId, Long userId, Integer refundQuantity,
         Integer refundReservedQuantity, Integer refundedQuantity,
         Collection<OrderStatus> statuses) {
 
@@ -87,7 +87,7 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
     }
 
     @Override
-    public int settingRefundedReservation(UUID orderId, Integer refundQuantity,
+    public int applyRefundCompletion(UUID orderId, Integer refundQuantity,
         Integer refundReservedQuantity, Integer refundedQuantity, Integer refundAmount,
         OrderStatus status) {
 
