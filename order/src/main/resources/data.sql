@@ -3,6 +3,8 @@ INSERT INTO p_order (
     product_id, product_price,
     quantity, total_amount,
 
+    payment_id,
+
     refund_reserved_quantity, refunded_quantity, refunded_amount, fee_amount,
 
     idempotency_key,
@@ -20,6 +22,8 @@ VALUES
     '11111111-1111-1111-1111-111111111111', 1001,
     'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 12000,
     1, 12000,
+
+    NULL,
 
     0, 0, 0, 0,
 
@@ -39,6 +43,8 @@ VALUES
     'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 32000,
     3, 96000,
 
+ 'pay_3f92a7b8-12cd-4c7f-9e10-83ac912f4bb1',
+
     0, 0, 0, 0,
 
     'bbbb2222-bbbb-2222-bbbb-222222222222',
@@ -56,6 +62,8 @@ VALUES
     '33333333-3333-3333-3333-333333333333', 1003,
     'cccccccc-cccc-cccc-cccc-cccccccccccc', 5000,
     5, 25000,
+
+    'pay_9bd1c6ef-45aa-4f1e-88ce-2a7df301cb84',
 
     0, 0, 0, 0,
 
