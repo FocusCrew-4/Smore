@@ -31,4 +31,8 @@ public class Address {
         this.zipcode = zipcode;
     }
 
+    public static Address of(String street, String city, String zipcode) {
+        return new Address(street, city, zipcode);
+    }
+
 }

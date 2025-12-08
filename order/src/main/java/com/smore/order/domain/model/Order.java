@@ -22,7 +22,9 @@ public class Order {
     private Product product;
     private Integer quantity;
     private Integer totalAmount;
-    private Integer refundAmount;
+    private Integer refundReservedQuantity;
+    private Integer refundedQuantity;
+    private Integer refundedAmount;
     private Integer feeAmount;
     private UUID idempotencyKey;
     private OrderStatus orderStatus;
@@ -70,7 +72,9 @@ public class Order {
         Integer productPrice,
         Integer quantity,
         Integer totalAmount,
-        Integer refundAmount,
+        Integer refundReservedQuantity,
+        Integer refundedQuantity,
+        Integer refundedAmount,
         Integer feeAmount,
         UUID idempotencyKey,
         OrderStatus orderStatus,
@@ -92,7 +96,9 @@ public class Order {
             .product(product)
             .quantity(quantity)
             .totalAmount(totalAmount)
-            .refundAmount(refundAmount)
+            .refundReservedQuantity(refundReservedQuantity)
+            .refundedQuantity(refundedQuantity)
+            .refundedAmount(refundedAmount)
             .feeAmount(feeAmount)
             .idempotencyKey(idempotencyKey)
             .orderStatus(orderStatus)
@@ -106,6 +112,43 @@ public class Order {
 
     public boolean isCompleted() {
         return orderStatus == OrderStatus.COMPLETED;
+    }
+
+    public boolean noRefund() {
+
+        boolean noRemainingQuantity =
+            quantity <= (refundedQuantity + refundReservedQuantity);
+
+        return noRemainingQuantity || !orderStatus.isRefundable();
+    }
+
+    public OrderStatus calculateStatusAfterRefund(Integer additionalRefundQuantity) {
+        if (additionalRefundQuantity <= 0) {
+            throw new IllegalArgumentException("환불 수량은 1개 이상이어야 합니다.");
+        }
+
+        Integer newRefunded = refundedQuantity + additionalRefundQuantity;
+        if (newRefunded > this.quantity) {
+            throw new IllegalStateException("전체 주문 수량을 초과하여 환불할 수 없습니다.");
+        }
+
+        if (newRefunded == quantity) {
+            return OrderStatus.REFUNDED;
+        }
+
+        return OrderStatus.PARTIALLY_REFUNDED;
+    }
+
+    public void changeAddressInfo(String street, String city, String zipcode) {
+        Address address = new Address(street, city, zipcode);
+    }
+
+    public boolean notEqualUserId(Long userId) {
+        return this.userId != userId;
+    }
+
+    public boolean equalAddress(Address address) {
+        return this.address.equals(address);
     }
 
     private static Integer calculateTotalPrice(Integer price, Integer quantity) {
