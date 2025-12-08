@@ -74,6 +74,7 @@ public class SellerController {
         return ResponseEntity.ok(ApiResponse.ok("거절 성공"));
     }
 
+    // TODO: 이미 승인된 Seller 중복 승인할 경우 예외처리 필요
     @PostMapping("/{id}/approve")
     public ResponseEntity<CommonResponse<?>> approveSeller(
         @RequestHeader("X-User-Role") String role,

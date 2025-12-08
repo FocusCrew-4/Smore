@@ -442,7 +442,9 @@ class OrderTest {
         Assertions.assertThat(order.getAddress().zipcode()).isEqualTo(zipcode);
 
         Assertions.assertThat(order.getId()).isNull();
-        Assertions.assertThat(order.getRefundAmount()).isNull();
+        Assertions.assertThat(order.getRefundReservedQuantity()).isNull();
+        Assertions.assertThat(order.getRefundedQuantity()).isNull();
+        Assertions.assertThat(order.getRefundedAmount()).isNull();
         Assertions.assertThat(order.getFeeAmount()).isNull();
         Assertions.assertThat(order.getConfirmedAt()).isNull();
         Assertions.assertThat(order.getCancelledAt()).isNull();

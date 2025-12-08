@@ -13,8 +13,8 @@ public record FeeRate(BigDecimal value) {
             throw new IllegalArgumentException("수수료율은 1(100%) 이하이어야 합니다.");
     }
 
-    public BigDecimal apply(BigDecimal amount) {
-        return amount.multiply(value);
+    public static FeeRate of(BigDecimal amount) {
+        return new FeeRate(amount);
     }
 }
 

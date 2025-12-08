@@ -22,14 +22,14 @@ public class FeePolicyEntity extends BaseEntity {
     private UUID id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "targetType", nullable = false, updatable = false)
+    @Column(name = "target_type", nullable = false, updatable = false)
     private TargetType targetType;
 
-    @Column(name = "targetKey", nullable = false, updatable = false)
-    private UUID targetKey; // 카테고리ID, 판메자ID
+    @Column(name = "target_key", nullable = false, updatable = false)
+    private String targetKey; // 카테고리ID, 판메자ID
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "feeType", nullable = false, updatable = false)
+    @Column(name = "fee_type", nullable = false, updatable = false)
     private FeeType feeType;
 
     @Embedded
@@ -45,7 +45,7 @@ public class FeePolicyEntity extends BaseEntity {
     public FeePolicyEntity(
             UUID id,
             TargetType targetType,
-            UUID targetKey,
+            String targetKey,
             FeeType feeType,
             FeeRateJpa rate,
             FixedAmountJpa fixedAmount,

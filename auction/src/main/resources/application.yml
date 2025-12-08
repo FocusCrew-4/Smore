@@ -2,4 +2,12 @@
 
 spring:
   application:
-    name: auction
+    name: auction-service
+
+management:
+  endpoints:
+    web:
+      discovery:
+        enabled: true
+      exposure:
+        include: "*"

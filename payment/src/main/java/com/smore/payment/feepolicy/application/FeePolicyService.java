@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
-
+//Todo: business exception 작성
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -36,7 +36,7 @@ public class FeePolicyService {
     public FeePolicy getFeePolicy(GetFeePolicyQuery getFeePolicyQuery) {
         return feePolicyRepository.findByTargetTypeAndTargetKey(
                 getFeePolicyQuery.targetType(),
-                getFeePolicyQuery.TargetKey()
+                getFeePolicyQuery.targetKey()
         ).orElseThrow(() -> new IllegalArgumentException("판매자 또는 카테고리에 해당하는 수수료 정책을 찾을 수 없습니다."));
     }
 
