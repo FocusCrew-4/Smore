@@ -13,12 +13,14 @@ public class PaymentApprovedEvent {
     private final UUID paymentId;
     private final BigDecimal amount;
     private final LocalDateTime approvedAt;
+    private final UUID idempotencyKey;
 
-    public PaymentApprovedEvent(UUID orderId, UUID paymentId, BigDecimal amount, LocalDateTime approvedAt) {
+    public PaymentApprovedEvent(UUID orderId, UUID paymentId, BigDecimal amount, LocalDateTime approvedAt, UUID idempotencyKey) {
         this.orderId = orderId;
         this.paymentId = paymentId;
         this.amount = amount;
         this.approvedAt = approvedAt;
+        this.idempotencyKey = idempotencyKey;
     }
 
 }

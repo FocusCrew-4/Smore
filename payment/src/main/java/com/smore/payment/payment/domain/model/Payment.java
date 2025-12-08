@@ -12,7 +12,7 @@ public class Payment {
     private final Long userId;
     private final UUID orderId;  // ← 추가됨
     private final BigDecimal amount;
-    private final PaymentMethod paymentMethod;
+    private PaymentMethod paymentMethod;
     private PaymentStatus status;
     private LocalDateTime approvedAt;
 
@@ -42,7 +42,6 @@ public class Payment {
             Long userId,
             UUID orderId,
             BigDecimal amount,
-            PaymentMethod paymentMethod,
             PaymentStatus status
     ) {
         this.id = UUID.randomUUID();
@@ -50,7 +49,6 @@ public class Payment {
         this.userId = userId;
         this.orderId = orderId;
         this.amount = amount;
-        this.paymentMethod = paymentMethod;
         this.status = status;
     }
     public static Payment createFinalPayment(
@@ -58,7 +56,6 @@ public class Payment {
             Long userId,
             UUID orderId,
             BigDecimal amount,
-            PaymentMethod paymentMethod,
             PgApproveResult result)
     {
         Payment payment = new Payment(
@@ -66,7 +63,6 @@ public class Payment {
                 userId,
                 orderId,
                 amount,
-                paymentMethod,
                 PaymentStatus.APPROVED
         );
 
@@ -86,23 +82,10 @@ public class Payment {
         payment.pgStatus = result.pgStatus();
         payment.pgMessage = "Success";
 
+        payment.paymentMethod = result.paymentMethod();
+
+
         return payment;
-    }
-    public static Payment create(
-            UUID idempotencyKey,
-            Long userId,
-            UUID orderId,
-            BigDecimal amount,
-            PaymentMethod paymentMethod
-    ) {
-        return new Payment(
-                idempotencyKey,
-                userId,
-                orderId,
-                amount,
-                paymentMethod,
-                PaymentStatus.REQUESTED
-        );
     }
 
     private Payment(

@@ -1,12 +1,13 @@
 package com.smore.payment.payment.infrastructure.pg.mapper;
 
+import com.smore.payment.payment.domain.model.PaymentMethod;
 import com.smore.payment.payment.domain.model.PgApproveResult;
 import com.smore.payment.payment.infrastructure.pg.dto.TossApproveResponse;
 
 public class TossPgMapper {
 
     public static PgApproveResult toDomain(TossApproveResponse res) {
-
+        PaymentMethod paymentMethod = PaymentMethod.of(res.method());
         return new PgApproveResult(
                 "TOSS",
                 res.orderId(),
@@ -15,6 +16,7 @@ public class TossPgMapper {
                 "SUCCESS",
 
                 // 카드 정보
+                paymentMethod,
                 res.card().company(),
                 res.card().number(),
                 res.card().installmentPlanMonths(),

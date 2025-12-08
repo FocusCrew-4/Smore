@@ -11,4 +11,8 @@ public interface RedisRepository {
     Optional<TemporaryPayment> findByOrderId(UUID uuid);
 
     void deleteByOrderId(UUID orderId);
+
+    void save(TemporaryPayment temp);
+
+    boolean existsByOrderId(UUID orderId);
 }

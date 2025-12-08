@@ -11,6 +11,7 @@ public record PgApproveResult(
         String pgMessage,
 
         // 카드 정보
+        PaymentMethod paymentMethod,
         String cardCompany,
         String cardNumber,
         Integer installmentMonths,

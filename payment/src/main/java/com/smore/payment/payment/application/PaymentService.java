@@ -25,7 +25,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final OutboxRepository outboxRepository;
     private final PgClient pgClient;
-    private final MongoRepository mongoRepository; 
+    private final MongoRepository mongoRepository;
 
     public Payment approve(ApprovePaymentCommand command) {
 
@@ -51,7 +51,8 @@ public class PaymentService {
             PaymentFailedEvent failedEvent = new PaymentFailedEvent(
                     temp.getOrderId(),
                     command.paymentKey(),
-                    e.getMessage()
+                    e.getMessage(),
+                    temp.getIdempotencyKey()
             );
 
             outboxRepository.save(
@@ -71,7 +72,6 @@ public class PaymentService {
                 temp.getUserId(),
                 temp.getOrderId(),
                 temp.getAmount(),
-                temp.getMethod(),
                 result
         );
 
@@ -81,7 +81,8 @@ public class PaymentService {
                 payment.getOrderId(),
                 payment.getId(),
                 payment.getAmount(),
-                payment.getApprovedAt()
+                payment.getApprovedAt(),
+                payment.getIdempotencyKey()
         );
 
         outboxRepository.save(

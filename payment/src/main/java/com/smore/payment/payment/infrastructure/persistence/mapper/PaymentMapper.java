@@ -4,10 +4,10 @@ import com.smore.payment.payment.domain.model.Payment;
 import com.smore.payment.payment.domain.model.PaymentCancel;
 import com.smore.payment.payment.domain.model.PaymentFailure;
 import com.smore.payment.payment.domain.model.PaymentRefund;
-import com.smore.payment.payment.infrastructure.persistence.model.PaymentCancelJpa;
-import com.smore.payment.payment.infrastructure.persistence.model.PaymentEntity;
-import com.smore.payment.payment.infrastructure.persistence.model.PaymentFailureJpa;
-import com.smore.payment.payment.infrastructure.persistence.model.PaymentRefundJpa;
+import com.smore.payment.payment.infrastructure.persistence.model.payment.PaymentCancelJpa;
+import com.smore.payment.payment.infrastructure.persistence.model.payment.PaymentEntity;
+import com.smore.payment.payment.infrastructure.persistence.model.payment.PaymentFailureJpa;
+import com.smore.payment.payment.infrastructure.persistence.model.payment.PaymentRefundJpa;
 import org.springframework.stereotype.Component;
 
 @Component

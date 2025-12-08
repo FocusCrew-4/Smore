@@ -1,4 +1,4 @@
-package com.smore.payment.payment.infrastructure.persistence.model;
+package com.smore.payment.payment.infrastructure.persistence.model.payment;
 
 import com.smore.payment.payment.domain.model.*;
 import jakarta.persistence.*;
