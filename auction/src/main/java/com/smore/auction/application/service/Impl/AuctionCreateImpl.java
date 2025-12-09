@@ -8,7 +8,6 @@ import com.smore.auction.domain.model.Auction;
 import java.time.Clock;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
