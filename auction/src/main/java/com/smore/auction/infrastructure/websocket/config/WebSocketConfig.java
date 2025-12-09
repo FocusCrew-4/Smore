@@ -1,23 +1,21 @@
 package com.smore.auction.infrastructure.websocket.config;
 
-import com.smore.auction.infrastructure.websocket.AuctionUserPrincipal;
 import com.smore.auction.infrastructure.websocket.interceptor.AuctionHandshakeInterceptor;
-import java.util.Objects;
+import com.smore.auction.infrastructure.websocket.interceptor.AuctionStompInterceptor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final AuctionStompInterceptor auctionStompInterceptor;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -44,23 +42,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(new ChannelInterceptor() {
-            @Override
-            public Message<?> preSend( Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-
-                if (accessor.getCommand() == StompCommand.CONNECT) {
-                    // attributes 의 타입이 Map<String, Object> 이기 때문에 Long 을 넣어도 컴파일러는 그 값을 Long 으로 저장
-                    // 따라서 다시 꺼낼 때 반환 타입도 Object 이므로 Long 으로 사용하려면 명시적 다운캐스팅이 필수
-                    Long userId = (Long) Objects.requireNonNull(accessor.getSessionAttributes()).get("userId");
-                    String role = (String) Objects.requireNonNull(accessor.getSessionAttributes()).get("role");
-
-                    // Principal 등록
-                    accessor.setUser(new AuctionUserPrincipal(userId, role));
-                }
-
-                return message;
-            }
-        });
+        registration.interceptors(auctionStompInterceptor);
     }
 }
