@@ -28,6 +28,11 @@ public class AuctionHandshakeInterceptor implements HandshakeInterceptor {
         if (optionalRole == null) {
             throw new Exception("X-USER-ROLE header is missing");
         }
+        // region socket 정상작동 확인시 활성화 필수
+//        if (!optionalRole.equalsIgnoreCase("customer")) {
+//            throw new Exception("Only customer roles are supported");
+//        }
+        // endregion
 
         attributes.put("USER_ID", Long.valueOf(optionalUserId));
         attributes.put("ROLE", optionalRole);
