@@ -1,4 +1,4 @@
-package com.smore.auction.infrastructure.websocket.handler.impl;
+package com.smore.auction.infrastructure.websocket.manager.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
