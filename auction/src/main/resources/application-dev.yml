@@ -21,7 +21,7 @@ spring:
     mongodb:
       uri: mongodb://root:examplepassword@mongodb:27017/default?authSource=admin
     redis:
-      host: localhost
+      host: redis-stack
       port: 6379
       password: ""
       database: 0
