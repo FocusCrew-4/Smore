@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
@@ -27,6 +29,13 @@ public class CategoryService {
         );
 
         categoryRepository.save(category);
+        return new CategoryResponse(category);
+    }
+
+    public CategoryResponse getCategory(UUID id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+
         return new CategoryResponse(category);
     }
 }
