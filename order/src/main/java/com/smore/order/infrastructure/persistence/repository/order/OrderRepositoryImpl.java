@@ -171,4 +171,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     public int completePayment(UUID orderId, UUID paymentId) {
         return orderJpaRepository.completePayment(orderId, paymentId);
     }
+
+    @Override
+    public int fail(UUID orderId, OrderStatus currentStatus) {
+        return orderJpaRepository.fail(orderId, currentStatus);
+    }
 }

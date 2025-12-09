@@ -231,6 +231,24 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
         return (int) updated;
     }
 
+    @Override
+    public int fail(UUID orderId, OrderStatus currentStatus) {
+        long updated = queryFactory
+            .update(orderEntity)
+            .set(orderEntity.orderStatus, OrderStatus.FAILED)
+            .where(
+                orderEntity.id.eq(orderId),
+                orderEntity.orderStatus.eq(currentStatus),
+                orderEntity.orderStatus.eq(OrderStatus.CREATED)
+            )
+            .execute();
+
+        em.flush();
+        em.clear();
+
+        return (int) updated;
+    }
+
     private BooleanExpression userIdEq(Long userId) {
         return userId != null ? orderEntity.userId.eq(userId) : null;
     }
