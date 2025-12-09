@@ -260,6 +260,7 @@ services:
     build: ./auction/.
     ports:
       - "6600:6600"
+      - "5005:5005"
     environment:
       SPRING_PROFILES_ACTIVE: dev
     networks:
