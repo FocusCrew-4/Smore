@@ -51,4 +51,15 @@ public class CategoryController {
         CategoryResponse response = categoryService.updateCategory(id, request);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<CommonResponse<Void>> deleteCategory(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") UUID requesterId
+    ) {
+
+        categoryService.deleteCategory(id, requesterId);
+
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
 }
