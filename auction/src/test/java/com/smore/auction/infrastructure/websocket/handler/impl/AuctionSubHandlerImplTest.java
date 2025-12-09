@@ -38,7 +38,7 @@ class AuctionSubHandlerImplTest {
     }
 
     private StringRedisTemplate redis;
-    private AuctionSubHandlerImpl auctionSubHandler;
+    private AuctionSessionManagerImpl auctionSubHandler;
 
     @BeforeEach
     void cleanRedis() {
@@ -46,7 +46,7 @@ class AuctionSubHandlerImplTest {
             new LettuceConnectionFactory(redisContainer.getHost(), redisContainer.getMappedPort(6379));
         cf.afterPropertiesSet();
         redis = new StringRedisTemplate(cf);
-        auctionSubHandler = new AuctionSubHandlerImpl(redis);
+        auctionSubHandler = new AuctionSessionManagerImpl(redis);
 
         redis.execute((RedisCallback<Void>) connection -> {
             connection.serverCommands().flushAll();
