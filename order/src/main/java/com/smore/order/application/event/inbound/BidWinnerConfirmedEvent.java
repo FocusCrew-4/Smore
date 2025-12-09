@@ -16,6 +16,9 @@ public class BidWinnerConfirmedEvent {
     private UUID productId;
     private Integer productPrice;
     private Integer quantity;
+    private UUID categoryId;
+    private String saleType;
+    private Long sellerId;
     private UUID idempotencyKey;
     private LocalDateTime expiresAt;
     private String street;

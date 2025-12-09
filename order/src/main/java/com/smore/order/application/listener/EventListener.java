@@ -10,6 +10,7 @@ import com.smore.order.application.event.inbound.BidWinnerConfirmedEvent;
 import com.smore.order.application.event.inbound.PaymentCompletedEvent;
 import com.smore.order.application.event.inbound.PaymentRefundSucceededEvent;
 import com.smore.order.application.event.inbound.PaymentRefundFailedEvent;
+import com.smore.order.domain.status.SaleType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -40,6 +41,9 @@ public class EventListener {
                 event.getProductId(),
                 event.getProductPrice(),
                 event.getQuantity(),
+                event.getCategoryId(),
+                SaleType.from(event.getSaleType()),
+                event.getSellerId(),
                 event.getIdempotencyKey(),
                 event.getExpiresAt(),
                 event.getStreet(),
