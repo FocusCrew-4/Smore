@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.order.application.dto.CompletedPaymentCommand;
 import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
+import com.smore.order.application.dto.FailedOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
 import com.smore.order.application.dto.ModifyOrderCommand;
 import com.smore.order.application.dto.RefundCommand;
+import com.smore.order.application.event.outbound.OrderFailedEvent;
 import com.smore.order.application.exception.OrderIdMisMatchException;
 import com.smore.order.application.exception.RefundReservationConflictException;
 import com.smore.order.application.repository.OrderRepository;
@@ -517,6 +519,45 @@ public class OrderService {
             }
         }
         return pageable;
+    }
+
+    public void failOrder(FailedOrderCommand command) {
+
+        Order order = orderRepository.findById(command.getOrderId());
+
+        if (order.isFailed()) {
+            log.info("이미 처리된 작업 orderId : {}", command.getOrderId());
+            return;
+        }
+
+        int updated = orderRepository.fail(
+            command.getOrderId(),
+            order.getOrderStatus()
+        );
+
+        if (updated == 0) {
+            log.error("주문 실패 실패 orderid : {}, method : {} ", command.getOrderId(), "failOrder()");
+            throw new UpdateOrderFailException(OrderErrorCode.UPDATE_ORDER_FAIL_CONFLICT);
+        }
+
+        OrderFailedEvent event = OrderFailedEvent.of(
+            order.getIdempotencyKey(),
+            order.getProduct().productId(),
+            order.getUserId(),
+            order.getQuantity(),
+            LocalDateTime.now(clock)
+        );
+
+        Outbox outbox = Outbox.create(
+            AggregateType.ORDER,
+            order.getId(),
+            EventType.ORDER_FAILED,
+            UUID.randomUUID(),
+            makePayload(event)
+        );
+
+        outboxRepository.save(outbox);
+
     }
 
     // TODO: 나중에 클래스로 분리할 예정
