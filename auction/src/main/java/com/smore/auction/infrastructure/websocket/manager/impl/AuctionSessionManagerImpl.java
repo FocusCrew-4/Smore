@@ -1,6 +1,6 @@
-package com.smore.auction.infrastructure.websocket.handler.impl;
+package com.smore.auction.infrastructure.websocket.manager.impl;
 
-import com.smore.auction.infrastructure.websocket.handler.AuctionSessionManager;
+import com.smore.auction.infrastructure.websocket.manager.AuctionSessionManager;
 import java.time.Duration;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
