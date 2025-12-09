@@ -34,17 +34,19 @@ public class RedisConfig {
     RedisTemplate<String, String> 의 제네릭은 Redis 자료구조와는 무관하고
     Redis 의 키와 값이 Java 코드에서 어떤 타입으로 직렬화될지를 결정하는 것 뿐
      */
-    @Bean
-    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory cf) {
-        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(cf);
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-
-        redisTemplate.setEnableTransactionSupport(true);
-
-        return redisTemplate;
-    }
+    //region StringRedisTemplate 이 이미 기본으로 제공하고 있고 Redis 에서 트랜잭션이 필요한 상황도 적음
+//    @Bean
+//    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory cf) {
+//        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+//        redisTemplate.setConnectionFactory(cf);
+//        redisTemplate.setKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setValueSerializer(new StringRedisSerializer());
+//
+//        redisTemplate.setEnableTransactionSupport(true);
+//
+//        return redisTemplate;
+//    }
+    // endregion
 
     /**
      * CacheManager 설정
