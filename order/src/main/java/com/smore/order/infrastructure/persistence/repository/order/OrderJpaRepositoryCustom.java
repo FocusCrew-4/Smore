@@ -34,5 +34,5 @@ public interface OrderJpaRepositoryCustom {
 
     int delete(UUID orderId, Long userId, LocalDateTime now);
 
-    int completePayment(UUID orderId, String paymentId);
+    int completePayment(UUID orderId, UUID paymentId);
 }

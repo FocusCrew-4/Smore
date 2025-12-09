@@ -214,7 +214,7 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
     }
 
     @Override
-    public int completePayment(UUID orderId, String paymentId) {
+    public int completePayment(UUID orderId, UUID paymentId) {
         long updated = queryFactory
             .update(orderEntity)
             .set(orderEntity.paymentId, paymentId)

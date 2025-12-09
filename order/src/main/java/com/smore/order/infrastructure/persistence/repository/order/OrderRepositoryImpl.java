@@ -168,7 +168,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public int completePayment(UUID orderId, String paymentId) {
+    public int completePayment(UUID orderId, UUID paymentId) {
         return orderJpaRepository.completePayment(orderId, paymentId);
     }
 }

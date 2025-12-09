@@ -11,12 +11,12 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class CompletedPaymentCommand {
     private UUID orderId;
-    private String paymentId;
+    private UUID paymentId;
     private Integer totalAmount;
 
     public static CompletedPaymentCommand of(
         UUID orderId,
-        String paymentId,
+        UUID paymentId,
         Integer totalAmount
     ) {
         return CompletedPaymentCommand.builder()

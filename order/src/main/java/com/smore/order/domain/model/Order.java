@@ -22,7 +22,7 @@ public class Order {
     private Long userId;
     private Product product;
     private Integer quantity;
-    private String paymentId;
+    private UUID paymentId;
     private Integer totalAmount;
     private UUID categoryId;
     private SaleType saleType;
@@ -83,7 +83,7 @@ public class Order {
         UUID productId,
         Integer productPrice,
         Integer quantity,
-        String paymentId,
+        UUID paymentId,
         Integer totalAmount,
         UUID categoryId,
         SaleType saleType,

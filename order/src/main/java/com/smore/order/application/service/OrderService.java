@@ -119,7 +119,7 @@ public class OrderService {
     public ServiceResult completeOrder(CompletedPaymentCommand command) {
 
         UUID orderId = command.getOrderId();
-        String paymentId = command.getPaymentId();
+        UUID paymentId = command.getPaymentId();
 
         Order order = orderRepository.findById(orderId);
 

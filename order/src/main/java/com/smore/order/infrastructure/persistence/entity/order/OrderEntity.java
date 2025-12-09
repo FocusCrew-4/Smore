@@ -55,7 +55,7 @@ public class OrderEntity extends BaseEntity {
     private Integer totalAmount;
 
     @Column(name = "payment_id")
-    private String paymentId;
+    private UUID paymentId;
 
     @Column(name = "category_id", nullable = false)
     private UUID categoryId;

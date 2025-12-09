@@ -18,7 +18,7 @@ public class Refund {
     private UUID orderId;
     private Long userId;
     private UUID productId;
-    private String paymentId;
+    private UUID paymentId;
     private Integer refundQuantity;
     private Integer refundAmount;
     private UUID idempotencyKey;
@@ -32,7 +32,7 @@ public class Refund {
         UUID orderId,
         Long userId,
         UUID productId, Integer productPrice,
-        String paymentId,
+        UUID paymentId,
         Integer refundQuantity,
         UUID idempotencyKey,
         String reason,
@@ -71,7 +71,7 @@ public class Refund {
         UUID orderId,
         Long userId,
         UUID productId,
-        String paymentId,
+        UUID paymentId,
         Integer refundQuantity,
         Integer refundAmount,
         UUID idempotencyKey,

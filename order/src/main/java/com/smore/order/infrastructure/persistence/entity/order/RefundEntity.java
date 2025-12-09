@@ -47,7 +47,7 @@ public class RefundEntity extends BaseEntity {
     private UUID productId;
 
     @Column(name = "payment_id", nullable = false, updatable = false)
-    private String paymentId;
+    private UUID paymentId;
 
     @Column(name = "refund_quantity", nullable = false, updatable = false)
     private Integer refundQuantity;
@@ -78,7 +78,7 @@ public class RefundEntity extends BaseEntity {
         UUID orderId,
         Long userId,
         UUID productId,
-        String paymentId,
+        UUID paymentId,
         Integer refundQuantity, Integer refundAmount,
         UUID idempotencyKey,
         String reason,

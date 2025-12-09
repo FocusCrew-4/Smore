@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PaymentCompletedEvent {
     private UUID orderId;
-    private String paymentId;
+    private UUID paymentId;
     private BigInteger amount;
     private LocalDateTime approvedAt;
     private UUID idempotencyKey;

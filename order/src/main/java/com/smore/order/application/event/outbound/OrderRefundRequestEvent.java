@@ -16,7 +16,7 @@ public class OrderRefundRequestEvent implements OrderEvent {
     private final UUID orderId;
     private final Long userId;
     private final UUID refundId;
-    private final String paymentId;
+    private final UUID paymentId;
     private final Integer refundAmount;
     private final UUID idempotencyKey;
     private final String reason;
@@ -24,7 +24,7 @@ public class OrderRefundRequestEvent implements OrderEvent {
 
     public static OrderRefundRequestEvent of(
         UUID orderId, Long userId,
-        UUID refundId, String paymentId, Integer refundAmount,
+        UUID refundId, UUID paymentId, Integer refundAmount,
         UUID idempotencyKey,
         String reason,
         LocalDateTime publishedAt
