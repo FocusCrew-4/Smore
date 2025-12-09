@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 public class ProductTopicListener {
 
     private final ObjectMapper objectMapper;
+    // TODO: 인터페이스 풀고 Listener 가 하는일 직접 정의
     private final AuctionCreate auctionCreate;
     private final AuctionKafkaMapper appMapper;
 
