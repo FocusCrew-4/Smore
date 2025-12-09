@@ -82,6 +82,8 @@ public class OrderService {
             command.getProductId(),
             command.getProductPrice(),
             command.getQuantity(),
+            command.getCategoryId(),
+            command.getSaleType(),
             command.getIdempotencyKey(),
             now,
             command.getStreet(),
@@ -94,6 +96,9 @@ public class OrderService {
             saveOrder.getId(),
             saveOrder.getUserId(),
             saveOrder.getTotalAmount(),
+            saveOrder.getCategoryId(),
+            saveOrder.getSaleType(),
+            command.getSellerId(),
             UUID.randomUUID(),
             now,
             command.getExpiresAt()
