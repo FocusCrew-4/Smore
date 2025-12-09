@@ -69,4 +69,13 @@ public class ProductController {
                 ApiResponse.ok(productService.updateProductStatus(productId, request))
         );
     }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<CommonResponse<Void>> deleteProduct(
+            @PathVariable UUID productId,
+            @RequestHeader("X-User-Id") Long requesterId
+    ) {
+        productService.deleteProduct(productId, requesterId);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
 }
