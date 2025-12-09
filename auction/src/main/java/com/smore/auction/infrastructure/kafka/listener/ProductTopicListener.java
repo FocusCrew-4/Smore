@@ -1,7 +1,7 @@
 package com.smore.auction.infrastructure.kafka.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smore.auction.application.mapper.AuctionAppMapper;
+import com.smore.auction.infrastructure.kafka.mapper.AuctionKafkaMapper;
 import com.smore.auction.application.service.usecase.AuctionCreate;
 import com.smore.auction.infrastructure.kafka.listener.dto.AuctionStartedV1;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class ProductTopicListener {
 
     private final ObjectMapper objectMapper;
     private final AuctionCreate auctionCreate;
-    private final AuctionAppMapper appMapper;
+    private final AuctionKafkaMapper appMapper;
 
     // TODO: 실패시 처리로직 등 추가구현 필요
     @KafkaListener(
