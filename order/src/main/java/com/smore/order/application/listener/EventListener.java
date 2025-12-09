@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.order.application.dto.CompletedPaymentCommand;
 import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
+import com.smore.order.application.dto.FailedOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
+import com.smore.order.application.event.inbound.PaymentFailedEvent;
 import com.smore.order.application.service.OrderService;
 import com.smore.order.application.event.inbound.BidWinnerConfirmedEvent;
 import com.smore.order.application.event.inbound.PaymentCompletedEvent;
@@ -131,6 +133,30 @@ public class EventListener {
         } catch (Exception e) {
             // TODO: DLQ/백오프 처리 추가하여 동일 메시지 무한 재시도 방지
             log.error("refundFailed 처리 실패 : {}", message, e);
+        }
+    }
+
+    @KafkaListener(
+        topics = "${topic.payment.failed}",
+        groupId = "${consumer.group.payment}",
+        concurrency = "2"
+    )
+    public void paymentFailed(String message, Acknowledgment ack) {
+        try {
+            PaymentFailedEvent event = objectMapper.readValue(message,
+                PaymentFailedEvent.class);
+
+            FailedOrderCommand command = FailedOrderCommand.of(
+                event.getOrderId(),
+                event.getPaymentId(),
+                event.getErrorMessage()
+            );
+
+            service.failOrder(command);
+
+            ack.acknowledge();
+        } catch (Exception e) {
+            log.error("PaymentFailed 처리 실패: {}", message, e);
         }
     }
 }
