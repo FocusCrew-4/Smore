@@ -2,8 +2,8 @@ package com.smore.category.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.UuidGenerator;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,7 +16,7 @@ public class Category {
 
     @Id
     @GeneratedValue
-    @UuidGenerator
+    @Column(columnDefinition = "UUID")
     private UUID id;
 
     @Column(nullable = false, unique = true)
@@ -27,19 +27,27 @@ public class Category {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = this.createdAt;
+    public static Category create(String name, String description) {
+        LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
+
+        Category category = new Category();
+        category.name = name;
+        category.description = description;
+        category.createdAt = now;
+        category.updatedAt = now;
+
+        return category;
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+    public void update(String name, String description) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
 
-    public Category(String name, String description) {
-        this.name = name;
-        this.description = description;
+        if (description != null) {
+            this.description = description;
+        }
+
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
 }
