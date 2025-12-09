@@ -3,6 +3,7 @@ package com.smore.category.presentation.controller;
 
 import com.smore.category.application.service.CategoryService;
 import com.smore.category.presentation.dto.request.CreateCategoryRequest;
+import com.smore.category.presentation.dto.request.UpdateCategoryRequest;
 import com.smore.category.presentation.dto.resopnse.CategoryResponse;
 import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
@@ -40,5 +41,14 @@ public class CategoryController {
     public ResponseEntity<CommonResponse<List<CategoryResponse>>> getCategories() {
         List<CategoryResponse> responses = categoryService.getCategories();
         return ResponseEntity.ok(ApiResponse.ok(responses));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<CommonResponse<CategoryResponse>> updateCategory(
+            @PathVariable UUID id,
+            @RequestBody UpdateCategoryRequest request
+    ) {
+        CategoryResponse response = categoryService.updateCategory(id, request);
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }
