@@ -2,6 +2,7 @@ package com.smore.order.infrastructure.persistence.entity.order;
 
 import com.smore.order.domain.status.CancelState;
 import com.smore.order.domain.status.OrderStatus;
+import com.smore.order.domain.status.SaleType;
 import com.smore.order.infrastructure.persistence.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -20,6 +21,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+// 상품 카테고리, 주문 방식, SellerId(이벤트)
+// RefundSucceded에도 Sellerid를 받아야 함 그래서 이벤트에 넣어야 함
 
 @Getter
 @Entity
@@ -52,6 +56,13 @@ public class OrderEntity extends BaseEntity {
 
     @Column(name = "payment_id")
     private String paymentId;
+
+    @Column(name = "category_id", nullable = false)
+    private UUID categoryId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sale_type", nullable = false)
+    private SaleType saleType;
 
     @Column(name = "refund_reserved_quantity")
     private Integer refundReservedQuantity;
@@ -91,6 +102,7 @@ public class OrderEntity extends BaseEntity {
     public static OrderEntity create(
         Long userId,
         UUID productId, Integer productPrice, Integer quantity, Integer totalAmount,
+        UUID categoryId, SaleType saleType,
         UUID idempotencyKey, OrderStatus orderStatus, CancelState cancelState,
         LocalDateTime orderedAt,
         String street, String city, String zipcode
@@ -111,6 +123,8 @@ public class OrderEntity extends BaseEntity {
             .product(product)
             .quantity(quantity)
             .totalAmount(totalAmount)
+            .categoryId(categoryId)
+            .saleType(saleType)
             .refundReservedQuantity(0)
             .refundedQuantity(0)
             .refundedAmount(0)
