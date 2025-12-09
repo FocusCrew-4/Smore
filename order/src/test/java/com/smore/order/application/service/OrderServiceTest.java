@@ -12,6 +12,7 @@ import com.smore.order.domain.model.Order;
 import com.smore.order.domain.model.Outbox;
 import com.smore.order.domain.status.AggregateType;
 import com.smore.order.domain.status.EventType;
+import com.smore.order.domain.status.SaleType;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -56,6 +57,9 @@ class OrderServiceTest {
             UUID.fromString("11111111-1111-1111-1111-111111111111"),
             10000,
             2,
+            UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7"),
+            SaleType.BID,
+            1L,
             UUID.fromString("22222222-2222-2222-2222-222222222222"),
             LocalDateTime.of(2025, 11, 30, 12, 0, 0),
             "서울시 강남구 테헤란로 1",
@@ -68,6 +72,8 @@ class OrderServiceTest {
             UUID.fromString("11111111-1111-1111-1111-111111111111"),
             10_000,
             2,
+            UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7"),
+            SaleType.BID,
             UUID.fromString("22222222-2222-2222-2222-222222222222"),
             LocalDateTime.of(2025, 11, 30, 12, 0, 0),
             "서울시 강남구 테헤란로 1",
@@ -109,6 +115,9 @@ class OrderServiceTest {
             UUID.fromString("11111111-1111-1111-1111-111111111111"),
             10000,
             2,
+            UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7"),
+            SaleType.BID,
+            1L,
             UUID.fromString("22222222-2222-2222-2222-222222222222"),
             LocalDateTime.of(2025, 11, 30, 12, 0, 0),
             "서울시 강남구 테헤란로 1",
@@ -121,6 +130,8 @@ class OrderServiceTest {
             UUID.fromString("11111111-1111-1111-1111-111111111111"),
             10_000,
             2,
+            UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7"),
+            SaleType.BID,
             UUID.fromString("22222222-2222-2222-2222-222222222222"),
             LocalDateTime.of(2025, 11, 30, 12, 0, 0),
             "서울시 강남구 테헤란로 1",
