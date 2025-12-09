@@ -1,6 +1,6 @@
 package com.smore.auction.infrastructure.websocket.handler.impl;
 
-import com.smore.auction.infrastructure.websocket.handler.AuctionSubHandler;
+import com.smore.auction.infrastructure.websocket.handler.AuctionSessionManager;
 import java.time.Duration;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AuctionSubHandlerImpl implements AuctionSubHandler {
+public class AuctionSessionManagerImpl implements AuctionSessionManager {
 
     private final StringRedisTemplate redis;
 
