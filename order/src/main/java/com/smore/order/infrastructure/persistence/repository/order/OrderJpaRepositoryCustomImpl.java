@@ -238,8 +238,7 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
             .set(orderEntity.orderStatus, OrderStatus.FAILED)
             .where(
                 orderEntity.id.eq(orderId),
-                orderEntity.orderStatus.eq(currentStatus),
-                orderEntity.orderStatus.eq(OrderStatus.CREATED)
+                orderEntity.orderStatus.eq(currentStatus)
             )
             .execute();
 
