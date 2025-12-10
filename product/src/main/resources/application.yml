@@ -9,11 +9,11 @@ spring:
 
   application:
     name: product-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/product-db
-    username: root
-    password: root
-    driver-class-name: org.postgresql.Driver
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/product-db
+#    username: root
+#    password: root
+#    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
