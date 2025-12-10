@@ -7,6 +7,7 @@ import com.smore.order.domain.status.OrderStatus;
 import com.smore.order.infrastructure.persistence.entity.order.Address;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import jakarta.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -143,6 +144,27 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
             .where(
                 orderEntity.id.eq(orderId),
                 orderEntity.userId.eq(userId)
+            )
+            .execute();
+
+        em.flush();
+        em.clear();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int delete(UUID orderId, Long userId, LocalDateTime now) {
+        long updated = queryFactory
+            .update(orderEntity)
+            .set(orderEntity.deletedBy, userId)
+            .set(orderEntity.deletedAt, now)
+            .where(
+                orderEntity.id.eq(orderId),
+                orderEntity.userId.eq(userId),
+                orderEntity.orderStatus.eq(OrderStatus.CONFIRMED),
+                orderEntity.deletedAt.isNull(),
+                orderEntity.deletedBy.isNull()
             )
             .execute();
 

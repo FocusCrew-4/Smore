@@ -28,9 +28,12 @@ import com.smore.order.domain.status.RefundStatus;
 import com.smore.order.domain.status.ServiceResult;
 import com.smore.order.domain.vo.Address;
 import com.smore.order.infrastructure.persistence.exception.CompleteOrderFailException;
+import com.smore.order.infrastructure.persistence.exception.NotFoundOrderException;
 import com.smore.order.infrastructure.persistence.exception.UpdateOrderFailException;
+import com.smore.order.presentation.dto.DeleteOrderResponse;
 import com.smore.order.presentation.dto.IsOrderCreatedResponse;
 import com.smore.order.presentation.dto.ModifyOrderResponse;
+import com.smore.order.presentation.dto.OrderInfo;
 import com.smore.order.presentation.dto.RefundResponse;
 import jakarta.transaction.Transactional;
 import java.time.Clock;
@@ -414,6 +417,64 @@ public class OrderService {
             command.getAddress().city(),
             command.getAddress().zipcode()
         );
+    }
+
+    @Transactional
+    public DeleteOrderResponse delete(UUID orderId, Long userId) {
+
+        Optional<Order> content = orderRepository.findByIdIncludingDeleted(orderId);
+
+        if (content.isEmpty()) {
+            log.error("주문을 찾을 수 없습니다. orderId : {}", orderId);
+            throw new NotFoundOrderException("주문을 찾을 수 없습니다.");
+        }
+
+        Order order = content.get();
+
+        if (order.notEqualUserId(userId)) {
+            return DeleteOrderResponse.fail(
+                "주문자와 주문 삭제자가 일치하지 않습니다."
+            );
+        }
+
+        if (order.isDeleted()) {
+            return DeleteOrderResponse.success(
+                "이미 삭제된 주문입니다.",
+                order.getDeletedAt(),
+                order.getDeletedBy()
+            );
+        }
+
+        if (order.isUndeletable()) {
+            return DeleteOrderResponse.fail(
+                "삭제 가능한 상태가 아닙니다."
+            );
+        }
+
+        LocalDateTime now = LocalDateTime.now(clock);
+        int updated = orderRepository.delete(
+            orderId,
+            userId,
+            now
+        );
+
+        if (updated == 0) {
+            log.error("동시 처리로 주문 삭제 실패 orderid : {}, method : {} ", orderId, "delete()");
+            throw new UpdateOrderFailException("동시 처리로 주문 삭제 실패");
+        }
+
+        return DeleteOrderResponse.success(
+            "주문 삭제에 성공했습니다.",
+            now,
+            userId
+        );
+    }
+
+    public OrderInfo searchOrderOne(UUID orderId) {
+
+        Order order = orderRepository.findById(orderId);
+
+        return OrderInfo.of(order);
     }
 
     // TODO: 나중에 클래스로 분리할 예정

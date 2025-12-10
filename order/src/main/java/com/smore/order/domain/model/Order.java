@@ -33,6 +33,10 @@ public class Order {
     private LocalDateTime confirmedAt;
     private LocalDateTime cancelledAt;
     private Address address;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
+    private Long deletedBy;
 
     public static Order create(
         Long userId, UUID productId,
@@ -84,7 +88,11 @@ public class Order {
         LocalDateTime cancelledAt,
         String street,
         String city,
-        String zipcode
+        String zipcode,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+        LocalDateTime deletedAt,
+        Long deletedBy
     ) {
 
         Product product = new Product(productId, productPrice);
@@ -107,6 +115,10 @@ public class Order {
             .confirmedAt(confirmedAt)
             .cancelledAt(cancelledAt)
             .address(address)
+            .createdAt(createdAt)
+            .updatedAt(updatedAt)
+            .deletedAt(deletedAt)
+            .deletedBy(deletedBy)
             .build();
     }
 
@@ -144,11 +156,19 @@ public class Order {
     }
 
     public boolean notEqualUserId(Long userId) {
-        return this.userId != userId;
+        return !this.userId.equals(userId);
     }
 
     public boolean equalAddress(Address address) {
         return this.address.equals(address);
+    }
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
+
+    public boolean isUndeletable() {
+        return this.orderStatus != OrderStatus.CONFIRMED;
     }
 
     private static Integer calculateTotalPrice(Integer price, Integer quantity) {

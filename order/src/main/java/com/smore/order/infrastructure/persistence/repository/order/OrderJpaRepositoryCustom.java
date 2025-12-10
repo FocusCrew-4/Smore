@@ -3,6 +3,7 @@ package com.smore.order.infrastructure.persistence.repository.order;
 import com.smore.order.domain.status.OrderStatus;
 import com.smore.order.infrastructure.persistence.entity.order.Address;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -26,4 +27,6 @@ public interface OrderJpaRepositoryCustom {
         Integer refundedQuantity);
 
     int update(UUID orderId, Long userId, Address address);
+
+    int delete(UUID orderId, Long userId, LocalDateTime now);
 }

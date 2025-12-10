@@ -8,6 +8,7 @@ import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOrderFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOrderException;
 import com.smore.order.infrastructure.persistence.mapper.OrderMapper;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -67,6 +68,14 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         OrderEntity entity = orderJpaRepository
             .findByAllocationKeyAndUserId(allocationKey, userId);
+
+        return Optional.ofNullable(entity).map(OrderMapper::toDomain);
+    }
+
+    @Override
+    public Optional<Order> findByIdIncludingDeleted(UUID orderId) {
+
+        OrderEntity entity = orderJpaRepository.findByIdIncludingDeleted(orderId);
 
         return Optional.ofNullable(entity).map(OrderMapper::toDomain);
     }
@@ -139,5 +148,10 @@ public class OrderRepositoryImpl implements OrderRepository {
         );
 
         return orderJpaRepository.update(order.getId(), order.getUserId(), newAddress);
+    }
+
+    @Override
+    public int delete(UUID orderId, Long userId, LocalDateTime now) {
+        return orderJpaRepository.delete(orderId, userId, now);
     }
 }
