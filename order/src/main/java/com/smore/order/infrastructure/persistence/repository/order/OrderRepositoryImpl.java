@@ -3,6 +3,7 @@ package com.smore.order.infrastructure.persistence.repository.order;
 import com.smore.order.application.repository.OrderRepository;
 import com.smore.order.domain.model.Order;
 import com.smore.order.domain.status.OrderStatus;
+import com.smore.order.infrastructure.error.OrderErrorCode;
 import com.smore.order.infrastructure.persistence.entity.order.Address;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOrderFailException;
@@ -50,7 +51,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         OrderEntity entity = orderJpaRepository.findById(orderId)
             .orElseThrow(
-                () -> new NotFoundOrderException("주문을 찾을 수 없습니다.")
+                () -> new NotFoundOrderException(OrderErrorCode.NOT_FOUND_ORDER)
             );
 
         return OrderMapper.toDomain(entity);
@@ -104,7 +105,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         if (entity == null) {
             log.error("entity is Null : methodName = {}", "save()");
-            throw new CreateOrderFailException("주문이 생성되지 않았습니다.");
+            throw new CreateOrderFailException(OrderErrorCode.CREATE_ORDER_CONFLICT);
         }
         return OrderMapper.toDomain(entity);
     }
@@ -165,4 +166,16 @@ public class OrderRepositoryImpl implements OrderRepository {
     public int delete(UUID orderId, Long userId, LocalDateTime now) {
         return orderJpaRepository.delete(orderId, userId, now);
     }
+
+
+    @Override
+    public int completePayment(UUID orderId, UUID paymentId) {
+        return orderJpaRepository.completePayment(orderId, paymentId);
+    }
+
+    @Override
+    public int fail(UUID orderId, OrderStatus currentStatus) {
+        return orderJpaRepository.fail(orderId, currentStatus);
+    }
+
 }

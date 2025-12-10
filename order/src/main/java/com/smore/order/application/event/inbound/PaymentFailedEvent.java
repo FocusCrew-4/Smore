@@ -1,7 +1,5 @@
 package com.smore.order.application.event.inbound;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,10 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PaymentCompletedEvent {
+public class PaymentFailedEvent {
     private UUID orderId;
     private UUID paymentId;
-    private BigInteger amount;
-    private LocalDateTime approvedAt;
+    private String errorMessage;
     private UUID idempotencyKey;
 }

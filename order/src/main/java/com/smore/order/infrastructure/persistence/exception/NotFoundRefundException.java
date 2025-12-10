@@ -1,8 +1,21 @@
 package com.smore.order.infrastructure.persistence.exception;
 
-public class NotFoundRefundException extends RuntimeException {
+import com.smore.common.error.ErrorCode;
+import com.smore.order.infrastructure.error.OrderException;
 
-    public NotFoundRefundException(String message) {
-        super(message);
+public class NotFoundRefundException extends OrderException {
+
+    public NotFoundRefundException(ErrorCode errorCode) {
+        super(errorCode);
+    }
+
+    @Override
+    public ErrorCode getErrorCode() {
+        return super.getErrorCode();
+    }
+
+    @Override
+    public String getTriggeredBy() {
+        return super.getTriggeredBy();
     }
 }

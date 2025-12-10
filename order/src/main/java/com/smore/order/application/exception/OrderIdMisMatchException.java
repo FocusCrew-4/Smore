@@ -1,11 +1,12 @@
-package com.smore.order.infrastructure.persistence.exception;
+package com.smore.order.application.exception;
 
 import com.smore.common.error.ErrorCode;
 import com.smore.order.infrastructure.error.OrderException;
 
-public class CreateOrderFailException extends OrderException {
 
-    public CreateOrderFailException(ErrorCode errorCode) {
+public class OrderIdMisMatchException extends OrderException {
+
+    public OrderIdMisMatchException(ErrorCode errorCode) {
         super(errorCode);
     }
 

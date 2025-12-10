@@ -2,12 +2,15 @@ package com.smore.order.application.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smore.order.application.dto.CompletedPaymentCommand;
 import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
+import com.smore.order.application.dto.FailedOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
 import com.smore.order.application.dto.ModifyOrderCommand;
 import com.smore.order.application.dto.RefundCommand;
-import com.smore.order.application.exception.RefundConflictException;
+import com.smore.order.application.event.outbound.OrderFailedEvent;
+import com.smore.order.application.exception.OrderIdMisMatchException;
 import com.smore.order.application.exception.RefundReservationConflictException;
 import com.smore.order.application.repository.OrderRepository;
 import com.smore.order.application.repository.OutboxRepository;
@@ -27,7 +30,8 @@ import com.smore.order.domain.status.OrderStatus;
 import com.smore.order.domain.status.RefundStatus;
 import com.smore.order.domain.status.ServiceResult;
 import com.smore.order.domain.vo.Address;
-import com.smore.order.infrastructure.persistence.exception.CompleteOrderFailException;
+import com.smore.order.application.exception.CompleteOrderFailException;
+import com.smore.order.infrastructure.error.OrderErrorCode;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOrderException;
 import com.smore.order.infrastructure.persistence.exception.UpdateOrderFailException;
 import com.smore.order.presentation.dto.DeleteOrderResponse;
@@ -80,6 +84,8 @@ public class OrderService {
             command.getProductId(),
             command.getProductPrice(),
             command.getQuantity(),
+            command.getCategoryId(),
+            command.getSaleType(),
             command.getIdempotencyKey(),
             now,
             command.getStreet(),
@@ -92,6 +98,9 @@ public class OrderService {
             saveOrder.getId(),
             saveOrder.getUserId(),
             saveOrder.getTotalAmount(),
+            saveOrder.getCategoryId(),
+            saveOrder.getSaleType(),
+            command.getSellerId(),
             UUID.randomUUID(),
             now,
             command.getExpiresAt()
@@ -109,7 +118,10 @@ public class OrderService {
     }
 
     @Transactional
-    public ServiceResult completeOrder(UUID orderId) {
+    public ServiceResult completeOrder(CompletedPaymentCommand command) {
+
+        UUID orderId = command.getOrderId();
+        UUID paymentId = command.getPaymentId();
 
         Order order = orderRepository.findById(orderId);
 
@@ -118,11 +130,11 @@ public class OrderService {
             return ServiceResult.SUCCESS;
         }
 
-        int updated = orderRepository.markComplete(orderId);
+        int updated = orderRepository.completePayment(orderId, paymentId);
 
         if (updated == 0) {
             log.error("주문 완료 상태로 변경하지 못했습니다. orderId = {}, methodName = {}", orderId, "completeOrder");
-            throw new CompleteOrderFailException("주문 완료 상태로 변경하지 못했습니다.");
+            throw new CompleteOrderFailException(OrderErrorCode.COMPLETE_ORDER_CONFLICT);
         }
 
         OrderCompletedEvent event = OrderCompletedEvent.of(
@@ -195,7 +207,7 @@ public class OrderService {
         if (updated == 0) {
             log.error("환불 예약에 실패 orderid : {}, method : {} ", command.getOrderId(), "refund()");
             throw new RefundReservationConflictException(
-                "환불 예약에 실패했습니다. 다른 환불 요청이 먼저 처리되었거나 주문 상태가 변경되었습니다."
+                OrderErrorCode.REFUND_RESERVATION_CONFLICT
             );
         }
 
@@ -204,6 +216,7 @@ public class OrderService {
             command.getUserId(),
             order.getProduct().productId(),
             order.getProduct().productPrice(),
+            order.getPaymentId(),
             command.getRefundQuantity(),
             command.getIdempotencyKey(),
             command.getReason(),
@@ -216,8 +229,10 @@ public class OrderService {
             savedRefund.getOrderId(),
             order.getUserId(),
             savedRefund.getId(),
+            savedRefund.getPaymentId(),
             savedRefund.getRefundAmount(),
             savedRefund.getIdempotencyKey(),
+            command.getReason(),
             LocalDateTime.now(clock)
         );
 
@@ -258,8 +273,8 @@ public class OrderService {
 
         if (refund.notEqualOrderId(command.getOrderId())) {
             log.error("refund의 orderId와 이벤트의 command의 orderId가 일치하지 않습니다.");
-            throw new RefundConflictException(
-                "refund의 orderId와 이벤트의 command의 orderId가 일치하지 않습니다."
+            throw new OrderIdMisMatchException(
+                OrderErrorCode.ORDER_ID_MISMATCH
             );
         }
 
@@ -272,7 +287,7 @@ public class OrderService {
         if (updated == 0) {
             log.error("환불 완료 실패 orderid : {}, method : {} ", command.getOrderId(), "refundSuccess()");
             throw new RefundReservationConflictException(
-                "환불 완료가 실패했습니다. 다른 환불 완료가 먼저 처리되었거나 주문 상태가 변경되었습니다."
+                OrderErrorCode.REFUND_RESERVATION_CONFLICT
             );
         }
 
@@ -292,7 +307,7 @@ public class OrderService {
         if (updated == 0) {
             log.error("환불 완료 실패 orderid : {}, method : {} ", command.getOrderId(), "refundSuccess()");
             throw new RefundReservationConflictException(
-                "환불 완료가 실패했습니다. 다른 환불 완료가 먼저 처리되었거나 주문 상태가 변경되었습니다."
+                OrderErrorCode.REFUND_RESERVATION_CONFLICT
             );
         }
 
@@ -326,21 +341,22 @@ public class OrderService {
 
         if (refund.notEqualOrderId(command.getOrderId())) {
             log.error("refund의 orderId와 이벤트의 command의 orderId가 일치하지 않습니다.");
-            throw new RefundConflictException(
-                "refund의 orderId와 이벤트의 command의 orderId가 일치하지 않습니다."
+            throw new OrderIdMisMatchException(
+                OrderErrorCode.ORDER_ID_MISMATCH
             );
         }
 
         int updated = refundRepository.fail(
             refund.getId(),
             RefundStatus.FAILED,
+            command.getMessage(),
             LocalDateTime.now(clock)
         );
 
         if (updated == 0) {
             log.error("환불 요청 실패 기록 하지 못함 orderid : {}, method : {} ", command.getOrderId(), "refundFail()");
             throw new RefundReservationConflictException(
-                "환불 요청 실패를 기록하지 못했습니다. 다른 작업이 먼저 처리했고나 환불 상태가 변경되었습니다."
+                OrderErrorCode.REFUND_RESERVATION_CONFLICT
             );
         }
 
@@ -356,7 +372,7 @@ public class OrderService {
         if (updated == 0) {
             log.error("환불 요청 실패 기록 하지 못함 orderid : {}, method : {} ", command.getOrderId(), "refundFail()");
             throw new RefundReservationConflictException(
-                "환불 요청 실패를 기록하지 못했습니다. 다른 작업이 먼저 처리했고나 환불 상태가 변경되었습니다."
+                OrderErrorCode.REFUND_RESERVATION_CONFLICT
             );
         }
 
@@ -415,7 +431,7 @@ public class OrderService {
 
         if (updated == 0) {
             log.error("주문 정보 수정 실패 orderid : {}, method : {} ", command.getOrderId(), "modify()");
-            throw new UpdateOrderFailException("주문 정보 수정 실패");
+            throw new UpdateOrderFailException(OrderErrorCode.UPDATE_ORDER_FAIL_CONFLICT);
         }
 
         return ModifyOrderResponse.success(
@@ -436,7 +452,8 @@ public class OrderService {
 
         if (content.isEmpty()) {
             log.error("주문을 찾을 수 없습니다. orderId : {}", orderId);
-            throw new NotFoundOrderException("주문을 찾을 수 없습니다.");
+            throw new NotFoundOrderException(OrderErrorCode.NOT_FOUND_ORDER);
+
         }
 
         Order order = content.get();
@@ -470,7 +487,8 @@ public class OrderService {
 
         if (updated == 0) {
             log.error("동시 처리로 주문 삭제 실패 orderid : {}, method : {} ", orderId, "delete()");
-            throw new UpdateOrderFailException("동시 처리로 주문 삭제 실패");
+            throw new UpdateOrderFailException(OrderErrorCode.UPDATE_ORDER_FAIL_CONFLICT);
+
         }
 
         return DeleteOrderResponse.success(
@@ -503,6 +521,45 @@ public class OrderService {
             }
         }
         return pageable;
+    }
+
+    public void failOrder(FailedOrderCommand command) {
+
+        Order order = orderRepository.findById(command.getOrderId());
+
+        if (order.isFailed()) {
+            log.info("이미 처리된 작업 orderId : {}", command.getOrderId());
+            return;
+        }
+
+        int updated = orderRepository.fail(
+            command.getOrderId(),
+            order.getOrderStatus()
+        );
+
+        if (updated == 0) {
+            log.error("주문 실패 실패 orderid : {}, method : {} ", command.getOrderId(), "failOrder()");
+            throw new UpdateOrderFailException(OrderErrorCode.UPDATE_ORDER_FAIL_CONFLICT);
+        }
+
+        OrderFailedEvent event = OrderFailedEvent.of(
+            order.getIdempotencyKey(),
+            order.getProduct().productId(),
+            order.getUserId(),
+            order.getQuantity(),
+            LocalDateTime.now(clock)
+        );
+
+        Outbox outbox = Outbox.create(
+            AggregateType.ORDER,
+            order.getId(),
+            EventType.ORDER_FAILED,
+            UUID.randomUUID(),
+            makePayload(event)
+        );
+
+        outboxRepository.save(outbox);
+
     }
 
     // TODO: 나중에 클래스로 분리할 예정

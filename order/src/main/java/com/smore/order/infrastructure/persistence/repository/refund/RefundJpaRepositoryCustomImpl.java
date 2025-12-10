@@ -46,10 +46,11 @@ public class RefundJpaRepositoryCustomImpl implements RefundJpaRepositoryCustom 
     }
 
     @Override
-    public int fail(UUID id, RefundStatus refundStatus, LocalDateTime now) {
+    public int fail(UUID id, RefundStatus refundStatus, String message, LocalDateTime now) {
         long updated = queryFactory
             .update(refundEntity)
             .set(refundEntity.status, refundStatus)
+            .set(refundEntity.refundFailReason, message)
             .where(
                 refundEntity.id.eq(id),
                 refundEntity.status.eq(RefundStatus.REQUESTED)

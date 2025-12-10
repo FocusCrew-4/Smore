@@ -1,8 +1,9 @@
 package com.smore.order.domain.model;
 
-
+// paymentId (추가)
 import com.smore.order.domain.status.CancelState;
 import com.smore.order.domain.status.OrderStatus;
+import com.smore.order.domain.status.SaleType;
 import com.smore.order.domain.vo.Address;
 import com.smore.order.domain.vo.Product;
 import java.time.LocalDateTime;
@@ -21,7 +22,10 @@ public class Order {
     private Long userId;
     private Product product;
     private Integer quantity;
+    private UUID paymentId;
     private Integer totalAmount;
+    private UUID categoryId;
+    private SaleType saleType;
     private Integer refundReservedQuantity;
     private Integer refundedQuantity;
     private Integer refundedAmount;
@@ -41,6 +45,7 @@ public class Order {
     public static Order create(
         Long userId, UUID productId,
         Integer productPrice, Integer quantity,
+        UUID categoryId, SaleType saleType,
         UUID idempotencyKey, LocalDateTime now,
         String street, String city, String zipcode
     ) {
@@ -49,6 +54,7 @@ public class Order {
         Address address = new Address(street, city, zipcode);
 
         if (userId == null) throw new IllegalArgumentException("유저 식별자는 필수값입니다.");
+        if (categoryId == null) throw new IllegalArgumentException("카테고리 식별자는 필수값입니다.");
         if (quantity == null)throw new IllegalArgumentException("주문 수량은 필수값입니다.");
         if (quantity < 1)throw new IllegalArgumentException("주문 수량은 1개 이상이어야 합니다.");
         if (idempotencyKey == null) throw new IllegalArgumentException("멱등키는 필수입니다.");
@@ -61,6 +67,8 @@ public class Order {
             .product(product)
             .quantity(quantity)
             .totalAmount(totalAmount)
+            .categoryId(categoryId)
+            .saleType(saleType)
             .idempotencyKey(idempotencyKey)
             .orderStatus(OrderStatus.CREATED)
             .cancelState(CancelState.NONE)
@@ -75,7 +83,10 @@ public class Order {
         UUID productId,
         Integer productPrice,
         Integer quantity,
+        UUID paymentId,
         Integer totalAmount,
+        UUID categoryId,
+        SaleType saleType,
         Integer refundReservedQuantity,
         Integer refundedQuantity,
         Integer refundedAmount,
@@ -104,6 +115,9 @@ public class Order {
             .product(product)
             .quantity(quantity)
             .totalAmount(totalAmount)
+            .categoryId(categoryId)
+            .saleType(saleType)
+            .paymentId(paymentId)
             .refundReservedQuantity(refundReservedQuantity)
             .refundedQuantity(refundedQuantity)
             .refundedAmount(refundedAmount)
@@ -152,7 +166,7 @@ public class Order {
     }
 
     public void changeAddressInfo(String street, String city, String zipcode) {
-        Address address = new Address(street, city, zipcode);
+        this.address = new Address(street, city, zipcode);
     }
 
     public boolean notEqualUserId(Long userId) {
@@ -171,6 +185,10 @@ public class Order {
         return this.orderStatus != OrderStatus.CONFIRMED;
     }
 
+    public boolean isFailed() {
+        return this.orderStatus == OrderStatus.FAILED;
+    }
+  
     private static Integer calculateTotalPrice(Integer price, Integer quantity) {
         return price * quantity;
     }

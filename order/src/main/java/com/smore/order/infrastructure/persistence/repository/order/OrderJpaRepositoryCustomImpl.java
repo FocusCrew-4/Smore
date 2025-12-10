@@ -8,6 +8,7 @@ import com.querydsl.core.types.dsl.ComparableExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.smore.order.application.event.outbound.OrderCompletedEvent;
 import com.smore.order.domain.status.OrderStatus;
 import com.smore.order.infrastructure.persistence.entity.order.Address;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
@@ -203,6 +204,41 @@ public class OrderJpaRepositoryCustomImpl implements OrderJpaRepositoryCustom {
                 orderEntity.orderStatus.eq(OrderStatus.CONFIRMED),
                 orderEntity.deletedAt.isNull(),
                 orderEntity.deletedBy.isNull()
+            )
+            .execute();
+
+        em.flush();
+        em.clear();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int completePayment(UUID orderId, UUID paymentId) {
+        long updated = queryFactory
+            .update(orderEntity)
+            .set(orderEntity.paymentId, paymentId)
+            .set(orderEntity.orderStatus, OrderStatus.COMPLETED)
+            .where(
+                orderEntity.id.eq(orderId),
+                orderEntity.orderStatus.eq(OrderStatus.CREATED)
+            )
+            .execute();
+
+        em.flush();
+        em.clear();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int fail(UUID orderId, OrderStatus currentStatus) {
+        long updated = queryFactory
+            .update(orderEntity)
+            .set(orderEntity.orderStatus, OrderStatus.FAILED)
+            .where(
+                orderEntity.id.eq(orderId),
+                orderEntity.orderStatus.eq(currentStatus)
             )
             .execute();
 
