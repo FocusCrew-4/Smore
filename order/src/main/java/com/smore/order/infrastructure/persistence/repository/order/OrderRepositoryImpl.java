@@ -167,6 +167,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         return orderJpaRepository.delete(orderId, userId, now);
     }
 
+
     @Override
     public int completePayment(UUID orderId, UUID paymentId) {
         return orderJpaRepository.completePayment(orderId, paymentId);
@@ -176,4 +177,5 @@ public class OrderRepositoryImpl implements OrderRepository {
     public int fail(UUID orderId, OrderStatus currentStatus) {
         return orderJpaRepository.fail(orderId, currentStatus);
     }
+
 }

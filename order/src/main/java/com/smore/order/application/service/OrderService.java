@@ -453,6 +453,7 @@ public class OrderService {
         if (content.isEmpty()) {
             log.error("주문을 찾을 수 없습니다. orderId : {}", orderId);
             throw new NotFoundOrderException(OrderErrorCode.NOT_FOUND_ORDER);
+
         }
 
         Order order = content.get();
@@ -487,6 +488,7 @@ public class OrderService {
         if (updated == 0) {
             log.error("동시 처리로 주문 삭제 실패 orderid : {}, method : {} ", orderId, "delete()");
             throw new UpdateOrderFailException(OrderErrorCode.UPDATE_ORDER_FAIL_CONFLICT);
+
         }
 
         return DeleteOrderResponse.success(

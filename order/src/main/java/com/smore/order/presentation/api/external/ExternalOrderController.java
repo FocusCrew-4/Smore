@@ -40,6 +40,7 @@ public interface ExternalOrderController {
     ResponseEntity<CommonResponse<?>> delete(
         @NotNull @RequestHeader("X-User-Id") Long requesterId,
         @NotBlank @RequestHeader("X-User-Role") String role,
+
         @PathVariable UUID orderId
     );
 
@@ -50,6 +51,7 @@ public interface ExternalOrderController {
     );
 
     ResponseEntity<CommonResponse<?>> searchOrderList(
+
         @NotNull @RequestHeader("X-User-Id") Long requesterId,
         @NotBlank @RequestHeader("X-User-Role") String role,
         @RequestParam(required = false) Long userId,

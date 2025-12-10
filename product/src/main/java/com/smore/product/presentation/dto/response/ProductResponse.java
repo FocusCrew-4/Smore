@@ -5,6 +5,7 @@ import com.smore.product.domain.entity.ProductStatus;
 import com.smore.product.domain.entity.SaleType;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ public class ProductResponse {
     private UUID categoryId;
     private String name;
     private String description;
-    private int price;
+    private BigDecimal price;
     private int stock;
     private SaleType saleType;
     private Integer thresholdForAuction;

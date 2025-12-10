@@ -1,8 +1,10 @@
 package com.smore.product.domain.entity;
 
 import jakarta.persistence.*;
+import jdk.jshell.Snippet;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -29,7 +31,7 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private int price;
+    private BigDecimal price;
 
     private int stock;
 
@@ -51,10 +53,11 @@ public class Product {
             UUID categoryId,
             String name,
             String description,
-            int price,
+            BigDecimal price,
             int stock,
             SaleType saleType,
-            Integer thresholdForAuction
+            Integer thresholdForAuction,
+            ProductStatus status
     ) {
         LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
 
@@ -67,7 +70,7 @@ public class Product {
                 .stock(stock)
                 .saleType(saleType)
                 .thresholdForAuction(thresholdForAuction)
-                .status(ProductStatus.ON_SALE)
+                .status(status)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
@@ -76,11 +79,12 @@ public class Product {
     public void update(
             String name,
             String description,
-            Integer price,
+            BigDecimal price,
             Integer stock,
             UUID categoryId,
             SaleType saleType,
-            Integer thresholdForAuction
+            Integer thresholdForAuction,
+            ProductStatus status
     ) {
         if (name != null) this.name = name;
         if (description != null) this.description = description;
@@ -89,6 +93,7 @@ public class Product {
         if (categoryId != null) this.categoryId = categoryId;
         if (saleType != null) this.saleType = saleType;
         if (thresholdForAuction != null) this.thresholdForAuction = thresholdForAuction;
+        if (status != null) this.status = status;
 
         this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
@@ -107,7 +112,7 @@ public class Product {
         this.description = description;
     }
 
-    public void changePrice(Integer price) {
+    public void changePrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -125,5 +130,10 @@ public class Product {
 
     public void changeThreshold(Integer threshold) {
         this.thresholdForAuction = threshold;
+    }
+
+    public void changeStatus(ProductStatus status) {
+        this.status = status;
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
 }

@@ -43,4 +43,5 @@ public interface OrderRepository {
     int completePayment(UUID orderId, UUID paymentId);
 
     int fail(UUID orderId, OrderStatus currentStatus);
+
 }

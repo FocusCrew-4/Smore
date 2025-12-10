@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   redis-stack:
@@ -267,6 +265,15 @@ services:
     networks:
       - msa-network
 
+  category-service:
+    container_name: category-service
+    build: ./category/.
+    ports:
+      - "3300:3300"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - msa-network
 
 volumes:
   kafka-1-data:

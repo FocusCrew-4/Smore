@@ -188,7 +188,7 @@ public class Order {
     public boolean isFailed() {
         return this.orderStatus == OrderStatus.FAILED;
     }
-
+  
     private static Integer calculateTotalPrice(Integer price, Integer quantity) {
         return price * quantity;
     }

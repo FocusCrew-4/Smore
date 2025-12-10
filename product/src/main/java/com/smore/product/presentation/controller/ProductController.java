@@ -3,8 +3,10 @@ package com.smore.product.presentation.controller;
 import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
 import com.smore.product.application.service.ProductService;
+import com.smore.product.domain.sale.dto.ProductSaleResponse;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductRequest;
+import com.smore.product.presentation.dto.request.UpdateProductStatusRequest;
 import com.smore.product.presentation.dto.response.ProductResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +16,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -56,6 +59,33 @@ public class ProductController {
             @RequestBody UpdateProductRequest request
     ) {
         ProductResponse response = productService.updateProduct(productId, request);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @PatchMapping("/{productId}/status")
+    public ResponseEntity<CommonResponse<ProductResponse>> updateStatus(
+            @PathVariable UUID productId,
+            @RequestBody UpdateProductStatusRequest request
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.ok(productService.updateProductStatus(productId, request))
+        );
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<CommonResponse<Void>> deleteProduct(
+            @PathVariable UUID productId,
+            @RequestHeader("X-User-Id") Long requesterId
+    ) {
+        productService.deleteProduct(productId, requesterId);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @GetMapping("/{productId}/sales")
+    public ResponseEntity<CommonResponse<List<ProductSaleResponse>>> getSales(
+            @PathVariable UUID productId
+    ) {
+        var response = productService.getProductSales(productId);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }
