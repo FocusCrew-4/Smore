@@ -81,8 +81,3 @@ eureka:
       defaultZone: http://eureka-server:18800/eureka/
   instance:
     prefer-ip-address: true
-
-product:
-  topic:
-    auction-pending-start:
-      v1: product.auctionPendingStart.v1
