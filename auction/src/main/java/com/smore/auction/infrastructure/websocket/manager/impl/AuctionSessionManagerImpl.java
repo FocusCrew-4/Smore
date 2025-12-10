@@ -1,5 +1,6 @@
 package com.smore.auction.infrastructure.websocket.manager.impl;
 
+import com.smore.auction.infrastructure.redis.RedisKeyFactory;
 import com.smore.auction.infrastructure.websocket.manager.AuctionSessionManager;
 import java.time.Duration;
 import java.util.Set;
@@ -14,24 +15,11 @@ import org.springframework.stereotype.Component;
 public class AuctionSessionManagerImpl implements AuctionSessionManager {
 
     private final StringRedisTemplate redis;
+    private final RedisKeyFactory key;
 
     /*
     Redis 네이밍 룰 [namespace]:[entity]:[identifier]:[property]
      */
-    // ws:auction:501 = {sessionA, sessionB, sessionC}
-    private String keyAuction_sessions(String auctionId) {
-        return "ws:auction:" + auctionId;
-    }
-
-    // ws:session:abc123:user = 10
-    private String keySession_user(String sessionId) {
-        return "ws:session:" + sessionId + ":user";
-    }
-
-    // ws:session:abc123:auction = 501, 202, 333
-    private String keySession_auctions(String sessionId) {
-        return "ws:session:" + sessionId + ":auction";
-    }
 
     /*
      ConcurrentMap 은 Java 에서 동시성에 안전한 Map 인터페이스
@@ -55,17 +43,17 @@ public class AuctionSessionManagerImpl implements AuctionSessionManager {
     public void handleSubscribe(String sessionId, Long userId, String auctionId) {
         log.info("구독매니저 진입 레디스에 키 정보 기록");
 
-        Boolean auctionExist = redis.hasKey(keyAuction_sessions(auctionId));
+        Boolean auctionExist = redis.hasKey(key.auctionSessions(auctionId));
 
         redis.opsForSet()
-            .add(keyAuction_sessions(auctionId), sessionId);
+            .add(key.auctionSessions(auctionId), sessionId);
         redis.opsForValue()
-            .set(keySession_user(sessionId), userId.toString());
+            .set(key.sessionUser(sessionId), userId.toString());
         redis.opsForSet()
-            .add(keySession_auctions(sessionId), auctionId);
+            .add(key.sessionUser(sessionId), auctionId);
 
         if (!auctionExist) {
-            redis.expire(keyAuction_sessions(auctionId), Duration.ofMinutes(10));
+            redis.expire(key.auctionSessions(auctionId), Duration.ofMinutes(10));
         }
     }
 
@@ -73,19 +61,19 @@ public class AuctionSessionManagerImpl implements AuctionSessionManager {
     public void handleDisconnect(String sessionId) {
 
         Set<String> auctionIds = redis.opsForSet()
-            .members(keySession_auctions(sessionId));
+            .members(key.sessionAuctions(sessionId));
 
         // sessionId 키를 제거함 (매핑된 auctionId 도 지워짐)
-        redis.delete(keySession_auctions(sessionId));
+        redis.delete(key.sessionAuctions(sessionId));
 
         // sessionId 키를 제거함 (매핑된 userId 도 지워짐)
-        redis.delete(keySession_user(sessionId));
+        redis.delete(key.sessionUser(sessionId));
 
         // AuctionId 키 값들을 불러와서 내부의 sessionId 를 지움
         // 키를 지우면 내부 데이터가 모두 날아가서 하면 안 됨
         if (auctionIds != null) {
             auctionIds.forEach(auctionId -> redis.opsForSet()
-                .remove(keyAuction_sessions(auctionId), sessionId));
+                .remove(key.auctionSessions(auctionId), sessionId));
         }
     }
 }
