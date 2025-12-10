@@ -50,7 +50,7 @@ public class AuctionSessionManagerImpl implements AuctionSessionManager {
         redis.opsForValue()
             .set(key.sessionUser(sessionId), userId.toString());
         redis.opsForSet()
-            .add(key.sessionUser(sessionId), auctionId);
+            .add(key.sessionAuctions(sessionId), auctionId);
 
         if (!auctionExist) {
             redis.expire(key.auctionSessions(auctionId), Duration.ofMinutes(10));

@@ -2,6 +2,7 @@ package com.smore.auction.infrastructure.websocket.manager.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.smore.auction.infrastructure.redis.RedisKeyFactory;
 import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -26,18 +27,19 @@ class AuctionSubHandlerImplTest {
             .withExposedPorts(6379);
 
     private String auctionSessionsKey(String auctionId) {
-        return "ws:auction:" + auctionId;
+        return key.auctionSessions(auctionId);
     }
 
     private String sessionUserKey(String sessionId) {
-        return "ws:session:" + sessionId + ":user";
+        return key.sessionUser(sessionId);
     }
 
     private String sessionAuctionKey(String sessionId) {
-        return "ws:session:" + sessionId + ":auction";
+        return key.sessionAuctions(sessionId);
     }
 
     private StringRedisTemplate redis;
+    private RedisKeyFactory key;
     private AuctionSessionManagerImpl auctionSubHandler;
 
     @BeforeEach
@@ -46,7 +48,8 @@ class AuctionSubHandlerImplTest {
             new LettuceConnectionFactory(redisContainer.getHost(), redisContainer.getMappedPort(6379));
         cf.afterPropertiesSet();
         redis = new StringRedisTemplate(cf);
-        auctionSubHandler = new AuctionSessionManagerImpl(redis);
+        key = new RedisKeyFactory();
+        auctionSubHandler = new AuctionSessionManagerImpl(redis, key);
 
         redis.execute((RedisCallback<Void>) connection -> {
             connection.serverCommands().flushAll();
