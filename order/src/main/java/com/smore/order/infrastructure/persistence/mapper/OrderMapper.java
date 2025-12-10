@@ -21,6 +21,8 @@ public final class OrderMapper {
             order.getProduct().productPrice(),
             order.getQuantity(),
             order.getTotalAmount(),
+            order.getCategoryId(),
+            order.getSaleType(),
             order.getIdempotencyKey(),
             order.getOrderStatus(),
             order.getCancelState(),
@@ -42,7 +44,10 @@ public final class OrderMapper {
             entity.getProduct().getProductId(),
             entity.getProduct().getProductPrice(),
             entity.getQuantity(),
+            entity.getPaymentId(),
             entity.getTotalAmount(),
+            entity.getCategoryId(),
+            entity.getSaleType(),
             entity.getRefundReservedQuantity(),
             entity.getRefundedQuantity(),
             entity.getRefundedAmount(),
@@ -55,7 +60,11 @@ public final class OrderMapper {
             entity.getCancelledAt(),
             entity.getAddress().getStreet(),
             entity.getAddress().getCity(),
-            entity.getAddress().getZipcode()
+            entity.getAddress().getZipcode(),
+            entity.getCreatedAt(),
+            entity.getUpdatedAt(),
+            entity.getDeletedAt(),
+            entity.getDeletedBy()
         );
     }
 }

@@ -2,6 +2,7 @@ package com.smore.auction.domain.model;
 
 import com.smore.auction.domain.enums.AuctionStatus;
 import com.smore.auction.domain.vo.Product;
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -25,7 +26,7 @@ public class Auction {
 
     public static Auction create(
         UUID productId,
-        Long productPrice,
+        BigDecimal productPrice,
         Long stock,
         Long sellerId,
         Clock clock

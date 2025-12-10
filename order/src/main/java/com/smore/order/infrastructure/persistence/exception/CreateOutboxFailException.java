@@ -1,8 +1,21 @@
 package com.smore.order.infrastructure.persistence.exception;
 
-public class CreateOutboxFailException extends RuntimeException {
+import com.smore.common.error.ErrorCode;
+import com.smore.order.infrastructure.error.OrderException;
 
-    public CreateOutboxFailException(String message) {
-        super(message);
+public class CreateOutboxFailException extends OrderException {
+
+    public CreateOutboxFailException(ErrorCode errorCode) {
+        super(errorCode);
+    }
+
+    @Override
+    public ErrorCode getErrorCode() {
+        return super.getErrorCode();
+    }
+
+    @Override
+    public String getTriggeredBy() {
+        return super.getTriggeredBy();
     }
 }

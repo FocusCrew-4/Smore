@@ -1,8 +1,21 @@
 package com.smore.order.application.exception;
 
-public class RefundReservationConflictException extends RuntimeException {
+import com.smore.common.error.ErrorCode;
+import com.smore.order.infrastructure.error.OrderException;
 
-    public RefundReservationConflictException(String message) {
-        super(message);
+public class RefundReservationConflictException extends OrderException {
+
+    public RefundReservationConflictException(ErrorCode errorCode) {
+        super(errorCode);
+    }
+
+    @Override
+    public ErrorCode getErrorCode() {
+        return super.getErrorCode();
+    }
+
+    @Override
+    public String getTriggeredBy() {
+        return super.getTriggeredBy();
     }
 }

@@ -3,16 +3,21 @@ package com.smore.order.infrastructure.persistence.repository.order;
 import com.smore.order.application.repository.OrderRepository;
 import com.smore.order.domain.model.Order;
 import com.smore.order.domain.status.OrderStatus;
+import com.smore.order.infrastructure.error.OrderErrorCode;
 import com.smore.order.infrastructure.persistence.entity.order.Address;
 import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOrderFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOrderException;
 import com.smore.order.infrastructure.persistence.mapper.OrderMapper;
+
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Slf4j(topic = "OrderRepositoryImpl")
@@ -46,7 +51,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         OrderEntity entity = orderJpaRepository.findById(orderId)
             .orElseThrow(
-                () -> new NotFoundOrderException("주문을 찾을 수 없습니다.")
+                () -> new NotFoundOrderException(OrderErrorCode.NOT_FOUND_ORDER)
             );
 
         return OrderMapper.toDomain(entity);
@@ -72,6 +77,22 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public Optional<Order> findByIdIncludingDeleted(UUID orderId) {
+
+        OrderEntity entity = orderJpaRepository.findByIdIncludingDeleted(orderId);
+
+        return Optional.ofNullable(entity).map(OrderMapper::toDomain);
+    }
+
+    @Override
+    public Page<Order> findAll(Long userId, UUID productId, Pageable pageable) {
+
+        Page<OrderEntity> orderEntityPage = orderJpaRepository.findAll(userId, productId, pageable);
+
+        return orderEntityPage.map(OrderMapper::toDomain);
+    }
+
+    @Override
     public Order save(Order order) {
         if (order == null){
             log.error("order is Null : methodName = {}", "save()");
@@ -84,7 +105,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         if (entity == null) {
             log.error("entity is Null : methodName = {}", "save()");
-            throw new CreateOrderFailException("주문이 생성되지 않았습니다.");
+            throw new CreateOrderFailException(OrderErrorCode.CREATE_ORDER_CONFLICT);
         }
         return OrderMapper.toDomain(entity);
     }
@@ -140,4 +161,21 @@ public class OrderRepositoryImpl implements OrderRepository {
 
         return orderJpaRepository.update(order.getId(), order.getUserId(), newAddress);
     }
+
+    @Override
+    public int delete(UUID orderId, Long userId, LocalDateTime now) {
+        return orderJpaRepository.delete(orderId, userId, now);
+    }
+
+
+    @Override
+    public int completePayment(UUID orderId, UUID paymentId) {
+        return orderJpaRepository.completePayment(orderId, paymentId);
+    }
+
+    @Override
+    public int fail(UUID orderId, OrderStatus currentStatus) {
+        return orderJpaRepository.fail(orderId, currentStatus);
+    }
+
 }

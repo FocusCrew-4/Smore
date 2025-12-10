@@ -1,5 +1,6 @@
 package com.smore.order.application.dto;
 
+import com.smore.order.domain.status.SaleType;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -16,6 +17,9 @@ public class CreateOrderCommand {
     private UUID productId;
     private Integer productPrice;
     private Integer quantity;
+    private UUID categoryId;
+    private SaleType saleType;
+    private Long sellerId;
     private UUID idempotencyKey;
     private LocalDateTime expiresAt;
     private String street;
@@ -25,6 +29,7 @@ public class CreateOrderCommand {
     public static CreateOrderCommand create(
         Long userId, UUID productId,
         Integer productPrice, Integer quantity,
+        UUID categoryId, SaleType saleType, Long sellerId,
         UUID idempotencyKey, LocalDateTime expiresAt,
         String street, String city, String zipcode
     ) {
@@ -34,6 +39,9 @@ public class CreateOrderCommand {
             .productId(productId)
             .productPrice(productPrice)
             .quantity(quantity)
+            .categoryId(categoryId)
+            .saleType(saleType)
+            .sellerId(sellerId)
             .idempotencyKey(idempotencyKey)
             .expiresAt(expiresAt)
             .street(street)

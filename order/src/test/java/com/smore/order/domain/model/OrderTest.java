@@ -2,6 +2,7 @@ package com.smore.order.domain.model;
 
 import com.smore.order.domain.status.CancelState;
 import com.smore.order.domain.status.OrderStatus;
+import com.smore.order.domain.status.SaleType;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.assertj.core.api.Assertions;
@@ -23,6 +24,8 @@ class OrderTest {
         Integer productPrice = 15000;
 
         Integer quantity = 10;
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
 
         UUID idempotencyKey = UUID.fromString("b3fb0b90-4a22-49e9-a3b3-8dc98d85e2b1");
         LocalDateTime now = LocalDateTime.of(2025, 11, 29, 12, 0, 0);
@@ -37,6 +40,8 @@ class OrderTest {
                 productId,
                 productPrice,
                 quantity,
+                categoryId,
+                saleType,
                 idempotencyKey,
                 now,
                 street,
@@ -57,6 +62,8 @@ class OrderTest {
         Integer productPrice = 15000;
 
         Integer quantity = 10;
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
 
         UUID idempotencyKey = UUID.fromString("b3fb0b90-4a22-49e9-a3b3-8dc98d85e2b1");
         LocalDateTime now = LocalDateTime.of(2025, 11, 29, 12, 0, 0);
@@ -71,6 +78,8 @@ class OrderTest {
                 productId,
                 productPrice,
                 quantity,
+                categoryId,
+                saleType,
                 idempotencyKey,
                 now,
                 street,
@@ -91,6 +100,8 @@ class OrderTest {
         Integer productPrice = null;
 
         Integer quantity = 10;
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
 
         UUID idempotencyKey = UUID.fromString("b3fb0b90-4a22-49e9-a3b3-8dc98d85e2b1");
         LocalDateTime now = LocalDateTime.of(2025, 11, 29, 12, 0, 0);
@@ -105,6 +116,8 @@ class OrderTest {
                 productId,
                 productPrice,
                 quantity,
+                categoryId,
+                saleType,
                 idempotencyKey,
                 now,
                 street,
@@ -125,6 +138,8 @@ class OrderTest {
         Integer productPrice = -1;
 
         Integer quantity = 10;
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
 
         UUID idempotencyKey = UUID.fromString("b3fb0b90-4a22-49e9-a3b3-8dc98d85e2b1");
         LocalDateTime now = LocalDateTime.of(2025, 11, 29, 12, 0, 0);
@@ -139,6 +154,8 @@ class OrderTest {
                 productId,
                 productPrice,
                 quantity,
+                categoryId,
+                saleType,
                 idempotencyKey,
                 now,
                 street,
@@ -161,6 +178,8 @@ class OrderTest {
         Integer productPrice = 15000;
 
         Integer quantity = 10;
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
 
         UUID idempotencyKey = UUID.fromString("b3fb0b90-4a22-49e9-a3b3-8dc98d85e2b1");
         LocalDateTime now = LocalDateTime.of(2025, 11, 29, 12, 0, 0);
@@ -174,6 +193,8 @@ class OrderTest {
                 productId,
                 productPrice,
                 quantity,
+                categoryId,
+                saleType,
                 idempotencyKey,
                 now,
                 street,
@@ -196,6 +217,8 @@ class OrderTest {
         Integer productPrice = 15000;
 
         Integer quantity = 10;
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
 
         UUID idempotencyKey = UUID.fromString("b3fb0b90-4a22-49e9-a3b3-8dc98d85e2b1");
         LocalDateTime now = LocalDateTime.of(2025, 11, 29, 12, 0, 0);
@@ -209,6 +232,8 @@ class OrderTest {
                 productId,
                 productPrice,
                 quantity,
+                categoryId,
+                saleType,
                 idempotencyKey,
                 now,
                 street,
@@ -231,6 +256,8 @@ class OrderTest {
         Integer productPrice = 15000;
 
         Integer quantity = 10;
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
 
         UUID idempotencyKey = UUID.fromString("b3fb0b90-4a22-49e9-a3b3-8dc98d85e2b1");
         LocalDateTime now = LocalDateTime.of(2025, 11, 29, 12, 0, 0);
@@ -244,6 +271,8 @@ class OrderTest {
                 productId,
                 productPrice,
                 quantity,
+                categoryId,
+                saleType,
                 idempotencyKey,
                 now,
                 street,
@@ -264,6 +293,9 @@ class OrderTest {
         UUID productId = UUID.fromString("c5d7e9a9-2e86-4947-9a12-2dd6a0b980da");
         Integer productPrice = 15000;
 
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
+
         UUID idempotencyKey = UUID.fromString("b3fb0b90-4a22-49e9-a3b3-8dc98d85e2b1");
         LocalDateTime now = LocalDateTime.of(2025, 11, 29, 12, 0, 0);
 
@@ -277,6 +309,8 @@ class OrderTest {
                 productId,
                 productPrice,
                 quantity,
+                categoryId,
+                saleType,
                 idempotencyKey,
                 now,
                 street,
@@ -297,6 +331,9 @@ class OrderTest {
         UUID productId = UUID.fromString("c5d7e9a9-2e86-4947-9a12-2dd6a0b980da");
         Integer productPrice = 15000;
 
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
+
         UUID idempotencyKey = UUID.fromString("b3fb0b90-4a22-49e9-a3b3-8dc98d85e2b1");
         LocalDateTime now = LocalDateTime.of(2025, 11, 29, 12, 0, 0);
 
@@ -310,6 +347,8 @@ class OrderTest {
                 productId,
                 productPrice,
                 quantity,
+                categoryId,
+                saleType,
                 idempotencyKey,
                 now,
                 street,
@@ -331,6 +370,9 @@ class OrderTest {
 
         Integer quantity = 10;
 
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
+
         UUID idempotencyKey = null;
         LocalDateTime now = LocalDateTime.of(2025, 11, 29, 12, 0, 0);
 
@@ -344,6 +386,8 @@ class OrderTest {
                 productId,
                 productPrice,
                 quantity,
+                categoryId,
+                saleType,
                 idempotencyKey,
                 now,
                 street,
@@ -365,6 +409,9 @@ class OrderTest {
 
         Integer quantity = 10;
 
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
+
         UUID idempotencyKey = UUID.fromString("b3fb0b90-4a22-49e9-a3b3-8dc98d85e2b1");
         LocalDateTime now = null;
 
@@ -378,6 +425,8 @@ class OrderTest {
                 productId,
                 productPrice,
                 quantity,
+                categoryId,
+                saleType,
                 idempotencyKey,
                 now,
                 street,
@@ -398,6 +447,8 @@ class OrderTest {
         Integer productPrice = 15000;
 
         Integer quantity = 10;
+        UUID categoryId = UUID.fromString("9f3c3a4c-8b6c-4f9a-9f4f-0e4c62e2b3c7");
+        SaleType saleType = SaleType.BID;
 
         UUID idempotencyKey = UUID.fromString("b3fb0b90-4a22-49e9-a3b3-8dc98d85e2b1");
         LocalDateTime now = LocalDateTime.of(2025, 11, 29, 12, 0, 0);
@@ -412,6 +463,8 @@ class OrderTest {
             productId,
             productPrice,
             quantity,
+            categoryId,
+            saleType,
             idempotencyKey,
             now,
             street,

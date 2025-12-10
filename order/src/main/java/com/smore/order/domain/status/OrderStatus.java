@@ -9,6 +9,7 @@ public enum OrderStatus {
     PARTIALLY_REFUNDED("부분 환불"),
     REFUNDED("전체 환불"),
     CANCELLED("주문 취소"),
+    CONFIRMED("주문 확정")
     ;
 
     private final String description;
