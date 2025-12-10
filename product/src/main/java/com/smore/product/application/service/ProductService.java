@@ -1,6 +1,8 @@
 package com.smore.product.application.service;
 
 import com.smore.product.domain.entity.ProductStatus;
+import com.smore.product.domain.sale.dto.ProductSaleResponse;
+import com.smore.product.domain.sale.repository.ProductSaleRepository;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductStatusRequest;
@@ -14,12 +16,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
+    private final ProductSaleRepository productSaleRepository;
 
     @Transactional
     public ProductResponse createProduct(CreateProductRequest req) {
@@ -118,5 +122,16 @@ public class ProductService {
         }
 
         product.softDelete(requesterId);
+    }
+
+    public List<ProductSaleResponse> getProductSales(UUID productId) {
+
+        // 상품 존재 여부 체크
+        productSaleRepository.findByProductId(productId);
+//                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        return productSaleRepository.findByProductId(productId).stream()
+                .map(ProductSaleResponse::new)
+                .toList();
     }
 }
