@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
@@ -22,6 +24,14 @@ public class CategoryController {
             @RequestBody CreateCategoryRequest request
     ) {
         CategoryResponse response = categoryService.create(request);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonResponse<CategoryResponse>> getCategory(
+            @PathVariable UUID id
+    ) {
+        CategoryResponse response = categoryService.getCategory(id);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }
