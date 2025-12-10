@@ -2,9 +2,11 @@ package com.smore.auction.infrastructure.websocket.manager.impl;
 
 import com.smore.auction.infrastructure.websocket.manager.AuctionPubManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuctionPubManagerImpl implements AuctionPubManager {
@@ -34,6 +36,14 @@ public class AuctionPubManagerImpl implements AuctionPubManager {
 
     @Override
     public void validateSend(String sessionId, String auctionId) throws IllegalAccessException {
+        log.info("validate Send 진입\n\n\n");
+        log.info(sessionId);
+        log.info(auctionId);
+        log.info(keyAuction_sessions(auctionId));
+        log.info(String.valueOf(redis.opsForSet()
+            .members(keyAuction_sessions(auctionId))));
+        log.info(String.valueOf(redis.opsForSet()
+            .isMember(keyAuction_sessions(auctionId), sessionId)));
         Boolean exists = redis.opsForSet()
             .isMember(keyAuction_sessions(auctionId), sessionId);
 
