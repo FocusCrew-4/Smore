@@ -1,94 +1,12 @@
 spring:
   application:
     name: payment-service
-  profiles:
-    active: local
 
-  config:
-    activate:
-      on-profile: dev
-    import: "optional:configserver:"
-  cloud:
-    config:
+
+management:
+  endpoints:
+    web:
       discovery:
         enabled: true
-        service-id: config-server
-      fail-fast: true
-      retry:
-        max-attempts: 6
-        initial-interval: 1000
-        multiplier: 1.5
-
-  datasource:
-    url: jdbc:postgresql://postgres:5432/payment
-    username: root
-    password: root
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 2
-      idle-timeout: 30000
-      pool-name: HikariPool
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-  data:
-    mongodb:
-      uri: mongodb://mongo_user:mongo_pass@mongo:27017/my_mongo_db?authSource=admin
-      auto-index-creation: true
-    redis:
-      host: redis-stack
-      port: 6379
-
-  kafka:
-    # 여러 브로커 (docker-compose에 매핑된 외부 포트)
-    bootstrap-servers: localhost:19092,localhost:29092,localhost:39092
-
-    # --- Consumer 설정 ---
-    consumer:
-      group-id: payment-service-group  # consumer group 명, 필요에 따라 바꿔
-      auto-offset-reset: earliest      # 브로커에 기록된 오프셋이 유효하지 않다면 earliest부터 읽기
-      enable-auto-commit: false        # 자동 커밋 끄기 (수동 커밋 사용)
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.StringDeserializer
-      # 트랜잭션 메시지일 때 commit된 것만 읽기
-      properties:
-        isolation.level: read_committed
-
-    listener:
-      # 수동 커밋(Acknowledgment) 가능하게 설정
-      ack-mode: MANUAL
-      concurrency: 3  # 소비자 스레드 수, 필요에 따라 조정
-
-    # --- Producer 설정 ---
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      acks: all         # 리더 + 모든 ISR이 쓰기에 성공할 때까지 기다림
-      retries: 10       # 실패 시 재시도 수
-      # (선택) idempotence 활성화: 중복 방지용
-      properties:
-        enable.idempotence: true
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://eureka-server:18800/eureka/
-  instance:
-    prefer-ip-address: true
-
-server:
-  port: 4400
-
-logging:
-  level:
-    root: INFO
-    org.springframework.web: DEBUG
-    com.example: DEBUG
+      exposure:
+        include: "*"

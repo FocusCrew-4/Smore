@@ -1,0 +1,98 @@
+server:
+  port: 4400
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+    import: "optional:configserver:"
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+      fail-fast: true
+      retry:
+        max-attempts: 6
+        initial-interval: 1000
+        multiplier: 1.5
+  datasource:
+    url: jdbc:postgresql://postgresql:5432/payment
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      pool-name: HikariPool
+  data:
+    mongodb:
+      uri: mongodb://mongo_user:mongo_pass@mongo:27017/my_mongo_db?authSource=admin
+      auto-index-creation: true
+    redis:
+      host: redis-stack
+      port: 6379
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  kafka:
+    # 로컬에서 Docker로 띄운 브로커 외부 포트에 맞춰 설정 (docker-compose의 EXTERNAL 매핑)
+    bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
+
+    consumer:
+      group-id: payment-service-group
+        # offset 커밋 기록이 삭제되었거나, 브로커에서 보관중인 로그범위에서 오프셋이 유효하지 않은 경우
+      # 어디서부터 메시지를 읽기 시작할지 정해주는 설정
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        isolation.level: read_committed # 트랜잭션 메시지 읽기 안전성
+      # key 는 String 으로 역직렬화
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # value 는 Json java 객체로 역직렬화 하겠다
+      # properties 추가 설정이나 ConsumerFactory 에서 추가 설정 필요
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    listener:
+      # 필수: @KafkaListener 에서 Acknowledgment 사용 가능
+      # MANUAL 수동 커밋 모드
+      ack-mode: MANUAL
+      # 컨슈머 스레드 개수 (옵션)
+      concurrency: 3
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # 브로커의 리더 + 모든 ISR 에 쓰기 성공 후 ACK
+      acks: all
+      retries: 3
+      properties:
+        enable.idempotence: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+    operations-sorter: method
+    tags-sorter: alpha
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka-server:18800/eureka/
+  instance:
+    prefer-ip-address: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    com.example: DEBUG

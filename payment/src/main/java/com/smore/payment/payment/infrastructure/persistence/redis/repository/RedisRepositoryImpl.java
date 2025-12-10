@@ -1,4 +1,4 @@
-package com.smore.payment.payment.infrastructure.persistence.repository.redis;
+package com.smore.payment.payment.infrastructure.persistence.redis.repository;
 
 import com.smore.payment.payment.domain.model.TemporaryPayment;
 import com.smore.payment.payment.domain.repository.RedisRepository;

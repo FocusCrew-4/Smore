@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface RefundPolicyRepository {
     void save(RefundPolicy refundPolicy);
 
-    void delete(RefundPolicy refundPolicy, UUID userId);
+    void delete(RefundPolicy refundPolicy, Long userId);
 
     Optional<RefundPolicy> findByTargetTypeAndTargetKey(RefundTargetType refundTargetType, TargetKey targetKey);
 

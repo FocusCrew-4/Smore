@@ -1,4 +1,4 @@
-package com.smore.payment.payment.infrastructure.persistence.model.payment;
+package com.smore.payment.payment.infrastructure.persistence.jpa.model.payment;
 
 import com.smore.payment.payment.domain.model.PaymentMethod;
 import com.smore.payment.payment.domain.model.PaymentStatus;

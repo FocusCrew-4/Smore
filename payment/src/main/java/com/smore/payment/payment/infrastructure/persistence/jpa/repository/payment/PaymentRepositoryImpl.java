@@ -1,8 +1,8 @@
-package com.smore.payment.payment.infrastructure.persistence.repository.payment;
+package com.smore.payment.payment.infrastructure.persistence.jpa.repository.payment;
 
 import com.smore.payment.payment.domain.model.Payment;
 import com.smore.payment.payment.domain.repository.PaymentRepository;
-import com.smore.payment.payment.infrastructure.persistence.mapper.PaymentMapper;
+import com.smore.payment.payment.infrastructure.persistence.jpa.mapper.PaymentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

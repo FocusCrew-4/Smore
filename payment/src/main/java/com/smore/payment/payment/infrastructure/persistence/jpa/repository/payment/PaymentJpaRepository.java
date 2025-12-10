@@ -1,6 +1,6 @@
-package com.smore.payment.payment.infrastructure.persistence.repository.payment;
+package com.smore.payment.payment.infrastructure.persistence.jpa.repository.payment;
 
-import com.smore.payment.payment.infrastructure.persistence.model.payment.PaymentEntity;
+import com.smore.payment.payment.infrastructure.persistence.jpa.model.payment.PaymentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

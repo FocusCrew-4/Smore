@@ -42,7 +42,7 @@ public class CancelPolicyService {
         ).orElseThrow(() -> new IllegalArgumentException("판매자 또는 카테고리에 해당하는 수수료 정책을 찾을 수 없습니다."));
     }
 
-    public void deleteCancelPolicy(UUID id, UUID userId) {
+    public void deleteCancelPolicy(UUID id, Long userId) {
         CancelPolicy cancelPolicy = findFeePolicyById(id);
         cancelPolicy.deactivate();
         cancelPolicyRepository.delete(cancelPolicy, userId);

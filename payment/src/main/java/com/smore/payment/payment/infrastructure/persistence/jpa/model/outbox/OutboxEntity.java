@@ -1,4 +1,4 @@
-package com.smore.payment.payment.infrastructure.persistence.model.outbox;
+package com.smore.payment.payment.infrastructure.persistence.jpa.model.outbox;
 
 import com.smore.payment.global.outbox.OutboxStatus;
 import jakarta.persistence.*;

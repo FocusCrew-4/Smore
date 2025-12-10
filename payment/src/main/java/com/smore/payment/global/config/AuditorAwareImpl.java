@@ -8,11 +8,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class AuditorAwareImpl implements AuditorAware<UUID> {
+public class AuditorAwareImpl implements AuditorAware<Long> {
 
     @Override
     @NonNull
-    public Optional<UUID> getCurrentAuditor() {
+    public Optional<Long> getCurrentAuditor() {
         return Optional.ofNullable(UserContextHolder.get());
     }
 

@@ -1,8 +1,8 @@
 package com.smore.payment.payment.infrastructure.kafka;
 
 import com.smore.payment.global.outbox.OutboxStatus;
-import com.smore.payment.payment.infrastructure.persistence.model.outbox.OutboxEntity;
-import com.smore.payment.payment.infrastructure.persistence.repository.outbox.OutboxJpaRepository;
+import com.smore.payment.payment.infrastructure.persistence.jpa.model.outbox.OutboxEntity;
+import com.smore.payment.payment.infrastructure.persistence.jpa.repository.outbox.OutboxJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,7 +18,7 @@ public class PaymentApprovedOutboxPublisher {
     private final OutboxJpaRepository outboxJpaRepository;
     private final MessageBrokerPublisher messageBrokerPublisher;
 
-    @Scheduled(fixedDelay = 5000)
+//    @Scheduled(fixedDelay = 5000)
     public void publish() {
 
         List<OutboxEntity> pendingMessages = outboxJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);

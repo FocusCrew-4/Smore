@@ -1,7 +1,7 @@
-package com.smore.payment.payment.infrastructure.persistence.mapper;
+package com.smore.payment.payment.infrastructure.persistence.jpa.mapper;
 
 import com.smore.payment.global.outbox.OutboxMessage;
-import com.smore.payment.payment.infrastructure.persistence.model.outbox.OutboxEntity;
+import com.smore.payment.payment.infrastructure.persistence.jpa.model.outbox.OutboxEntity;
 import org.springframework.stereotype.Component;
 
 @Component

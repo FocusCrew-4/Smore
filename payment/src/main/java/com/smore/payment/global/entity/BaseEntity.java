@@ -30,11 +30,11 @@ public class BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    private UUID deletedBy;
+    private Long deletedBy;
 
     private LocalDateTime deletedAt;
 
-    public void delete(UUID id) {
+    public void delete(Long id) {
         this.deletedBy = id;
         this.deletedAt = LocalDateTime.now();
     }

@@ -1,4 +1,4 @@
-package com.smore.payment.payment.infrastructure.persistence.model.payment;
+package com.smore.payment.payment.infrastructure.persistence.jpa.model.payment;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

@@ -14,7 +14,7 @@ public interface CancelPolicyRepository {
 
     Optional<CancelPolicy> findByTargetTypeAndTargetKey(CancelTargetType cancelTargetType, TargetKey targetKey);
 
-    void delete(CancelPolicy cancelPolicy, UUID userId);
+    void delete(CancelPolicy cancelPolicy, Long userId);
 
     Optional<CancelPolicy> findById(UUID id);
 }

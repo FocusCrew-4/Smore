@@ -31,7 +31,7 @@ public class RefundPolicyRepositoryImpl implements RefundPolicyRepository {
     }
 
     @Override
-    public void delete(RefundPolicy refundPolicy, UUID userId) {
+    public void delete(RefundPolicy refundPolicy, Long userId) {
         RefundPolicyEntity entity = refundPolicyJpaRepository.findById(refundPolicy.getId())
                 .orElseThrow(() -> new IllegalArgumentException("취소 정책을 찾을 수 없습니다."));
 
