@@ -25,4 +25,9 @@ public class RedisKeyFactory {
     public String sessionAuctions(String sessionId) {
         return PREFIX_WS_SESSION + sessionId + ":auction";
     }
+
+    // auction:{auctionId}:bids
+    public String auctionBids(String auctionId) {
+        return "auction:" + auctionId + ":bids";
+    }
 }
