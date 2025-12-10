@@ -5,6 +5,7 @@ import com.smore.payment.feepolicy.domain.model.TargetKey;
 import com.smore.payment.feepolicy.domain.model.TargetType;
 import org.springframework.stereotype.Repository;
 
+import java.lang.ScopedValue;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,4 +18,6 @@ public interface FeePolicyRepository {
     void delete(FeePolicy feePolicy, UUID userId);
 
     Optional<FeePolicy> findByTargetTypeAndTargetKey(TargetType targetType, TargetKey targetKey);
+
+    Optional<FeePolicy> findApplicablePolicy(Long sellerId, UUID categoryId);
 }

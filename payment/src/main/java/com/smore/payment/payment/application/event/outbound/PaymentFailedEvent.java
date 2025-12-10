@@ -1,4 +1,4 @@
-package com.smore.payment.payment.domain.event;
+package com.smore.payment.payment.application.event.outbound;
 
 import lombok.Getter;
 
@@ -8,13 +8,13 @@ import java.util.UUID;
 public class PaymentFailedEvent {
 
     private final UUID orderId;
-    private final String paymentKey;
+    private final UUID paymentId;
     private final String errorMessage;
     private final UUID idempotencyKey;
 
-    public PaymentFailedEvent(UUID orderId, String paymentKey, String errorMessage, UUID idempotencyKey) {
+    public PaymentFailedEvent(UUID orderId, UUID paymentId, String errorMessage, UUID idempotencyKey) {
         this.orderId = orderId;
-        this.paymentKey = paymentKey;
+        this.paymentId = paymentId;
         this.errorMessage = errorMessage;
         this.idempotencyKey = idempotencyKey;
     }

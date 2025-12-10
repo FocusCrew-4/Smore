@@ -49,4 +49,13 @@ public class FeePolicyRepositoryImpl implements FeePolicyRepository {
         return feePolicyJpaRepository.findByTargetTypeAndTargetKey(targetType, targetKey.getValueAsString())
                 .map(feePolicyMapper::toDomainEntity);
     }
+
+    @Override
+    public Optional<FeePolicy> findApplicablePolicy(Long sellerId, UUID categoryId) {
+        return feePolicyJpaRepository.findByTargetTypeAndTargetKey(TargetType.MERCHANT, sellerId.toString())
+                .or(() ->
+                        feePolicyJpaRepository.findByTargetTypeAndTargetKey(TargetType.CATEGORY, categoryId.toString())
+                )
+                .map(feePolicyMapper::toDomainEntity);
+    }
 }

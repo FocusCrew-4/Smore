@@ -1,6 +1,6 @@
 package com.smore.payment.payment.application;
 
-import com.smore.payment.payment.domain.event.PaymentRequestedEvent;
+import com.smore.payment.payment.application.event.inbound.PaymentRequestedEvent;
 import com.smore.payment.payment.domain.model.TemporaryPayment;
 import com.smore.payment.payment.domain.repository.RedisRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,17 +14,21 @@ public class CreateTemporaryPaymentService {
     private final RedisRepository redisRepository;
 
     @Transactional
-    public void create(PaymentRequestedEvent event) {
+    public void create(PaymentRequestedEvent paymentRequestedEvent) {
 
-        if (redisRepository.existsByOrderId(event.getOrderId())) {
+        if (redisRepository.existsByOrderId(paymentRequestedEvent.getOrderId())) {
             return;
         }
 
         TemporaryPayment temp = TemporaryPayment.create(
-                event.getIdempotencyKey(),
-                event.getOrderId(),
-                event.getUserId(),
-                event.getAmount()
+                paymentRequestedEvent.getIdempotencyKey(),
+                paymentRequestedEvent.getOrderId(),
+                paymentRequestedEvent.getUserId(),
+                paymentRequestedEvent.getAmount(),
+                paymentRequestedEvent.getSellerId(),
+                paymentRequestedEvent.getCategoryId(),
+                paymentRequestedEvent.getAuctionType(),
+                paymentRequestedEvent.getExpiredAt()
         );
 
         redisRepository.save(temp);

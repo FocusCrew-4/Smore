@@ -1,25 +1,49 @@
 package com.smore.payment.payment.domain.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record PgApproveResult(
         // PG 정보
-        String pgProvider,        // Toss, Kakao 등
+        String pgProvider,
+        String paymentKey,
         String pgOrderId,
-        String pgTransactionKey,
+        String pgOrderName,
+        String transactionKey,       // lastTransactionKey
         String pgStatus,
-        String pgMessage,
+        String paymentMethod,        // method
+        String currency,
+        BigDecimal totalAmount,
+        BigDecimal balanceAmount,
 
         // 카드 정보
-        PaymentMethod paymentMethod,
-        String cardCompany,
+        String cardIssuerCode,
+        String cardAcquirerCode,
         String cardNumber,
-        Integer installmentMonths,
+        Integer installmentPlanMonths,
         boolean interestFree,
+        String approveNo,
         String cardType,
-        String ownerType,
-        String acquirerCode,
+        String cardOwnerType,
+        String cardAcquireStatus,
+        BigDecimal cardAmount,
 
-        LocalDateTime approvedAt
+        // 승인 / 요청 시각
+        LocalDateTime requestedAt,
+        LocalDateTime approvedAt,
+
+        String failureCode,
+        String failureMessage,
+
+        CancellationInfo cancels
+
 ) {
+    public record CancellationInfo(
+            BigDecimal cancelAmount,
+            String cancelReason,
+            BigDecimal refundableAmount,
+            LocalDateTime canceledAt,
+            String cancelTransactionKey,
+            String cancelStatus
+    ) {}
 }

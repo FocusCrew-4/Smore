@@ -1,4 +1,4 @@
-package com.smore.payment.payment.domain.event;
+package com.smore.payment.payment.application.event.outbound;
 
 import lombok.Getter;
 

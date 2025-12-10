@@ -1,8 +1,9 @@
 package com.smore.payment.global.outbox;
 
-import com.smore.payment.payment.domain.event.PaymentApprovedEvent;
-import com.smore.payment.payment.domain.event.PaymentFailedEvent;
+import com.smore.payment.payment.application.event.outbound.PaymentApprovedEvent;
+import com.smore.payment.payment.application.event.outbound.PaymentFailedEvent;
 import com.smore.payment.global.util.JsonUtil;
+import com.smore.payment.payment.application.event.outbound.SettlementCalculatedEvent;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -65,7 +66,16 @@ public class OutboxMessage {
         );
     }
 
-    public void markAsSent() {
-        this.status = OutboxStatus.SENT;
+    public static OutboxMessage settlementCalculated(SettlementCalculatedEvent event) {
+        return new OutboxMessage(
+                "SETTLEMENT",
+                UUID.randomUUID(),
+                event.getClass().getSimpleName(),
+                event.idempotencyKey(),
+                JsonUtil.jsonToString(event),
+                3,
+                OutboxStatus.PENDING
+        );
     }
+
 }

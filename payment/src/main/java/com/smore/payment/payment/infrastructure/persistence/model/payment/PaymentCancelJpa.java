@@ -15,17 +15,14 @@ public record PaymentCancelJpa(
         BigDecimal cancelAmount,
 
         @Column(name = "cancelled_at")
-        LocalDateTime cancelledAt,
+        LocalDateTime cancelledAt
 
-        @Column(name = "pg_cancel_transaction_id")
-        String pgCancelTransactionId
 ) {
     public static PaymentCancelJpa of(
             String reason,
             BigDecimal amount,
-            LocalDateTime occurredAt,
-            String pgCancelTransactionId
+            LocalDateTime occurredAt
     ) {
-        return new PaymentCancelJpa(reason, amount, occurredAt, pgCancelTransactionId);
+        return new PaymentCancelJpa(reason, amount, occurredAt);
     }
 }

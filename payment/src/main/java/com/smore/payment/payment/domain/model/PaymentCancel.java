@@ -6,8 +6,7 @@ import java.time.LocalDateTime;
 public record PaymentCancel(
         String reason,
         BigDecimal cancelAmount,
-        LocalDateTime cancelledAt,
-        String pgCancelTransactionId
+        LocalDateTime cancelledAt
 ) {
 
     public PaymentCancel {
@@ -22,7 +21,7 @@ public record PaymentCancel(
         }
     }
 
-    public static PaymentCancel of(String reason, BigDecimal cancelAmount, LocalDateTime canceledAt, String pgCancelTransactionId) {
-        return new PaymentCancel(reason, cancelAmount, canceledAt, pgCancelTransactionId);
+    public static PaymentCancel of(String reason, BigDecimal cancelAmount, LocalDateTime canceledAt) {
+        return new PaymentCancel(reason, cancelAmount, canceledAt);
     }
 }

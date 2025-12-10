@@ -1,4 +1,4 @@
-package com.smore.payment.payment.domain.model;
+package com.smore.payment.payment.application.event.inbound;
 
 import lombok.Getter;
 
@@ -7,62 +7,61 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-public class TemporaryPayment {
+public class PaymentRequestedEvent {
 
-    private UUID idempotencyKey;
-    private UUID orderId;
-    private Long userId;
-    private BigDecimal amount;
-    private Long sellerId;
-    private UUID categoryId;
-    private String auctionType;
-    private LocalDateTime expiredAt;
+    private final UUID orderId;
+    private final Long userId;
+    private final BigDecimal amount;
+    private final UUID categoryId;
+    private final String auctionType;
+    private final Long sellerId;
+    private final UUID idempotencyKey;
+    private final LocalDateTime publishedAt;
+    private final LocalDateTime expiredAt;
 
-    protected TemporaryPayment(
-            UUID idempotencyKey,
+    public PaymentRequestedEvent(
             UUID orderId,
             Long userId,
             BigDecimal amount,
+            UUID idempotencyKey,
             Long sellerId,
             UUID categoryId,
             String auctionType,
+            LocalDateTime publishedAt,
             LocalDateTime expiredAt
     ) {
-        this.idempotencyKey = idempotencyKey;
         this.orderId = orderId;
         this.userId = userId;
         this.amount = amount;
+        this.idempotencyKey = idempotencyKey;
         this.sellerId = sellerId;
         this.categoryId = categoryId;
         this.auctionType = auctionType;
+        this.publishedAt = publishedAt;
         this.expiredAt = expiredAt;
     }
 
-    public static TemporaryPayment create(
-            UUID idempotencyKey,
+    public static PaymentRequestedEvent of(
             UUID orderId,
             Long userId,
             BigDecimal amount,
+            UUID idempotencyKey,
             Long sellerId,
             UUID categoryId,
             String auctionType,
+            LocalDateTime publishedAt,
             LocalDateTime expiredAt
     ) {
-        return new TemporaryPayment(
-                idempotencyKey,
+        return new PaymentRequestedEvent(
                 orderId,
                 userId,
                 amount,
+                idempotencyKey,
                 sellerId,
                 categoryId,
                 auctionType,
+                publishedAt,
                 expiredAt
         );
-    }
-
-    public void validateApproval(BigDecimal requestAmount) {
-        if (!this.amount.equals(requestAmount)) {
-            throw new IllegalArgumentException("결제 금액이 일치하지 않습니다.");
-        }
     }
 }

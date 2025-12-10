@@ -54,4 +54,15 @@ public class OutboxEntity {
         this.createdAt = createdAt;
     }
 
+    public void markAsSent() {
+        this.status = OutboxStatus.SENT;
+    }
+
+    public void markAsFailed() {
+        this.status = OutboxStatus.FAILED;
+    }
+
+    public void decreaseRetryCount() {
+        this.retryCount--;
+    }
 }
