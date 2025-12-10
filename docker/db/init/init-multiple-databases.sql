@@ -1,2 +1,3 @@
 CREATE DATABASE member;
+CREATE DATABASE auction;
 

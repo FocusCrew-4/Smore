@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   redis-stack:
@@ -252,6 +250,16 @@ services:
     build: ./member/.
     ports:
       - "9900:9900"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - msa-network
+
+  auction-service:
+    container_name: auction-service
+    build: ./auction/.
+    ports:
+      - "6600:6600"
     environment:
       SPRING_PROFILES_ACTIVE: dev
     networks:

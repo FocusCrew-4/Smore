@@ -50,8 +50,14 @@ public class OrderEntity extends BaseEntity {
     @Column(name = "total_amount", nullable = false)
     private Integer totalAmount;
 
-    @Column(name = "refund_amount")
-    private Integer refundAmount;
+    @Column(name = "refund_reserved_quantity")
+    private Integer refundReservedQuantity;
+
+    @Column(name = "refunded_quantity")
+    private Integer refundedQuantity;
+
+    @Column(name = "refunded_amount")
+    private Integer refundedAmount;
 
     @Column(name = "fee_amount")
     private Integer feeAmount;
@@ -102,6 +108,10 @@ public class OrderEntity extends BaseEntity {
             .product(product)
             .quantity(quantity)
             .totalAmount(totalAmount)
+            .refundReservedQuantity(0)
+            .refundedQuantity(0)
+            .refundedAmount(0)
+            .feeAmount(0)
             .idempotencyKey(idempotencyKey)
             .orderStatus(orderStatus)
             .cancelState(cancelState)
