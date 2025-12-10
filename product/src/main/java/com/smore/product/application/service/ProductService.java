@@ -37,7 +37,8 @@ public class ProductService {
                 req.getPrice(),
                 req.getStock(),
                 req.getSaleType(),
-                req.getThresholdForAuction()
+                req.getThresholdForAuction(),
+                req.getStatus()
         );
 
         productRepository.save(product);
@@ -103,5 +104,19 @@ public class ProductService {
         product.changeStatus(req.getStatus());
 
         return new ProductResponse(product);
+    }
+
+    @Transactional
+    public void deleteProduct(UUID productId, Long requesterId) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        // 이미 삭제된 상품 처리
+        if (product.getDeletedAt() != null) {
+            throw new IllegalStateException("이미 삭제된 상품입니다.");
+        }
+
+        product.softDelete(requesterId);
     }
 }
