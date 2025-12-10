@@ -4,7 +4,7 @@ public enum BidStatus {
     SCHEDULED("시작 전"),
     ACTIVE("진행 중"),
     CLOSED("종료 됨"),
-    CANCELD("취소 됨")
+    CANCELLED("취소 됨")
     ;
 
     private final String description;

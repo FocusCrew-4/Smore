@@ -41,7 +41,6 @@ public class BidCompetition {
         if (closedAt == null) throw new IllegalArgumentException("종료 날짜는 필수값입니다.");
 
         return BidCompetition.builder()
-            .bidStatus(BidStatus.SCHEDULED)
             .productId(productId)
             .sellerId(sellerId)
             .bidStatus(BidStatus.SCHEDULED)
