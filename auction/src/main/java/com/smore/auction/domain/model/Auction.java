@@ -45,4 +45,11 @@ public class Auction {
         );
     }
 
+    public boolean isReady() {
+        return this.status == AuctionStatus.READY;
+    }
+
+    public void start() {
+        this.status = AuctionStatus.OPEN;
+    }
 }

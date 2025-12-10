@@ -1,4 +1,4 @@
-package com.smore.auction.infrastructure.websocket.Impl;
+package com.smore.auction.infrastructure.adapter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,8 +45,6 @@ public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
 
         redis.opsForZSet()
             .add(key.auctionBids(auctionId), stringMetaData, scaled);
-
-        // --- 이거 이후로
 
         // 4. Top10 조회
         Set<TypedTuple<String>> top10 =
