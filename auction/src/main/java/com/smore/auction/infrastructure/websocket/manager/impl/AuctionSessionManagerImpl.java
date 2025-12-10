@@ -4,9 +4,11 @@ import com.smore.auction.infrastructure.websocket.manager.AuctionSessionManager;
 import java.time.Duration;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AuctionSessionManagerImpl implements AuctionSessionManager {
@@ -51,6 +53,7 @@ public class AuctionSessionManagerImpl implements AuctionSessionManager {
 
     @Override
     public void handleSubscribe(String sessionId, Long userId, String auctionId) {
+        log.info("구독매니저 진입 레디스에 키 정보 기록");
 
         Boolean auctionExist = redis.hasKey(keyAuction_sessions(auctionId));
 

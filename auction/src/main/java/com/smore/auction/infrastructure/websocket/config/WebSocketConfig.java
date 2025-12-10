@@ -1,5 +1,6 @@
 package com.smore.auction.infrastructure.websocket.config;
 
+import com.smore.auction.infrastructure.websocket.handler.AuctionHandshakeHandler;
 import com.smore.auction.infrastructure.websocket.interceptor.AuctionHandshakeInterceptor;
 import com.smore.auction.infrastructure.websocket.interceptor.AuctionStompInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    private final AuctionHandshakeInterceptor auctionHandshakeInterceptor;
+    private final AuctionHandshakeHandler auctionHandshakeHandler;
     private final AuctionStompInterceptor auctionStompInterceptor;
 
     @Override
@@ -23,7 +26,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // http://localhost:6600/ws-auction
         registry.addEndpoint("/ws-auction")
             .setAllowedOriginPatterns("*")
-            .addInterceptors(new AuctionHandshakeInterceptor())
+            .addInterceptors(auctionHandshakeInterceptor)
+            .setHandshakeHandler(auctionHandshakeHandler)
             .withSockJS(); // 선택: SockJS fallback
     }
 
@@ -35,11 +39,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/pub");
     }
 
-    /*
-    new ChannelInterceptor 를 직접 넣은 이유
-    beforeHandshake 에서 넣어둔 attributes 읽어서 CONNECT 프레임에서 Principal 생성해서 accessor.setUser(...)로 등록
-    간단한 사용자 식별자 등록 로직으로 외부 서비스 의존성도 없고 복잡한 주입도 필요없어 new 로 직접 등록
-     */
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(auctionStompInterceptor);

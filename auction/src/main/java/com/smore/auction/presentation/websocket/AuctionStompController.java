@@ -1,6 +1,7 @@
 package com.smore.auction.presentation.websocket;
 
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -17,7 +18,7 @@ public class AuctionStompController {
 
     @MessageMapping("/auction/{auctionId}/bid")
     public void handleBid(
-        @DestinationVariable Long auctionId,
+        @DestinationVariable UUID auctionId,
         Map<String, Object> map
     ) {
         log.info("Received a bid request for {}", auctionId);
