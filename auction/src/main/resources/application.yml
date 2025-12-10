@@ -17,4 +17,4 @@ product:
     auction-pending-start:
       v1: product.auctionPendingStart.v1
     auction-started:
-      v1: product.auctionPending.v1
+      v1: product.auctionStarted.v1
