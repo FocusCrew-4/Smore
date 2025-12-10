@@ -5,7 +5,6 @@ import com.smore.payment.feepolicy.domain.model.TargetKey;
 import com.smore.payment.feepolicy.domain.model.TargetType;
 import org.springframework.stereotype.Repository;
 
-import java.lang.ScopedValue;
 import java.util.Optional;
 import java.util.UUID;
 

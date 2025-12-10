@@ -3,6 +3,22 @@ spring:
     name: payment-service
   profiles:
     active: local
+
+  config:
+    activate:
+      on-profile: dev
+    import: "optional:configserver:"
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+      fail-fast: true
+      retry:
+        max-attempts: 6
+        initial-interval: 1000
+        multiplier: 1.5
+
   datasource:
     url: jdbc:postgresql://postgres:5432/payment
     username: root
@@ -39,7 +55,7 @@ spring:
       auto-offset-reset: earliest      # 브로커에 기록된 오프셋이 유효하지 않다면 earliest부터 읽기
       enable-auto-commit: false        # 자동 커밋 끄기 (수동 커밋 사용)
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.StringDeserializer
       # 트랜잭션 메시지일 때 commit된 것만 읽기
       properties:
         isolation.level: read_committed
@@ -58,6 +74,15 @@ spring:
       # (선택) idempotence 활성화: 중복 방지용
       properties:
         enable.idempotence: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka-server:18800/eureka/
+  instance:
+    prefer-ip-address: true
 
 server:
   port: 4400

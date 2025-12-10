@@ -8,7 +8,7 @@ import com.smore.payment.payment.application.facade.dto.FeePolicyResult;
 import com.smore.payment.payment.application.port.out.PgClient;
 import com.smore.payment.payment.application.event.outbound.PaymentApprovedEvent;
 import com.smore.payment.payment.domain.model.Payment;
-import com.smore.payment.payment.domain.document.PgApproveLog;
+//import com.smore.payment.payment.domain.document.PgApproveLog;
 import com.smore.payment.payment.domain.model.PgApproveResult;
 import com.smore.payment.payment.domain.model.TemporaryPayment;
 import com.smore.payment.payment.domain.repository.MongoRepository;
@@ -56,13 +56,13 @@ public class CreatePaymentService {
             );
 
             // Todo: 로그 document 추가
-            PgApproveLog log = PgApproveLog.builder().build();
-            mongoRepository.savePgApproveLog(log);
+//            PgApproveLog log = PgApproveLog.builder().build();
+//            mongoRepository.savePgApproveLog(log);
 
         } catch (Exception e) {
 
-            PgApproveLog log = PgApproveLog.builder().build();
-            mongoRepository.savePgApproveLog(log);
+//            PgApproveLog log = PgApproveLog.builder().build();
+//            mongoRepository.savePgApproveLog(log);
 
             // Todo: 예외 반환
 

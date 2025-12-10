@@ -265,6 +265,16 @@ services:
     networks:
       - msa-network
 
+  payment-service:
+    container_name: payment-service
+    build: ./payment/.
+    ports:
+      - "4400:4400"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - msa-network
+
 
 volumes:
   kafka-1-data:
