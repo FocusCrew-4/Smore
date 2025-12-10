@@ -38,7 +38,7 @@ public class AuctionBidderRankJpa {
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "id", column = @Column(name = "bidder_id")),
-        @AttributeOverride(name = "price", column = @Column(name = "bidder_price")),
+        @AttributeOverride(name = "price", column = @Column(name = "bidder_price", precision = 19, scale = 2)),
         @AttributeOverride(name = "quantity", column = @Column(name = "bidder_quantity")),
         @AttributeOverride(name = "status", column = @Column(name = "bidder_status"))
     })

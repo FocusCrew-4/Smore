@@ -4,6 +4,7 @@ import com.smore.order.domain.status.AggregateType;
 import com.smore.order.domain.status.EventStatus;
 import com.smore.order.domain.status.EventType;
 import com.smore.order.infrastructure.persistence.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -46,6 +47,7 @@ public class OutboxEntity extends BaseEntity {
 
     private UUID idempotencyKey;
 
+    @Column(name = "payload", columnDefinition = "text")
     private String payload;
 
     private Integer retryCount;

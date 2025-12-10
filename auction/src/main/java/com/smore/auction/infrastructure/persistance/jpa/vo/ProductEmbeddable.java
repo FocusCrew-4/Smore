@@ -1,6 +1,8 @@
 package com.smore.auction.infrastructure.persistance.jpa.vo;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,5 +16,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProductEmbeddable {
     private UUID id;
-    private Long price;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal price;
 }

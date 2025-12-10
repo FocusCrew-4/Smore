@@ -1,8 +1,21 @@
 package com.smore.order.infrastructure.persistence.exception;
 
-public class NotFoundOrderException extends RuntimeException {
+import com.smore.common.error.ErrorCode;
+import com.smore.order.infrastructure.error.OrderException;
 
-    public NotFoundOrderException(String message) {
-        super(message);
+public class NotFoundOrderException extends OrderException {
+
+    public NotFoundOrderException(ErrorCode errorCode) {
+        super(errorCode);
+    }
+
+    @Override
+    public ErrorCode getErrorCode() {
+        return super.getErrorCode();
+    }
+
+    @Override
+    public String getTriggeredBy() {
+        return super.getTriggeredBy();
     }
 }

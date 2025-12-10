@@ -1,0 +1,24 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:postgresql://postgresql-server:5432/d_order
+    username: root
+    password: root
+
+  kafka:
+    bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:18800/eureka/  # Eureka 서버 URL
+    register-with-eureka: true  # Eureka 서버에 등록
+    fetch-registry: true  # Eureka 서버로부터 레지스트리 정보 가져오기
+  instance:
+    hostname: order-service  # 클라이언트 호스트 이름
+    prefer-ip-address: true  # IP 주소 사용 선호
+    lease-renewal-interval-in-seconds: 30  # 리스 갱신 간격
+    lease-expiration-duration-in-seconds: 90  # 리스 만료 기간

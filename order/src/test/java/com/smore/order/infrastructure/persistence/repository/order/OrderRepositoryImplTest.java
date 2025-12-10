@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.smore.order.application.repository.OrderRepository;
 import com.smore.order.domain.model.Order;
+import com.smore.order.domain.status.SaleType;
 import com.smore.order.infrastructure.config.JpaConfig;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -16,7 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
+
+@TestPropertySource(properties = {
+    "spring.sql.init.mode=never"
+})
 @DataJpaTest
 @Import(
     {
@@ -41,6 +47,8 @@ class OrderRepositoryImplTest {
         UUID productId = UUID.randomUUID();
         int productPrice = 10_000;
         int quantity = 2;
+        UUID categoryId = UUID.randomUUID();
+        SaleType saleType = SaleType.BID;
         UUID idempotencyKey = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.of(2025, 11, 30, 12, 0, 0);
         String street = "서울시 강남구 테헤란로 1";
@@ -52,6 +60,8 @@ class OrderRepositoryImplTest {
             productId,
             productPrice,
             quantity,
+            categoryId,
+            saleType,
             idempotencyKey,
             now,
             street,

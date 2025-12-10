@@ -3,6 +3,7 @@ package com.smore.order.infrastructure.persistence.repository.outbox;
 import com.smore.order.application.repository.OutboxRepository;
 import com.smore.order.domain.model.Outbox;
 import com.smore.order.domain.status.EventStatus;
+import com.smore.order.infrastructure.error.OrderErrorCode;
 import com.smore.order.infrastructure.persistence.entity.outbox.OutboxEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOutboxFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOutboxException;
@@ -31,7 +32,7 @@ public class OutboxRepositoryImpl implements OutboxRepository {
         }
 
         OutboxEntity entity = outboxJpaRepository.findById(outboxId).orElseThrow(
-            () -> new NotFoundOutboxException("outbox를 찾을 수 없습니다.")
+            () -> new NotFoundOutboxException(OrderErrorCode.NOT_FOUND_OUTBOX)
         );
 
         return OutboxMapper.toDomain(entity);
@@ -66,7 +67,7 @@ public class OutboxRepositoryImpl implements OutboxRepository {
 
         if (entity == null) {
             log.error("entity is Null : method = {}", "save()");
-            throw new CreateOutboxFailException("이벤트를 outbox에 저장하지 못했습니다.");
+            throw new CreateOutboxFailException(OrderErrorCode.CREATE_OUTBOX_CONFLICT);
         }
         return OutboxMapper.toDomain(entity);
     }

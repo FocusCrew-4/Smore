@@ -1,0 +1,25 @@
+server:
+  port: 3300
+
+spring:
+
+  cloud:
+    config:
+      enabled: false
+
+  application:
+    name: category-service
+
+  datasource:
+      url: jdbc:postgresql://localhost:5432/category-db
+      username: root
+      password: root
+      driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true

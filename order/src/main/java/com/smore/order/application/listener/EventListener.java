@@ -1,14 +1,18 @@
 package com.smore.order.application.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smore.order.application.dto.CompletedPaymentCommand;
 import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
+import com.smore.order.application.dto.FailedOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
+import com.smore.order.application.event.inbound.PaymentFailedEvent;
 import com.smore.order.application.service.OrderService;
 import com.smore.order.application.event.inbound.BidWinnerConfirmedEvent;
 import com.smore.order.application.event.inbound.PaymentCompletedEvent;
 import com.smore.order.application.event.inbound.PaymentRefundSucceededEvent;
 import com.smore.order.application.event.inbound.PaymentRefundFailedEvent;
+import com.smore.order.domain.status.SaleType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -39,6 +43,9 @@ public class EventListener {
                 event.getProductId(),
                 event.getProductPrice(),
                 event.getQuantity(),
+                event.getCategoryId(),
+                SaleType.from(event.getSaleType()),
+                event.getSellerId(),
                 event.getIdempotencyKey(),
                 event.getExpiresAt(),
                 event.getStreet(),
@@ -64,7 +71,13 @@ public class EventListener {
             PaymentCompletedEvent event = objectMapper.readValue(message,
                 PaymentCompletedEvent.class);
 
-            service.completeOrder(event.getOrderId());
+            CompletedPaymentCommand command = CompletedPaymentCommand.of(
+                event.getOrderId(),
+                event.getPaymentId(),
+                event.getAmount().intValue() // TODO: 나중에 돈과 관련된 모든 필드는 BigDecimal로 변경될 예정
+            );
+
+            service.completeOrder(command);
 
             ack.acknowledge();
         } catch (Exception e) {
@@ -92,7 +105,7 @@ public class EventListener {
 
             ack.acknowledge();
         } catch (Exception e) {
-            // TODO: DLQ/알람 처리 등 재시도 한계 초과 시 후속 조치 필요
+            // TODO: DLQ/백오프 처리 추가하여 동일 메시지 무한 재시도 방지
             log.error("refundCompleted 처리 실패 : {}", message, e);
         }
     }
@@ -118,7 +131,32 @@ public class EventListener {
 
             ack.acknowledge();
         } catch (Exception e) {
+            // TODO: DLQ/백오프 처리 추가하여 동일 메시지 무한 재시도 방지
             log.error("refundFailed 처리 실패 : {}", message, e);
+        }
+    }
+
+    @KafkaListener(
+        topics = "${topic.payment.failed}",
+        groupId = "${consumer.group.payment}",
+        concurrency = "2"
+    )
+    public void paymentFailed(String message, Acknowledgment ack) {
+        try {
+            PaymentFailedEvent event = objectMapper.readValue(message,
+                PaymentFailedEvent.class);
+
+            FailedOrderCommand command = FailedOrderCommand.of(
+                event.getOrderId(),
+                event.getPaymentId(),
+                event.getErrorMessage()
+            );
+
+            service.failOrder(command);
+
+            ack.acknowledge();
+        } catch (Exception e) {
+            log.error("PaymentFailed 처리 실패: {}", message, e);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.smore.product.presentation.dto.request;
 
+import com.smore.product.domain.entity.ProductStatus;
 import com.smore.product.domain.entity.SaleType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -36,6 +37,9 @@ public class CreateProductRequest {
 
     @NotNull(message = "판매 유형은 필수입니다.")
     private SaleType saleType;
+
+    @NotNull(message = "상품 판매 상태는 필수입니다.")
+    private ProductStatus status;
 
     // LIMITED_TO_AUCTION일 때는 서비스에서 추가 검증
     @Min(value = 1, message = "경매 전환 기준은 1 이상이어야 합니다.")

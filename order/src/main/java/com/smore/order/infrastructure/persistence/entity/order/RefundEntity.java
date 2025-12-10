@@ -46,6 +46,9 @@ public class RefundEntity extends BaseEntity {
     @Column(name = "product_id", nullable = false, updatable = false)
     private UUID productId;
 
+    @Column(name = "payment_id", nullable = false, updatable = false)
+    private UUID paymentId;
+
     @Column(name = "refund_quantity", nullable = false, updatable = false)
     private Integer refundQuantity;
 
@@ -57,6 +60,9 @@ public class RefundEntity extends BaseEntity {
 
     @Column(name = "reason", nullable = false, updatable = false)
     private String reason;
+
+    @Column(name ="refund_fail_reason")
+    private String refundFailReason;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "refund_status", nullable = false)
@@ -72,6 +78,7 @@ public class RefundEntity extends BaseEntity {
         UUID orderId,
         Long userId,
         UUID productId,
+        UUID paymentId,
         Integer refundQuantity, Integer refundAmount,
         UUID idempotencyKey,
         String reason,
@@ -93,6 +100,7 @@ public class RefundEntity extends BaseEntity {
             .orderId(orderId)
             .userId(userId)
             .productId(productId)
+            .paymentId(paymentId)
             .refundQuantity(refundQuantity)
             .refundAmount(refundAmount)
             .idempotencyKey(idempotencyKey)
