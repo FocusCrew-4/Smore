@@ -43,7 +43,7 @@ VALUES
     'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 32000,
     3, 96000,
 
- 'pay_3f92a7b8-12cd-4c7f-9e10-83ac912f4bb1', 'c1c9d8d2-7e54-4c1e-a7e8-61c5ff0bb2fa', 'BID',
+ '3f8c1e52-7c4b-4af4-ae9d-9c2c7b2f4a11', 'c1c9d8d2-7e54-4c1e-a7e8-61c5ff0bb2fa', 'BID',
 
     0, 0, 0, 0,
 
@@ -63,7 +63,7 @@ VALUES
     'cccccccc-cccc-cccc-cccc-cccccccccccc', 5000,
     5, 25000,
 
-    'pay_9bd1c6ef-45aa-4f1e-88ce-2a7df301cb84', '4c0c2c0f-3f7a-4db3-92c2-6bd7d8e4fb9c', 'AUCTION',
+    'a92d0c33-1b6e-4c6d-8f8d-4e3b0c1e92d7', '4c0c2c0f-3f7a-4db3-92c2-6bd7d8e4fb9c', 'AUCTION',
 
     0, 0, 0, 0,
 
