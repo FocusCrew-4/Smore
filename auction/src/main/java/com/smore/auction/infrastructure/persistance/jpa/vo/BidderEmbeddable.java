@@ -1,9 +1,11 @@
 package com.smore.auction.infrastructure.persistance.jpa.vo;
 
 import com.smore.auction.domain.enums.BidderStatus;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +18,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BidderEmbeddable {
     private Long id;
-    private Long price;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal price;
     private Integer quantity;
     @Enumerated(EnumType.STRING)
     private BidderStatus status;
