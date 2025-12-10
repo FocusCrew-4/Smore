@@ -3,6 +3,7 @@ package com.smore.category.application.service;
 import com.smore.category.domain.entity.Category;
 import com.smore.category.domain.repository.CategoryRepository;
 import com.smore.category.presentation.dto.request.CreateCategoryRequest;
+import com.smore.category.presentation.dto.request.UpdateCategoryRequest;
 import com.smore.category.presentation.dto.resopnse.CategoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,13 @@ public class CategoryService {
             throw new IllegalArgumentException("이미 존재하는 카테고리입니다.");
         }
 
-        Category category = new Category(
+        Category category = Category.create(
                 request.getName(),
                 request.getDescription()
         );
 
         categoryRepository.save(category);
+
         return new CategoryResponse(category);
     }
 
@@ -41,10 +43,20 @@ public class CategoryService {
     }
 
     public List<CategoryResponse> getCategories() {
-        List<Category> categories = categoryRepository.findAll();
-
-        return categories.stream()
+        return categoryRepository.findAll()
+                .stream()
                 .map(CategoryResponse::new)
                 .toList();
+    }
+
+    @Transactional
+    public CategoryResponse updateCategory(UUID id, UpdateCategoryRequest req) {
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+
+        category.update(req.getName(), req.getDescription());
+
+        return new CategoryResponse(category);
     }
 }
