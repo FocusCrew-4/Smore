@@ -50,4 +50,12 @@ public class Category {
 
         this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
+
+    private LocalDateTime deletedAt;
+    private UUID deletedBy;
+
+    public void softDelete(UUID requesterId) {
+        this.deletedAt = LocalDateTime.now(Clock.systemUTC());
+        this.deletedBy = requesterId;
+    }
 }

@@ -36,14 +36,14 @@ public class CategoryService {
     }
 
     public CategoryResponse getCategory(UUID id) {
-        Category category = categoryRepository.findById(id)
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
 
         return new CategoryResponse(category);
     }
 
     public List<CategoryResponse> getCategories() {
-        return categoryRepository.findAll()
+        return categoryRepository.findAllByDeletedAtIsNull()
                 .stream()
                 .map(CategoryResponse::new)
                 .toList();
@@ -58,5 +58,14 @@ public class CategoryService {
         category.update(req.getName(), req.getDescription());
 
         return new CategoryResponse(category);
+    }
+
+    @Transactional
+    public void deleteCategory(UUID id, UUID requesterId) {
+
+        Category category = categoryRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+
+        category.softDelete(requesterId);
     }
 }
