@@ -8,8 +8,12 @@ services:
       - "8001:8001"
     volumes:
       - ./docker/db/redis/redis-stack-data:/data
-      - ./docker/db/redis/redis-stack.conf:/usr/local/etc/redis/redis-stack.conf
-    command: [ "/entrypoint.sh", "./redis-stack.conf" ]
+    command:
+      [
+        "redis-stack-server",
+        "--notify-keyspace-events",
+        "Ex"
+      ]
 
   mongodb:
     image: mongo:8.0
