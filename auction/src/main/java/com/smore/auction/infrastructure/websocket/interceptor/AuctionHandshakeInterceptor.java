@@ -22,7 +22,7 @@ public class AuctionHandshakeInterceptor implements HandshakeInterceptor {
         throws Exception {
 
         // 웹소켓은 클라이언트 서버간 커스텀 헤더가 적용이 안 되고 서버간만 된다
-        // gw 를 경유하므로 gw 에서 ws 업그레이드 요청 request 를 잡아서 header 값 추가해야함
+        // TODO: gw 를 경유하므로 gw 에서 ws 업그레이드 요청 request 를 잡아서 header 값 추가해야함 gw 에서 쿼리파라미터로 jwt 받아와야함
 //        var headers = request.getHeaders();
 //        String optionalUserId = headers.getFirst("X-USER-ID");
 //        if (optionalUserId == null) {
