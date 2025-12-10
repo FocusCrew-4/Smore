@@ -8,12 +8,15 @@ import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOrderFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOrderException;
 import com.smore.order.infrastructure.persistence.mapper.OrderMapper;
+
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Slf4j(topic = "OrderRepositoryImpl")
@@ -78,6 +81,14 @@ public class OrderRepositoryImpl implements OrderRepository {
         OrderEntity entity = orderJpaRepository.findByIdIncludingDeleted(orderId);
 
         return Optional.ofNullable(entity).map(OrderMapper::toDomain);
+    }
+
+    @Override
+    public Page<Order> findAll(Long userId, UUID productId, Pageable pageable) {
+
+        Page<OrderEntity> orderEntityPage = orderJpaRepository.findAll(userId, productId, pageable);
+
+        return orderEntityPage.map(OrderMapper::toDomain);
     }
 
     @Override

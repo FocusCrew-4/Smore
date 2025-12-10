@@ -6,12 +6,16 @@ import com.smore.order.infrastructure.persistence.entity.order.OrderEntity;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface OrderJpaRepositoryCustom {
 
     OrderEntity findByIdempotencyKey(UUID idempotencyKey);
 
     OrderEntity findByAllocationKeyAndUserId(UUID allocationKey, Long userId);
+
+    Page<OrderEntity> findAll(Long userId, UUID productId, Pageable pageable);
 
     int markComplete(UUID orderId, OrderStatus status);
 
