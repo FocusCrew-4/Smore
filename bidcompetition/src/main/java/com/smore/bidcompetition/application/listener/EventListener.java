@@ -3,9 +3,11 @@ package com.smore.bidcompetition.application.listener;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.bidcompetition.application.dto.BidCreateCommand;
 import com.smore.bidcompetition.application.dto.OrderCompletedCommand;
+import com.smore.bidcompetition.application.dto.OrderFailedCommand;
 import com.smore.bidcompetition.application.dto.ServiceResult;
 import com.smore.bidcompetition.application.service.BidCompetitionService;
 import com.smore.bidcompetition.infrastructure.persistence.event.inbound.OrderCompletedEvent;
+import com.smore.bidcompetition.infrastructure.persistence.event.inbound.OrderFailedEvent;
 import com.smore.bidcompetition.infrastructure.persistence.event.inbound.ProductCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,4 +85,29 @@ public class EventListener {
         }
     }
 
+    @KafkaListener(
+        topics = "${topic.order.failed}",
+        groupId = "${consumer.group.order}",
+        concurrency = "3"
+    )
+    public void orderFailed(String message, Acknowledgment ack) {
+        try {
+            OrderFailedEvent event = objectMapper.readValue(message,
+                OrderFailedEvent.class);
+
+            OrderFailedCommand command = OrderFailedCommand.of(
+                event.getAllocationKey(),
+                event.getProductId(),
+                event.getUserId(),
+                event.getQuantity(),
+                event.getPublishedAt()
+            );
+
+            service.orderFailed(command);
+
+            ack.acknowledge();
+        } catch (Exception e) {
+            log.error("orderFailed 처리 실패 : {}", message, e);
+        }
+    }
 }
