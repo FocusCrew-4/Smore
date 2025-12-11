@@ -34,6 +34,7 @@ public class AuctionCreateImpl implements AuctionCreate {
 
         var auction = Auction.create(
             command.productId(),
+            command.productCategoryId(),
             command.productPrice(),
             command.stock(),
             command.sellerId(),

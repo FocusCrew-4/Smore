@@ -12,6 +12,7 @@ public class AuctionKafkaMapperImpl implements AuctionKafkaMapper {
     public AuctionCreateCommand toCommand(AuctionPendingStartedV1 auctionPendingStartedV1) {
         return new  AuctionCreateCommand(
             auctionPendingStartedV1.productId(),
+            auctionPendingStartedV1.productCategoryId(),
             auctionPendingStartedV1.productPrice(),
             auctionPendingStartedV1.stock(),
             auctionPendingStartedV1.sellerId()
