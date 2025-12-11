@@ -15,4 +15,6 @@ public interface BidCompetitionRepository {
     BidCompetition save(BidCompetition bidCompetition);
 
     int decreaseStock(UUID bidId, Integer quantity, LocalDateTime now);
+
+    int increaseStock(UUID bidId, Integer quantity);
 }

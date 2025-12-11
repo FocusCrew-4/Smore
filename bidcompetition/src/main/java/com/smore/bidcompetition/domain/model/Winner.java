@@ -110,4 +110,8 @@ public class Winner {
         return this.winnerStatus == WinnerStatus.EXPIRED;
     }
 
+    public boolean isCompleted() {
+        return this.winnerStatus != WinnerStatus.PAYMENT_PENDING;
+    }
+
 }

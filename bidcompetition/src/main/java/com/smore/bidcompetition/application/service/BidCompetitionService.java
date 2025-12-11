@@ -210,6 +210,36 @@ public class BidCompetitionService {
         return ServiceResult.SUCCESS;
     }
 
+    @Transactional
+    public void orderFailed(OrderFailedCommand command) {
+
+        // TODO: allocationKey로 Winner 미존재 시 재시도 루프 방지 처리 추가 필요
+        Winner winner = winnerRepository.findByAllocationKey(command.getAllocationKey());
+
+        if (winner.isCompleted()) {
+            log.info("이미 처리된 작업입니다. allocationKey : {}", command.getAllocationKey());
+            return;
+        }
+
+        int updated = winnerRepository.markCancelled(
+            winner.getBidId(),
+            command.getAllocationKey(),
+            winner.getVersion()
+        );
+
+        if (updated == 0) {
+            log.error("동시성 충돌로 인해 작업을 처리하지 못했습니다. allocationKey : {}", command.getAllocationKey());
+            throw new WinnerConflictException(BidErrorCode.WINNER_CONFLICT);
+        }
+
+        updated = bidCompetitionRepository.increaseStock(winner.getBidId(), winner.getQuantity());
+
+        if (updated == 0) {
+            log.error("예기치 못한 예외로 인해 처리하지 못했습니다. allocationKey : {}", command.getAllocationKey());
+            throw new WinnerConflictException(BidErrorCode.WINNER_CONFLICT);
+        }
+    }
+
     // TODO: 나중에 클래스로 분리할 예정
     private String makePayload(WinnerCreatedEvent event)  {
         try {
