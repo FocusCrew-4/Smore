@@ -21,6 +21,4 @@ public class BidderEmbeddable {
     @Column(precision = 19, scale = 2)
     private BigDecimal price;
     private Integer quantity;
-    @Enumerated(EnumType.STRING)
-    private BidderStatus status;
 }

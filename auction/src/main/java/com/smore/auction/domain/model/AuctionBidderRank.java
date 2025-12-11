@@ -16,6 +16,7 @@ public class AuctionBidderRank {
     private final UUID id;
     private final Auction auction;
     private Bidder bidder;
+    private BidderStatus status;
     private Long rank;
 
     private LocalDateTime createdAt;
@@ -34,7 +35,8 @@ public class AuctionBidderRank {
         return new AuctionBidderRank(
             null,
             auction,
-            new Bidder(userId, price, quantity, BidderStatus.WINNER),
+            new Bidder(userId, price, quantity),
+            BidderStatus.WINNER,
             rank,
             LocalDateTime.now(clock),
             LocalDateTime.now(clock),
@@ -54,12 +56,17 @@ public class AuctionBidderRank {
         return new AuctionBidderRank(
             null,
             auction,
-            new Bidder(userId, price, quantity, BidderStatus.STANDBY),
+            new Bidder(userId, price, quantity),
+            BidderStatus.STANDBY,
             rank,
             LocalDateTime.now(clock),
             LocalDateTime.now(clock),
             null,
             null
         );
+    }
+
+    public void confirm() {
+        this.status = BidderStatus.CONFIRMED;
     }
 }

@@ -76,4 +76,9 @@ public class AuctionSqlRepositoryImpl implements AuctionSqlRepository {
             .orElse(null);
         return auctionBidderRank;
     }
+
+    @Override
+    public void saveBidder(AuctionBidderRank auctionBidderRank) {
+        bidderRankJpaRepository.save(bidderRankJpaMapper.toEntity(auctionBidderRank));
+    }
 }

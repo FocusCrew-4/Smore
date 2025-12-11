@@ -28,7 +28,7 @@ public class FindUserBidInAuctionImpl implements FindUserBidInAuction {
         return new AuctionBidderRankResult(
             bidderRank.getBidder().price(),
             bidderRank.getBidder().quantity(),
-            bidderRank.getBidder().status(),
+            bidderRank.getStatus(),
             bidderRank.getRank()
         );
     }
