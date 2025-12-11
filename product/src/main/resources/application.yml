@@ -7,18 +7,48 @@ spring:
     config:
       enabled: false
 
+  sql:
+    init:
+      mode: always
+
   application:
     name: product-service
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/product-db
-#    username: root
-#    password: root
-#    driver-class-name: org.postgresql.Driver
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/product
+    username: root
+    password: root
+
+  kafka:
+    bootstrap-servers:
+      - localhost:19092
+      - localhost:29092
+      - localhost:39092
+    consumer:
+      group-id: product-service
+      auto-offset-reset: earliest
+    producer:
+      retries: 3
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
+      show-sql: true
+    defer-datasource-initialization: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:18800/eureka/  # Eureka 서버 URL
+    register-with-eureka: true  # Eureka 서버에 등록
+    fetch-registry: true  # Eureka 서버로부터 레지스트리 정보 가져오기
+  instance:
+    hostname: product-service  # 클라이언트 호스트 이름
+    prefer-ip-address: true  # IP 주소 사용 선호
+    lease-renewal-interval-in-seconds: 30  # 리스 갱신 간격
+    lease-expiration-duration-in-seconds: 90  # 리스 만료 기간
