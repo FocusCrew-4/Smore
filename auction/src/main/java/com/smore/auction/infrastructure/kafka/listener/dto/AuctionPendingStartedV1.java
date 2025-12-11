@@ -7,6 +7,7 @@ import java.util.UUID;
 public record AuctionPendingStartedV1(
     Long sellerId,
     UUID productId,
+    UUID productCategoryId,
     BigDecimal productPrice,
     Long stock,
     UUID idempotencyKey,

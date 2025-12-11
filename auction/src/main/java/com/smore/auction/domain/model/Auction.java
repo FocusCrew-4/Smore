@@ -26,6 +26,7 @@ public class Auction {
 
     public static Auction create(
         UUID productId,
+        UUID productCategoryId,
         BigDecimal productPrice,
         Long stock,
         Long sellerId,
@@ -34,7 +35,7 @@ public class Auction {
         LocalDateTime now = LocalDateTime.now(clock);
         return new Auction(
             null,
-            new Product(productId, productPrice),
+            new Product(productId, productCategoryId, productPrice),
             stock,
             sellerId,
             AuctionStatus.READY,
