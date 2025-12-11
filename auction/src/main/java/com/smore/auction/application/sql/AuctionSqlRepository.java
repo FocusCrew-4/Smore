@@ -13,4 +13,6 @@ public interface AuctionSqlRepository {
     Auction findById(String auctionId);
 
     void saveAll(List<AuctionBidderRank> ranks);
+
+    AuctionBidderRank findBidByAuctionIdAndBidderId(String auctionId, Long userId);
 }

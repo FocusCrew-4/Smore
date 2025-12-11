@@ -6,6 +6,7 @@ import com.smore.auction.domain.model.Auction;
 import com.smore.auction.domain.model.AuctionBidderRank;
 import com.smore.auction.infrastructure.persistance.jpa.AuctionBidderRankJpaRepository;
 import com.smore.auction.infrastructure.persistance.jpa.AuctionJpaRepository;
+import com.smore.auction.infrastructure.persistance.jpa.entity.AuctionBidderRankJpa;
 import com.smore.auction.infrastructure.persistance.jpa.entity.AuctionJpa;
 import com.smore.auction.infrastructure.persistance.jpa.mapper.AuctionBidderRankJpaMapper;
 import com.smore.auction.infrastructure.persistance.jpa.mapper.AuctionJpaMapper;
@@ -65,5 +66,14 @@ public class AuctionSqlRepositoryImpl implements AuctionSqlRepository {
         bidderRankJpaRepository.saveAll(ranks.stream()
             .map(bidderRankJpaMapper::toEntity)
             .toList());
+    }
+
+    @Override
+    public AuctionBidderRank findBidByAuctionIdAndBidderId(String auctionId, Long userId) {
+        AuctionBidderRank auctionBidderRank
+            = bidderRankJpaRepository.findByAuction_IdAndBidder_Id(UUID.fromString(auctionId), userId)
+            .map(bidderRankJpaMapper::toDomain)
+            .orElse(null);
+        return auctionBidderRank;
     }
 }
