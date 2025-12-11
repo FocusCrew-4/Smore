@@ -33,7 +33,15 @@ public class JwtValidationFilter implements GlobalFilter, Ordered {
         String bearerJwt
             = request.getHeaders().getFirst("Authorization");
         if (bearerJwt == null) {
-            return chain.filter(exchange);
+            ServerHttpRequest newRequest = exchange.getRequest()
+                .mutate()
+                .headers(h -> {
+                    h.add("X-User-Role", "NONE");
+                })
+                .build();
+            return chain.filter(exchange.mutate()
+                .request(newRequest)
+                .build());
         }
         if (!bearerJwt.startsWith("Bearer ")) {
             log.error("Bearer Token is invalid (JwtValidationFilter)");

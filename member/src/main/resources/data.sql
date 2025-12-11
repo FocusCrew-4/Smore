@@ -2,24 +2,13 @@
 INSERT INTO p_member (id, role, email, password, nickname, auction_cancel_count, status, created_at, updated_at, deleted_at, deleted_by)
 VALUES
     (1, 'ADMIN', 'admin@example.com', '$2a$10$sFHAFHXkl0ohQkv3uCuOAOmsfZgI/Aca4FH6hnkKP6jj1Fqw1Prg2', 'admin', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
-    (2, 'SELLER', 'seller_pending@example.com', 'hashed-seller-password', 'seller_pending', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
-    (3, 'SELLER', 'seller_active@example.com', 'hashed-seller-password', 'seller_active', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
-    (4, 'CONSUMER', 'consumer_changed_from_seller4@example.com', 'hashed-consumer-password', 'consumer_from4', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
-    (5, 'SELLER', 'seller_deleted@example.com', 'hashed-seller-password', 'seller_deleted', 1, 'DELETED', NOW(), NOW(), NOW(), 1),
-    (6, 'SELLER', 'seller_banned@example.com', 'hashed-seller-password', 'seller_banned', 2, 'BANNED', NOW(), NOW(), NOW(), 1),
-    (7, 'CONSUMER', 'consumer_active@example.com', 'hashed-consumer-password', 'consumer_active', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
-    (8, 'CONSUMER', 'consumer_inactive@example.com', 'hashed-consumer-password', 'consumer_inactive', 0, 'INACTIVE', NOW(), NOW(), NULL, NULL),
-    (9, 'SELLER', 'seller_inactive@example.com', 'hashed-seller-password', 'seller_inactive', 0, 'INACTIVE', NOW(), NOW(), NULL, NULL)
+    (4, 'CONSUMER', 'consumer_changed_from_seller4@example.com', 'hashed-consumer-password', 'consumer_from4', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL)
 ON CONFLICT DO NOTHING;
 
 -- Seed sellers by status (linked to seller members above)
 INSERT INTO p_seller (id, member_id, account_num, status, created_at, updated_at, deleted_at, deleted_by)
 VALUES
-    ('00000000-0000-0000-0000-000000000001', 2, '111-11-111111', 'PENDING', NOW(), NOW(), NULL, NULL),
-    ('00000000-0000-0000-0000-000000000002', 3, '222-22-222222', 'ACTIVE', NOW(), NOW(), NULL, NULL),
-    ('00000000-0000-0000-0000-000000000003', 9, '333-33-333333', 'INACTIVE', NOW(), NOW(), NULL, NULL),
-    ('00000000-0000-0000-0000-000000000004', 5, '444-44-444444', 'DELETED', NOW(), NOW(), NOW(), 1),
-    ('00000000-0000-0000-0000-000000000005', 6, '555-55-555555', 'BANNED', NOW(), NOW(), NOW(), 1)
+    ('00000000-0000-0000-0000-000000000001', 4, '111-11-111111', 'PENDING', NOW(), NOW(), NULL, NULL)
 ON CONFLICT DO NOTHING;
 
 -- Seed: seller outbox pending 230 rows
@@ -63,9 +52,17 @@ VALUES (
     json_build_object(
         'memberId', 4,
         'idempotencyKey', '00000000-0000-0000-0000-000000000004',
-        'createdAt', NOW()
+        -- LocalDateTime shape (no offset) for dummy event
+        'createdAt', NOW()::timestamp
     )::json,
     NULL,
     0,
     'PENDING'
+);
+
+-- Reset sequence after manual inserts to avoid PK collisions
+SELECT setval(
+    pg_get_serial_sequence('p_member', 'id'),
+    (SELECT COALESCE(MAX(id), 0) + 1 FROM p_member),
+    false
 );
