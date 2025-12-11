@@ -18,6 +18,7 @@ public class OutboxMessage {
     private final UUID aggregateId;       // ex: paymentId, orderId
     private final String eventType;         // ex: PaymentApprovedEvent
     private final UUID idempotencyKey;
+    private final String topicName;
     private final String payload;           // JSON
     private final Integer retryCount;
     private OutboxStatus status;            // PENDING / SENT
@@ -28,6 +29,7 @@ public class OutboxMessage {
             UUID aggregateId,
             String eventType,
             UUID idempotencyKey,
+            String topicName,
             String payload,
             Integer retryCount,
             OutboxStatus status
@@ -36,46 +38,11 @@ public class OutboxMessage {
         this.aggregateId = aggregateId;
         this.eventType = eventType;
         this.idempotencyKey = idempotencyKey;
+        this.topicName = topicName;
         this.payload = payload;
         this.retryCount = retryCount;
         this.status = status;
         this.createdAt = LocalDateTime.now();
-    }
-
-    public static OutboxMessage paymentApproved(PaymentApprovedEvent event) {
-        return new OutboxMessage(
-                "PAYMENT",
-                event.getPaymentId(),
-                event.getClass().getSimpleName(),
-                event.getIdempotencyKey(),
-                JsonUtil.jsonToString(event),
-                3,
-                OutboxStatus.PENDING
-        );
-    }
-
-    public static OutboxMessage paymentFailed(PaymentFailedEvent event) {
-        return new OutboxMessage(
-                "PAYMENT",
-                event.getOrderId(),
-                event.getClass().getSimpleName(),
-                event.getIdempotencyKey(),
-                JsonUtil.jsonToString(event),
-                3,
-                OutboxStatus.PENDING
-        );
-    }
-
-    public static OutboxMessage settlementCalculated(SettlementCalculatedEvent event) {
-        return new OutboxMessage(
-                "SETTLEMENT",
-                UUID.randomUUID(),
-                event.getClass().getSimpleName(),
-                event.idempotencyKey(),
-                JsonUtil.jsonToString(event),
-                3,
-                OutboxStatus.PENDING
-        );
     }
 
 }

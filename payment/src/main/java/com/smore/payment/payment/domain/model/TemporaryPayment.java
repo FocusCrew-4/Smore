@@ -1,12 +1,18 @@
 package com.smore.payment.payment.domain.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class TemporaryPayment {
 
     private UUID idempotencyKey;
@@ -17,26 +23,6 @@ public class TemporaryPayment {
     private UUID categoryId;
     private String auctionType;
     private LocalDateTime expiredAt;
-
-    protected TemporaryPayment(
-            UUID idempotencyKey,
-            UUID orderId,
-            Long userId,
-            BigDecimal amount,
-            Long sellerId,
-            UUID categoryId,
-            String auctionType,
-            LocalDateTime expiredAt
-    ) {
-        this.idempotencyKey = idempotencyKey;
-        this.orderId = orderId;
-        this.userId = userId;
-        this.amount = amount;
-        this.sellerId = sellerId;
-        this.categoryId = categoryId;
-        this.auctionType = auctionType;
-        this.expiredAt = expiredAt;
-    }
 
     public static TemporaryPayment create(
             UUID idempotencyKey,
@@ -61,8 +47,20 @@ public class TemporaryPayment {
     }
 
     public void validateApproval(BigDecimal requestAmount) {
-        if (!this.amount.equals(requestAmount)) {
-            throw new IllegalArgumentException("결제 금액이 일치하지 않습니다.");
+        if (requestAmount == null) {
+            throw new IllegalArgumentException("요청 금액이 null입니다.");
+        }
+
+        // BigDecimal은 equals 대신 compareTo 사용 권장
+        if (this.amount.compareTo(requestAmount) != 0) {
+            throw new IllegalArgumentException(
+                    String.format("결제 금액이 일치하지 않습니다. 예상: %s, 요청: %s",
+                            this.amount, requestAmount)
+            );
+        }
+
+        if (LocalDateTime.now().isAfter(expiredAt)) {
+            throw new IllegalStateException("결제 승인 시간이 만료되었습니다.");
         }
     }
 }

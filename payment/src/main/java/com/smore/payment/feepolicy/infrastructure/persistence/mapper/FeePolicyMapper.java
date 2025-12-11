@@ -38,8 +38,8 @@ public class FeePolicyMapper {
                 feePolicyEntity.getFixedAmount().getFixedAmount()
         );
         TargetKey targetKey = switch (feePolicyEntity.getTargetType()) {
-            case CATEGORY -> new TargetKeyLong(Long.parseLong(feePolicyEntity.getTargetKey()));
-            case MERCHANT -> new TargetKeyUUID(UUID.fromString(feePolicyEntity.getTargetKey()));
+            case MERCHANT -> new TargetKeyLong(Long.parseLong(feePolicyEntity.getTargetKey()));
+            case CATEGORY -> new TargetKeyUUID(UUID.fromString(feePolicyEntity.getTargetKey()));
             case USER_TYPE -> null;
         };
         return FeePolicy.reconstruct(

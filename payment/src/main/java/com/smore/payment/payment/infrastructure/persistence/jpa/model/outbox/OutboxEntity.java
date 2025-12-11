@@ -24,7 +24,9 @@ public class OutboxEntity {
 
     private UUID idempotencyKey;
 
-    @Lob
+    private String topicName;
+
+    @Column(name = "payload", columnDefinition = "TEXT")
     private String payload;
 
     private Integer retryCount;
@@ -39,6 +41,7 @@ public class OutboxEntity {
             UUID aggregateId,
             String eventType,
             UUID idempotencyKey,
+            String topicName,
             String payload,
             Integer retryCount,
             OutboxStatus status,
@@ -48,6 +51,7 @@ public class OutboxEntity {
         this.aggregateId = aggregateId;
         this.eventType = eventType;
         this.idempotencyKey = idempotencyKey;
+        this.topicName = topicName;
         this.payload = payload;
         this.retryCount = retryCount;
         this.status = status;

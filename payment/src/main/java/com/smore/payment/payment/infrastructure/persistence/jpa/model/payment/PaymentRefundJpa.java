@@ -17,10 +17,10 @@ public record PaymentRefundJpa(
         @Column(name = "refunded_at")
         LocalDateTime refundedAt,
 
-        @Column(name = "pg_cancel_transaction_key", nullable = false)
+        @Column(name = "pg_cancel_transaction_key")
         String pgCancelTransactionKey,
 
-        @Column(name = "refundable_amount", nullable = false)
+        @Column(name = "refundable_amount")
         BigDecimal refundableAmount
 ) {
     public static PaymentRefundJpa of(

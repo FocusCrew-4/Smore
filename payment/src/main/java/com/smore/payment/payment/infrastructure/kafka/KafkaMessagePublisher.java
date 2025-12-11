@@ -11,7 +11,7 @@ public class KafkaMessagePublisher implements MessageBrokerPublisher{
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
-    public void publish(String eventType, String payload, String key) {
-        kafkaTemplate.send(eventType, key, payload);
+    public void publish(String topicName, String payload, String key) {
+        kafkaTemplate.send(topicName, key, payload);
     }
 }

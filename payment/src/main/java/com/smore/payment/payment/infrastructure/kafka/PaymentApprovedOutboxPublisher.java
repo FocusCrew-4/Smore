@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,15 +19,16 @@ public class PaymentApprovedOutboxPublisher {
     private final OutboxJpaRepository outboxJpaRepository;
     private final MessageBrokerPublisher messageBrokerPublisher;
 
-//    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 5000)
+    @Transactional
     public void publish() {
-
+        log.info("이벤트 발행 시작");
         List<OutboxEntity> pendingMessages = outboxJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
-
+        log.info("아웃박스 찾아오기 {}", pendingMessages.size());
         for (OutboxEntity message : pendingMessages) {
             try {
                 messageBrokerPublisher.publish(
-                        message.getEventType(),
+                        message.getTopicName(),
                         message.getPayload(),
                         message.getAggregateId().toString()
                 );

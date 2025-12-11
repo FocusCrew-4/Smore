@@ -8,14 +8,11 @@ import java.util.UUID;
 public class PaymentFailedEvent {
 
     private final UUID orderId;
-    private final UUID paymentId;
     private final String errorMessage;
-    private final UUID idempotencyKey;
 
-    public PaymentFailedEvent(UUID orderId, UUID paymentId, String errorMessage, UUID idempotencyKey) {
+    public PaymentFailedEvent(UUID orderId, String errorMessage) {
         this.orderId = orderId;
-        this.paymentId = paymentId;
         this.errorMessage = errorMessage;
-        this.idempotencyKey = idempotencyKey;
     }
+
 }

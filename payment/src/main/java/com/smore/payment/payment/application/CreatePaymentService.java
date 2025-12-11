@@ -1,6 +1,8 @@
 package com.smore.payment.payment.application;
 
 import com.smore.payment.global.outbox.OutboxMessage;
+import com.smore.payment.global.outbox.OutboxMessageCreator;
+import com.smore.payment.global.util.JsonUtil;
 import com.smore.payment.payment.application.command.ApprovePaymentCommand;
 import com.smore.payment.payment.application.event.outbound.SettlementCalculatedEvent;
 import com.smore.payment.payment.application.facade.FeePolicyFacade;
@@ -16,12 +18,15 @@ import com.smore.payment.payment.domain.repository.OutboxRepository;
 import com.smore.payment.payment.domain.repository.PaymentRepository;
 import com.smore.payment.payment.domain.repository.RedisRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -33,6 +38,7 @@ public class CreatePaymentService {
     private final PgClient pgClient;
     private final MongoRepository mongoRepository;
     private final FeePolicyFacade feePolicyFacade;
+    private final OutboxMessageCreator outboxMessageCreator;
 
     public Payment approve(ApprovePaymentCommand command) {
 
@@ -103,13 +109,12 @@ public class CreatePaymentService {
                 payment.getIdempotencyKey()
         );
 
-        outboxRepository.save(
-                OutboxMessage.paymentApproved(event)
-        );
+        OutboxMessage paymentApprovedMsg = outboxMessageCreator.paymentApproved(event);
+        OutboxMessage settlementCalculatedMsg = outboxMessageCreator.settlementCalculated(settlementEvent);
 
-        outboxRepository.save(
-                OutboxMessage.settlementCalculated(settlementEvent)
-        );
+        outboxRepository.save(paymentApprovedMsg);
+
+        outboxRepository.save(settlementCalculatedMsg);
 
         redisRepository.deleteByOrderId(temp.getOrderId());
 
@@ -121,15 +126,12 @@ public class CreatePaymentService {
         BigDecimal fee;
 
         switch (policy.feeType()) {
-            case "RATE" ->
-                    fee = approvedAmount.multiply(policy.rate());
+            case "RATE" -> fee = approvedAmount.multiply(policy.rate());
 
-            case "FIXED" ->
-                    fee = policy.fixedAmount();
+            case "FIXED" -> fee = policy.fixedAmount();
 
-            case "MIXED" ->
-                    fee = approvedAmount.multiply(policy.rate())
-                            .add(policy.fixedAmount());
+            case "MIXED" -> fee = approvedAmount.multiply(policy.rate())
+                    .add(policy.fixedAmount());
             default -> throw new IllegalArgumentException("Unknown feeType: " + policy.feeType());
         }
 

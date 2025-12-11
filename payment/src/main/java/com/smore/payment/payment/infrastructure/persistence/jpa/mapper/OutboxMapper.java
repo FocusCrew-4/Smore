@@ -13,6 +13,7 @@ public class OutboxMapper {
                 message.getAggregateId(),
                 message.getEventType(),
                 message.getIdempotencyKey(),
+                message.getTopicName(),
                 message.getPayload(),
                 message.getRetryCount(),
                 message.getStatus(),
@@ -26,6 +27,7 @@ public class OutboxMapper {
                 entity.getAggregateId(),
                 entity.getEventType(),
                 entity.getIdempotencyKey(),
+                entity.getTopicName(),
                 entity.getPayload(),
                 entity.getRetryCount(),
                 entity.getStatus()
