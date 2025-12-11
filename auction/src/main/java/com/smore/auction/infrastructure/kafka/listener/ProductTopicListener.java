@@ -27,7 +27,7 @@ public class ProductTopicListener {
 
     // TODO: 실패시 처리로직 등 추가구현 필요
     @KafkaListener(
-        topics = "${product.topic.auction-pending-start.v1}"
+        topics = "${topic.auction-pending-start.v1}"
     )
     public void productAuctionPendingStartedV1(String event, Acknowledgment ack) {
         try {
@@ -49,7 +49,7 @@ public class ProductTopicListener {
     }
 
     @KafkaListener(
-        topics = "${product.topic.auction-started.v1}"
+        topics = "${topic.auction-started.v1}"
     )
     public void productAuctionStarted(String event, Acknowledgment ack) {
         try {
