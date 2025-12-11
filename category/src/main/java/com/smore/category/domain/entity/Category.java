@@ -52,9 +52,9 @@ public class Category {
     }
 
     private LocalDateTime deletedAt;
-    private UUID deletedBy;
+    private Long deletedBy;
 
-    public void softDelete(UUID requesterId) {
+    public void softDelete(Long requesterId) {
         this.deletedAt = LocalDateTime.now(Clock.systemUTC());
         this.deletedBy = requesterId;
     }

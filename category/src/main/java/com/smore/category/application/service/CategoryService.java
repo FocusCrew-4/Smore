@@ -61,7 +61,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategory(UUID id, UUID requesterId) {
+    public void deleteCategory(UUID id, Long requesterId) {
 
         Category category = categoryRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
