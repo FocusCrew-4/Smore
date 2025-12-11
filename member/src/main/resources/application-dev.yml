@@ -15,7 +15,7 @@ spring:
         initial-interval: 1000
         multiplier: 1.5
 
-  kafka:
+  Kafka:
     # 로컬에서 Docker로 띄운 브로커 외부 포트에 맞춰 설정 (docker-compose의 EXTERNAL 매핑)
     bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
 
