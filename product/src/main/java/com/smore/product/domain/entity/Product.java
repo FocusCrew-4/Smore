@@ -136,4 +136,17 @@ public class Product {
         this.status = status;
         this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
+
+    public void decreaseStock(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("차감 수량은 0보다 커야 합니다.");
+        }
+
+        if (this.stock < quantity) {
+            throw new IllegalStateException("재고가 부족합니다.");
+        }
+
+        this.stock -= quantity;
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
+    }
 }
