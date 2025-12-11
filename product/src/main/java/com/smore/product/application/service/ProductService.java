@@ -3,6 +3,8 @@ package com.smore.product.application.service;
 import com.smore.product.domain.entity.ProductStatus;
 import com.smore.product.domain.sale.dto.ProductSaleResponse;
 import com.smore.product.domain.sale.repository.ProductSaleRepository;
+import com.smore.product.domain.stock.dto.StockLogResponse;
+import com.smore.product.domain.stock.repository.StockLogRepository;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductStatusRequest;
@@ -24,6 +26,7 @@ import java.util.UUID;
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductSaleRepository productSaleRepository;
+    private final StockLogRepository stockLogRepository;
 
     @Transactional
     public ProductResponse createProduct(CreateProductRequest req) {
@@ -132,6 +135,17 @@ public class ProductService {
 
         return productSaleRepository.findByProductId(productId).stream()
                 .map(ProductSaleResponse::new)
+                .toList();
+    }
+
+    public List<StockLogResponse> getStockLogs(UUID productId) {
+
+        productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        return stockLogRepository.findByProductIdOrderByCreatedAtDesc(productId)
+                .stream()
+                .map(StockLogResponse::new)
                 .toList();
     }
 }
