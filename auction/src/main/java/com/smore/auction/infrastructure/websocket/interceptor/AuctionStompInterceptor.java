@@ -20,7 +20,7 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
 
-// TODO: 공부해야함
+// TODO: 공부 + 실제 경매 가능한 방만 Topic 생성해서 sub 하도록 수정 필요
 @Component
 @RequiredArgsConstructor
 @Slf4j
