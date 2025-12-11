@@ -1,5 +1,7 @@
 package com.smore.payment.payment.infrastructure.kafka;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.payment.payment.application.PaymentRefundService;
 import com.smore.payment.payment.application.event.inbound.PaymentRefundEvent;
 import com.smore.payment.payment.application.event.inbound.PaymentRequestedEvent;
@@ -20,9 +22,12 @@ import java.time.LocalDateTime;
 public class PaymentRefundEventConsumer {
 
     private final PaymentRefundService paymentRefundService;
+    private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = "order.canceled.v1")
-    public void handle(PaymentRefundRequestEvent event, Acknowledgment ack) {
+    public void handle(String message, Acknowledgment ack) throws JsonProcessingException {
+        PaymentRefundRequestEvent event = objectMapper.readValue(message, PaymentRefundRequestEvent.class);
+
         log.info("PaymentRequestedEvent 수신: orderId={}, amount={}",
                 event.getOrderId(), event.getRefundAmount());
 

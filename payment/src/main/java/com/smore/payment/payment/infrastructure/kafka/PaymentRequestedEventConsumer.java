@@ -1,5 +1,7 @@
 package com.smore.payment.payment.infrastructure.kafka;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.payment.payment.application.CreateTemporaryPaymentService;
 import com.smore.payment.payment.application.event.inbound.PaymentRequestedEvent;
 import com.smore.payment.payment.infrastructure.kafka.dto.PaymentCreateRequestEvent;
@@ -18,9 +20,12 @@ import java.time.LocalDateTime;
 public class PaymentRequestedEventConsumer {
 
     private final CreateTemporaryPaymentService createTemporaryPaymentService;
+    private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = "order.created.v1")
-    public void handle(PaymentCreateRequestEvent event, Acknowledgment ack) {
+    public void handle(String message, Acknowledgment ack) throws JsonProcessingException {
+        PaymentCreateRequestEvent event = objectMapper.readValue(message, PaymentCreateRequestEvent.class);
+
         log.info("PaymentRequestedEvent 수신: orderId={}, amount={}, expiredAt={}",
                 event.getOrderId(), event.getTotalAmount(), event.getExpiresAt());
 
