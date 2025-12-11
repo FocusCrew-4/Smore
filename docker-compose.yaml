@@ -289,9 +289,6 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       PG_SECRET_KEY: ${PG_SECRET_KEY}
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
     networks:
       - msa-network
 

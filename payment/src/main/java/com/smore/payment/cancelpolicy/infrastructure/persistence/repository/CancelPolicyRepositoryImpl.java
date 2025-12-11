@@ -46,4 +46,16 @@ public class CancelPolicyRepositoryImpl implements CancelPolicyRepository {
         return cancelPolicyJpaRepository.findById(id)
                 .map(cancelPolicyMapper::toDomainEntity);
     }
+
+    @Override
+    public Optional<CancelPolicy> findApplicablePolicy(Long sellerId, UUID categoryId, String auctionType) {
+        return cancelPolicyJpaRepository.findByCancelTargetTypeAndTargetKey(CancelTargetType.MERCHANT, sellerId.toString())
+                .or(() ->
+                        cancelPolicyJpaRepository.findByCancelTargetTypeAndTargetKey(CancelTargetType.CATEGORY, categoryId.toString())
+                )
+                .or(() ->
+                        cancelPolicyJpaRepository.findByCancelTargetTypeAndTargetKey(CancelTargetType.AUCTION_TYPE, auctionType)
+                )
+                .map(cancelPolicyMapper::toDomainEntity);
+    }
 }

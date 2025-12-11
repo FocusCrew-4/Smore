@@ -5,6 +5,7 @@ import com.smore.payment.refundpolicy.domain.model.RefundTargetType;
 import com.smore.payment.refundpolicy.domain.model.TargetKey;
 import org.springframework.stereotype.Repository;
 
+import java.lang.ScopedValue;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,4 +18,6 @@ public interface RefundPolicyRepository {
     Optional<RefundPolicy> findByTargetTypeAndTargetKey(RefundTargetType refundTargetType, TargetKey targetKey);
 
     Optional<RefundPolicy> findById(UUID id);
+
+    Optional<RefundPolicy> findApplicablePolicy(Long sellerId, UUID categoryId, String auctionType);
 }

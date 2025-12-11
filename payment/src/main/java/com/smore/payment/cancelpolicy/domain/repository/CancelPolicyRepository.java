@@ -17,4 +17,6 @@ public interface CancelPolicyRepository {
     void delete(CancelPolicy cancelPolicy, Long userId);
 
     Optional<CancelPolicy> findById(UUID id);
+
+    Optional<CancelPolicy> findApplicablePolicy(Long sellerId, UUID categoryId, String auctionType);
 }

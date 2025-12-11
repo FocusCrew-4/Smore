@@ -81,6 +81,8 @@ topic:
   order:
     approved: payment.approved.v1
     failed: payment.failed.v1
+    refund: payment.refund.v1
+    refund-fail: payment.refund-fail.v1
   seller:
     approved: payment.settlement.v1
 
