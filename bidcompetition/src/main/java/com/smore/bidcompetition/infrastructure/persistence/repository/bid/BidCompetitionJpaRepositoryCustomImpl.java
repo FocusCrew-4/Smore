@@ -62,4 +62,17 @@ public class BidCompetitionJpaRepositoryCustomImpl implements BidCompetitionJpaR
 
         return (int) updated;
     }
+
+    @Override
+    public int increaseStock(UUID bidId, Integer quantity) {
+        long updated = queryFactory
+            .update(bidCompetitionEntity)
+            .set(bidCompetitionEntity.stock, bidCompetitionEntity.stock.add(quantity))
+            .where(
+                bidCompetitionEntity.id.eq(bidId)
+            )
+            .execute();
+
+        return (int) updated;
+    }
 }

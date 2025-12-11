@@ -10,4 +10,6 @@ public interface WinnerJpaRepositoryCustom {
     WinnerEntity findByAllocationKey(UUID allocationKey);
 
     int winnerPaid(UUID allocationKey, UUID orderId, Long version);
+
+    int markCancelled(UUID bidId, UUID allocationKey, Long version);
 }

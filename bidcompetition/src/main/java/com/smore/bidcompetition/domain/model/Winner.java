@@ -102,12 +102,16 @@ public class Winner {
             .build();
     }
 
-    public boolean isCompleted() {
+    public boolean isPaid() {
         return this.winnerStatus == WinnerStatus.PAID;
     }
 
     public boolean isExpired() {
         return this.winnerStatus == WinnerStatus.EXPIRED;
+    }
+
+    public boolean isCompleted() {
+        return this.winnerStatus != WinnerStatus.PAYMENT_PENDING;
     }
 
 }

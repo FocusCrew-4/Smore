@@ -12,4 +12,6 @@ public interface WinnerRepository {
     int winnerPaid(UUID allocationKey, UUID orderId, Long version);
 
     Winner save(Winner winner);
+
+    int markCancelled(UUID bidId, UUID allocationKey, Long version);
 }

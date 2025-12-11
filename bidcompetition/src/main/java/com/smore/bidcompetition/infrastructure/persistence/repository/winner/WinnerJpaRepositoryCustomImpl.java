@@ -8,7 +8,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.smore.bidcompetition.domain.status.WinnerStatus;
 import com.smore.bidcompetition.infrastructure.persistence.entity.WinnerEntity;
 import jakarta.persistence.EntityManager;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
@@ -50,6 +49,27 @@ public class WinnerJpaRepositoryCustomImpl implements WinnerJpaRepositoryCustom{
             .set(winnerEntity.orderId, orderId)
             .where(
                 winnerEntity.allocationKey.eq(allocationKey),
+                winnerEntity.winnerStatus.eq(WinnerStatus.PAYMENT_PENDING),
+                winnerEntity.version.eq(version)
+            )
+            .execute();
+
+        em.flush();
+        em.clear();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int markCancelled(UUID bidId, UUID allocationKey, Long version) {
+        long updated = queryFactory
+            .update(winnerEntity)
+            .set(winnerEntity.winnerStatus, WinnerStatus.CANCELLED)
+            .set(winnerEntity.version, winnerEntity.version.add(1))
+            .where(
+                winnerEntity.bidId.eq(bidId),
+                winnerEntity.allocationKey.eq(allocationKey),
+                winnerEntity.winnerStatus.eq(WinnerStatus.PAYMENT_PENDING),
                 winnerEntity.version.eq(version)
             )
             .execute();
