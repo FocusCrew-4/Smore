@@ -20,6 +20,15 @@ public class BidCompetitionRepositoryImpl implements BidCompetitionRepository {
     private final BidCompetitionJpaRepository bidCompetitionJpaRepository;
 
     @Override
+    public BidCompetition findById(UUID bidId) {
+
+        BidCompetitionEntity entity = bidCompetitionJpaRepository.findById(bidId).orElseThrow(
+            () -> new NotFoundBidException(BidErrorCode.NOT_FOUND_BID)
+        );
+        return BidMapper.toDomain(entity);
+    }
+
+    @Override
     public BidCompetition findByIdempotencyKey(UUID idempotencyKey) {
 
         BidCompetitionEntity entity = bidCompetitionJpaRepository.findByIdempotencyKey(idempotencyKey);

@@ -6,4 +6,8 @@ import java.util.UUID;
 public interface WinnerJpaRepositoryCustom {
 
     WinnerEntity findByIdempotencyKey(UUID idempotencyKey);
+
+    WinnerEntity findByAllocationKey(UUID allocationKey);
+
+    int winnerPaid(UUID allocationKey, UUID orderId, Long version);
 }
