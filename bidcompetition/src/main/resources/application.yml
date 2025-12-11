@@ -29,6 +29,9 @@ spring:
       auto-offset-reset: earliest
       enable-auto-commit: false
 
+    listener:
+      ack-mode: manual
+
 topic:
   order:
     completed: order.completed.v1

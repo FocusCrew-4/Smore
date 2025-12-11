@@ -16,11 +16,14 @@ public final class BidMapper {
 
         return BidCompetitionEntity.create(
             bidCompetition.getProductId(),
+            bidCompetition.getCategoryId(),
             bidCompetition.getSellerId(),
+            bidCompetition.getProductPrice(),
             bidCompetition.getStock(),
             bidCompetition.getBidStatus(),
-            bidCompetition.getStartedAt(),
-            bidCompetition.getClosedAt()
+            bidCompetition.getIdempotencyKey(),
+            bidCompetition.getStartAt(),
+            bidCompetition.getEndAt()
         );
     }
 
@@ -32,11 +35,14 @@ public final class BidMapper {
         return BidCompetition.of(
             entity.getId(),
             entity.getProductId(),
+            entity.getCategoryId(),
             entity.getSellerId(),
+            entity.getProductPrice(),
             entity.getStock(),
             entity.getBidStatus(),
-            entity.getStartedAt(),
-            entity.getClosedAt(),
+            entity.getIdempotencyKey(),
+            entity.getStartAt(),
+            entity.getEndAt(),
             entity.getCreatedAt(),
             entity.getUpdatedAt(),
             entity.getDeletedAt(),
