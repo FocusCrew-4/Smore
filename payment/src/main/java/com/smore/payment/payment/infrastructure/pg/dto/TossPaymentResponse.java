@@ -1,5 +1,7 @@
 package com.smore.payment.payment.infrastructure.pg.dto;
 
+import java.util.List;
+
 public record TossPaymentResponse(
         String paymentKey,
         String type,
@@ -15,7 +17,7 @@ public record TossPaymentResponse(
         String requestedAt,
         String approvedAt,
         Failure failure,
-        Cancels cancels
+        List<Cancels> cancels
 ) {
     public record Card(
             String issuerCode,

@@ -12,6 +12,34 @@ public class TossPgMapper {
         OffsetDateTime requested = OffsetDateTime.parse(res.requestedAt());
         OffsetDateTime approved = OffsetDateTime.parse(res.approvedAt());
 
+        TossPaymentResponse.Cancels firstCancel = null;
+        if (res.cancels() != null && !res.cancels().isEmpty()) {
+            firstCancel = res.cancels().getFirst();
+        }
+
+        PgResponseResult.CancellationInfo cancellationInfo = null;
+
+        // 2) 취소 정보 변환
+        if (firstCancel != null) {
+            cancellationInfo = new PgResponseResult.CancellationInfo(
+                    firstCancel.cancelAmount() != null
+                            ? BigDecimal.valueOf(firstCancel.cancelAmount())
+                            : null,
+
+                    firstCancel.cancelReason(),
+
+                    firstCancel.refundableAmount() != null
+                            ? BigDecimal.valueOf(firstCancel.refundableAmount())
+                            : null,
+
+                    firstCancel.canceledAt() != null
+                            ? OffsetDateTime.parse(firstCancel.canceledAt()).toLocalDateTime()
+                            : null,
+
+                    firstCancel.transactionKey(),
+                    firstCancel.cancelStatus()
+            );
+        }
         return new PgResponseResult(
                 "tosspayments",
                 res.paymentKey(),
@@ -40,16 +68,7 @@ public class TossPgMapper {
 
                 res.failure() != null ? res.failure().code() : null,
                 res.failure() != null ? res.failure().message() : null,
-                res.cancels() != null
-                        ? new PgResponseResult.CancellationInfo(
-                        BigDecimal.valueOf(res.cancels().cancelAmount()),
-                        res.cancels().cancelReason(),
-                        BigDecimal.valueOf(res.cancels().refundableAmount()),
-                        OffsetDateTime.parse(res.cancels().canceledAt())
-                                .toLocalDateTime(),
-                        res.cancels().transactionKey(),
-                        res.cancels().cancelStatus()
-                ) : null
+                cancellationInfo
         );
     }
 }

@@ -24,11 +24,11 @@ public class PaymentRefundEventConsumer {
     private final PaymentRefundService paymentRefundService;
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "order.canceled.v1")
+    @KafkaListener(topics = "order.refund.v1")
     public void handle(String message, Acknowledgment ack) throws JsonProcessingException {
         PaymentRefundRequestEvent event = objectMapper.readValue(message, PaymentRefundRequestEvent.class);
 
-        log.info("PaymentRequestedEvent 수신: orderId={}, amount={}",
+        log.info("PaymentRefundRequestEvent 수신: orderId={}, amount={}",
                 event.getOrderId(), event.getRefundAmount());
 
         PaymentRefundEvent paymentRequestedEvent = PaymentRefundEvent.of(
