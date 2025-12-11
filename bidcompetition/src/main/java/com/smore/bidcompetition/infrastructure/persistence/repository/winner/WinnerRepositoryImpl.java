@@ -52,4 +52,9 @@ public class WinnerRepositoryImpl implements WinnerRepository {
     public int winnerPaid(UUID allocationKey, UUID orderId, Long version) {
         return winnerJpaRepository.winnerPaid(allocationKey, orderId, version);
     }
+
+    @Override
+    public int markCancelled(UUID bidId, UUID allocationKey, Long version) {
+        return winnerJpaRepository.markCancelled(bidId, allocationKey, version);
+    }
 }
