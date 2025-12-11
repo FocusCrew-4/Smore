@@ -1,13 +1,14 @@
 package com.smore.auction.infrastructure.persistance.jpa.entity;
 
 import com.smore.auction.domain.enums.BidderStatus;
-import com.smore.auction.domain.vo.Bidder;
 import com.smore.auction.infrastructure.persistance.jpa.vo.BidderEmbeddable;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,6 +45,7 @@ public class AuctionBidderRankJpa {
         @AttributeOverride(name = "quantity", column = @Column(name = "bidder_quantity"))
     })
     private BidderEmbeddable bidder;
+    @Enumerated(EnumType.STRING)
     private BidderStatus status;
     private Long rank;
 
