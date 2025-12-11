@@ -55,3 +55,8 @@ consumer:
 retry:
   count:
     max: 5
+
+app:
+  allocation:
+    valid-duration: 180
+    propagation-buffer-time: 60

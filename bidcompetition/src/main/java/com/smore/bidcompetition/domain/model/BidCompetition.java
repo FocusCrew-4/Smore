@@ -53,7 +53,9 @@ public class BidCompetition {
 
         return BidCompetition.builder()
             .productId(productId)
+            .categoryId(categoryId)
             .sellerId(sellerId)
+            .productPrice(productPrice)
             .bidStatus(BidStatus.SCHEDULED)
             .idempotencyKey(idempotencyKey)
             .stock(stock)
@@ -95,5 +97,13 @@ public class BidCompetition {
             .deletedAt(deletedAt)
             .deletedBy(deletedBy)
             .build();
+    }
+
+    public boolean isExpired(LocalDateTime now) {
+        return this.endAt.isBefore(now);
+    }
+
+    public boolean isNotActive() {
+        return this.bidStatus != BidStatus.ACTIVE;
     }
 }

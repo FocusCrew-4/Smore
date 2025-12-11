@@ -1,13 +1,12 @@
-package com.smore.order.presentation.scheduler;
+package com.smore.bidcompetition.presentation.scheduler;
 
-import com.smore.order.application.repository.OutboxRepository;
-import com.smore.order.application.service.OutboxProcessor;
-import com.smore.order.domain.status.EventStatus;
 
+import com.smore.bidcompetition.application.repository.OutboxRepository;
+import com.smore.bidcompetition.application.service.OutboxProcessor;
+import com.smore.bidcompetition.domain.status.EventStatus;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
