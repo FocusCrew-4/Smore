@@ -1,0 +1,63 @@
+server:
+  port: 7700
+
+spring:
+  application:
+    name: bid-service
+
+  config:
+    import: ""
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: true
+
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 10
+      properties:
+        enable.idempotence: true
+
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: bid-service-consumer-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+
+    listener:
+      ack-mode: manual
+
+topic:
+  order:
+    completed: order.completed.v1
+    refund-success: order.refund-success.v1
+    refund-fail: order.refund-fail.v1
+    failed: order.failed.v1
+
+  bid:
+    winner-confirm: bid.winnerconfirm.v1
+    finished: bid.limitedSaleFinished.v1
+
+  product:
+    created: product.limitedSalePendingStart.v1
+
+consumer:
+  group:
+    bid: bid-consumer-group
+    product: product-consumer-group
+    order: order-consumer-group
+
+
+retry:
+  count:
+    max: 5
+
+app:
+  allocation:
+    valid-duration: 180
+    propagation-buffer-time: 60

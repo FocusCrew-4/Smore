@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 public record Bidder(
     Long id,
     BigDecimal price,
-    Integer quantity,
-    BidderStatus status
+    Integer quantity
 ) {
 }

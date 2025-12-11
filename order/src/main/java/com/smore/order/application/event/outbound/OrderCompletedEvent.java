@@ -15,20 +15,20 @@ public class OrderCompletedEvent implements OrderEvent {
 
     private final UUID orderId;
     private final Long userId;
-    private final OrderStatus currentOrderStatus;
+    private final String currentOrderStatus;
     private final UUID idempotencyKey;
-    private final LocalDateTime publishedAt;
+    private final LocalDateTime paidAt;
 
     public static OrderCompletedEvent of(
         UUID orderId, Long userId, OrderStatus currentOrderStatus, UUID idempotencyKey,
-        LocalDateTime now) {
+        LocalDateTime paidAt) {
 
         return OrderCompletedEvent.builder()
             .orderId(orderId)
             .userId(userId)
-            .currentOrderStatus(currentOrderStatus)
+            .currentOrderStatus(String.valueOf(currentOrderStatus))
             .idempotencyKey(idempotencyKey)
-            .publishedAt(now)
+            .paidAt(paidAt)
             .build();
     }
 

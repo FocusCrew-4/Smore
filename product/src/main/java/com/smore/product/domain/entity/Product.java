@@ -48,6 +48,10 @@ public class Product {
     private LocalDateTime deletedAt;
     private Long deletedBy;
 
+    private LocalDateTime startAt;
+    private LocalDateTime endAt;
+    private java.time.Duration biddingDuration;
+
     public static Product create(
             Long sellerId,
             UUID categoryId,
@@ -73,6 +77,9 @@ public class Product {
                 .status(status)
                 .createdAt(now)
                 .updatedAt(now)
+                .startAt(null)
+                .endAt(null)
+                .biddingDuration(null)
                 .build();
     }
 
@@ -136,4 +143,18 @@ public class Product {
         this.status = status;
         this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
+
+    public void decreaseStock(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("차감 수량은 0보다 커야 합니다.");
+        }
+
+        if (this.stock < quantity) {
+            throw new IllegalStateException("재고가 부족합니다.");
+        }
+
+        this.stock -= quantity;
+        this.updatedAt = LocalDateTime.now(Clock.systemUTC());
+    }
+
 }

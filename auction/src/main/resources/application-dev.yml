@@ -21,7 +21,7 @@ spring:
     mongodb:
       uri: mongodb://root:examplepassword@mongodb:27017/default?authSource=admin
     redis:
-      host: localhost
+      host: redis-stack
       port: 6379
       password: ""
       database: 0
@@ -36,7 +36,12 @@ spring:
         # SQL 실행 시 주석 포함
         use_sql_comments: true
     show_sql: true
-  kafka:
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+  Kafka:
     # 로컬에서 Docker로 띄운 브로커 외부 포트에 맞춰 설정 (docker-compose의 EXTERNAL 매핑)
     bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
 
@@ -81,8 +86,3 @@ eureka:
       defaultZone: http://eureka-server:18800/eureka/
   instance:
     prefer-ip-address: true
-
-product:
-  topic:
-    auction-pending-start:
-      v1: product.auctionPendingStart.v1

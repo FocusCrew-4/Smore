@@ -4,6 +4,7 @@ import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
 import com.smore.product.application.service.ProductService;
 import com.smore.product.domain.sale.dto.ProductSaleResponse;
+import com.smore.product.domain.stock.dto.StockLogResponse;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductStatusRequest;
@@ -86,6 +87,13 @@ public class ProductController {
             @PathVariable UUID productId
     ) {
         var response = productService.getProductSales(productId);
+        return ResponseEntity.ok(ApiResponse.ok(response));
+    }
+    @GetMapping("/{productId}/stock-logs")
+    public ResponseEntity<CommonResponse<List<StockLogResponse>>> getStockLogs(
+            @PathVariable UUID productId
+    ) {
+        var response = productService.getStockLogs(productId);
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 }
