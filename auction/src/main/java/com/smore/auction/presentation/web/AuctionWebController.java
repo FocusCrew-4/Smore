@@ -41,7 +41,7 @@ public class AuctionWebController {
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
-    @PostMapping("/{auctionId}/me/bid")
+    @PostMapping("/{auctionId}/me/bid/confirm")
     public ResponseEntity<CommonResponse<?>> confirmBid(
         @RequestHeader("X-User-Id") Long requesterId,
         @RequestHeader("X-User-Role") String role,
