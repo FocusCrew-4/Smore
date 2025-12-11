@@ -25,7 +25,7 @@ public class ConfirmAuctionBidAdapter implements ConfirmAuctionBid {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final AuctionSqlRepository repository;
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @SneakyThrows
     @Override
