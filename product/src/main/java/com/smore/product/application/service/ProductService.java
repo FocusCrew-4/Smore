@@ -18,7 +18,11 @@ import com.smore.product.presentation.dto.response.ProductResponse;
 import com.smore.product.domain.entity.Product;
 import com.smore.product.domain.entity.SaleType;
 import com.smore.product.domain.repository.ProductRepository;
+import jakarta.persistence.EntityManager;
+import java.time.Clock;
+import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +42,7 @@ import java.util.Map;
 import java.util.UUID;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -45,6 +50,7 @@ public class ProductService {
     private final ProductSaleRepository productSaleRepository;
     private final StockLogRepository stockLogRepository;
     private final ProductEventPublisher eventPublisher;
+    private final EntityManager em;
 
     @Transactional
     public ProductResponse createProduct(CreateProductRequest req) {
@@ -63,10 +69,30 @@ public class ProductService {
                 req.getStock(),
                 req.getSaleType(),
                 req.getThresholdForAuction(),
-                req.getStatus()
+                req.getStatus(),
+                LocalDateTime.parse(req.getStartAt()),
+                LocalDateTime.parse(req.getEndAt())
+
         );
 
-        productRepository.save(product);
+        Product saved = productRepository.save(product);
+
+        log.info("product startAt : {}, endAt : {}", product.getStartAt(), product.getEndAt());
+        log.info("saved startAt : {}, endAt : {}", saved.getStartAt(), saved.getEndAt());
+
+        LimitedSalePendingStartEvent event =
+            LimitedSalePendingStartEvent.builder()
+                .productId(saved.getId())
+                .categoryId(saved.getCategoryId())
+                .sellerId(saved.getSellerId())
+                .productPrice(saved.getPrice())
+                .stock(saved.getStock())
+                .startAt(saved.getStartAt())
+                .endAt(saved.getEndAt())
+                .idempotencyKey(UUID.randomUUID())
+                .build();
+
+        eventPublisher.publishLimitedSalePendingStart(event);
 
         return new ProductResponse(product);
     }

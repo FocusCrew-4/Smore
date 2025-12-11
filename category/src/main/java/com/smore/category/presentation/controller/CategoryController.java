@@ -55,7 +55,7 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<Void>> deleteCategory(
             @PathVariable UUID id,
-            @RequestHeader("X-User-Id") UUID requesterId
+            @RequestHeader("X-User-Id") Long requesterId
     ) {
 
         categoryService.deleteCategory(id, requesterId);

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,4 +45,8 @@ public class CreateProductRequest {
     // LIMITED_TO_AUCTION일 때는 서비스에서 추가 검증
     @Min(value = 1, message = "경매 전환 기준은 1 이상이어야 합니다.")
     private Integer thresholdForAuction;
+
+    private String startAt;
+
+    private String endAt;
 }
