@@ -5,6 +5,7 @@ import com.smore.product.domain.sale.dto.ProductSaleResponse;
 import com.smore.product.domain.sale.repository.ProductSaleRepository;
 import com.smore.product.domain.stock.dto.StockLogResponse;
 import com.smore.product.domain.stock.repository.StockLogRepository;
+import com.smore.product.infrastructure.consumer.dto.BidLimitedSaleFinishedEvent;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductStatusRequest;
@@ -147,5 +148,15 @@ public class ProductService {
                 .stream()
                 .map(StockLogResponse::new)
                 .toList();
+    }
+
+    public void applyFinishedSale(BidLimitedSaleFinishedEvent event) {
+        Product product = productRepository.findById(event.getProductId())
+                .orElseThrow(() -> new IllegalArgumentException("상품 없음"));
+
+        product.decreaseStock(event.getSoldQuantity());
+
+        productRepository.save(product);
+        // 여기서 StockLog 남기고 싶으면 나중에 추가
     }
 }
