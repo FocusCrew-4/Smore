@@ -25,7 +25,7 @@ public class OutboxScheduler {
         EventStatus.PENDING
     );
 
-    @Scheduled(fixedDelay = 100)
+    @Scheduled(fixedDelay = 1000)
     public void outboxTasks() {
         int page = 0;
         int pageSize = 100;
