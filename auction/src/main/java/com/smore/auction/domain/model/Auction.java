@@ -52,4 +52,16 @@ public class Auction {
     public void start() {
         this.status = AuctionStatus.OPEN;
     }
+
+    public boolean isOpen() {
+        return this.status == AuctionStatus.OPEN;
+    }
+
+    public boolean isClosed() {
+        return this.status == AuctionStatus.CLOSED;
+    }
+
+    public void close() {
+        this.status = AuctionStatus.CLOSED;
+    }
 }

@@ -84,7 +84,7 @@ public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
             .longValue();
         return BigDecimal.valueOf(scaled, 2);
     }
-    private record RedisBidData(
+    public record RedisBidData(
         String userId,
         Integer quantity,
         BigDecimal bidPrice,
