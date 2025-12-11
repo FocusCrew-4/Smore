@@ -32,8 +32,8 @@ public class CreateFeePolicyRequestDto {
         TargetType type = TargetType.of(targetType);
 
         TargetKey parsedTargetKey = switch (type) {
-            case CATEGORY -> new TargetKeyLong(Long.parseLong(targetKey));
-            case MERCHANT -> new TargetKeyUUID(UUID.fromString(targetKey));
+            case MERCHANT -> new TargetKeyLong(Long.parseLong(targetKey));
+            case CATEGORY -> new TargetKeyUUID(UUID.fromString(targetKey));
             case USER_TYPE -> null;
         };
 

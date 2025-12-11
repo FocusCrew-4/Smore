@@ -14,6 +14,8 @@ services:
         "--notify-keyspace-events",
         "Ex"
       ]
+    networks:
+      - msa-network
 
   mongodb:
     image: mongo:8.0
@@ -26,6 +28,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: examplepassword
     volumes:
       - ./docker/db/mongo/mongo-data:/data/db
+    networks:
+      - msa-network
 
   postgresql-server:
     container_name: postgresql
@@ -279,6 +283,21 @@ services:
       SPRING_PROFILES_ACTIVE: dev
     networks:
       - msa-network
+
+  payment-service:
+    container_name: payment-service
+    build: ./payment/.
+    ports:
+      - "4400:4400"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      PG_SECRET_KEY: ${PG_SECRET_KEY}
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    networks:
+      - msa-network
+
 
 volumes:
   kafka-1-data:

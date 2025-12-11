@@ -3,9 +3,9 @@ package com.smore.payment.refundpolicy.presentation;
 import com.smore.common.response.ApiResponse;
 import com.smore.payment.global.config.UserContextHolder;
 import com.smore.payment.refundpolicy.application.RefundPolicyService;
-import com.smore.payment.refundpolicy.domain.model.RefundPolicy;
+import com.smore.payment.refundpolicy.application.query.GetRefundPolicyQuery;
+import com.smore.payment.refundpolicy.domain.model.*;
 import com.smore.payment.refundpolicy.presentation.dto.request.CreateRefundPolicyRequestDto;
-import com.smore.payment.refundpolicy.presentation.dto.request.GetRefundPolicyRequestDto;
 import com.smore.payment.refundpolicy.presentation.dto.response.GetRefundPolicyResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class RefundPolicyController {
     @PostMapping
     public ResponseEntity<?> createRefundPolicy(
             @Valid @RequestBody CreateRefundPolicyRequestDto createRefundPolicyRequestDto,
-            @RequestHeader("X-User-Id") UUID userId
+            @RequestHeader("X-User-Id") Long userId
     ) {
         UserContextHolder.set(userId);
 
@@ -36,15 +36,30 @@ public class RefundPolicyController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getRefundPolicy(@Valid @RequestBody GetRefundPolicyRequestDto getRefundPolicyRequestDto) {
+    public ResponseEntity<?> getRefundPolicy(
+            @RequestParam String targetType,
+            @RequestParam String targetKey
+    ) {
 
-        RefundPolicy refundPolicy = refundPolicyService.getRefundPolicy(getRefundPolicyRequestDto.toQuery());
+        RefundTargetType refundTargetType = RefundTargetType.of(targetType);
+
+        GetRefundPolicyQuery getCancelPolicyQuery = new GetRefundPolicyQuery(
+                refundTargetType,
+                switch (refundTargetType) {
+                    case CATEGORY -> new TargetKeyUUID(UUID.fromString(targetKey));
+                    case MERCHANT -> new TargetKeyLong(Long.parseLong(targetKey));
+                    case AUCTION_TYPE -> new TargetKeyString(targetKey);
+                    case USER_TYPE -> null;
+                }
+        );
+
+        RefundPolicy refundPolicy = refundPolicyService.getRefundPolicy(getCancelPolicyQuery);
 
         return ResponseEntity.ok(ApiResponse.ok(GetRefundPolicyResponseDto.from(refundPolicy)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteRefundPolicy(@PathVariable UUID id, @RequestHeader("X-User-Id") UUID userId) {
+    public ResponseEntity<?> deleteRefundPolicy(@PathVariable UUID id, @RequestHeader("X-User-Id") Long userId) {
         refundPolicyService.deleteRefundPolicy(id, userId);
         return ResponseEntity.ok().build();
     }

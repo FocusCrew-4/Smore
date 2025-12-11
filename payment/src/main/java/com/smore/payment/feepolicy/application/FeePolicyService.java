@@ -40,7 +40,7 @@ public class FeePolicyService {
         ).orElseThrow(() -> new IllegalArgumentException("판매자 또는 카테고리에 해당하는 수수료 정책을 찾을 수 없습니다."));
     }
 
-    public void deleteFeePolicy(UUID id, UUID userId) {
+    public void deleteFeePolicy(UUID id, Long userId) {
         FeePolicy feePolicy = findFeePolicyById(id);
         feePolicy.deactivate();
         feePolicyRepository.delete(feePolicy, userId);

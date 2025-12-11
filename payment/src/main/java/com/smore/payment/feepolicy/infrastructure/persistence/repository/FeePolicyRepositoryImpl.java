@@ -27,12 +27,13 @@ public class FeePolicyRepositoryImpl implements FeePolicyRepository {
 
     @Override
     public Optional<FeePolicy> findById(UUID id) {
+
         return feePolicyJpaRepository.findById(id)
                 .map(feePolicyMapper::toDomainEntity);
     }
 
     @Override
-    public void delete(FeePolicy feePolicy, UUID userId) {
+    public void delete(FeePolicy feePolicy, Long userId) {
 
         FeePolicyEntity feePolicyEntity = feePolicyJpaRepository.findById(feePolicy.getId())
                 .orElseThrow(() -> new IllegalArgumentException("수수료 정책를 찾을 수 없습니다."));
@@ -47,6 +48,15 @@ public class FeePolicyRepositoryImpl implements FeePolicyRepository {
     @Override
     public Optional<FeePolicy> findByTargetTypeAndTargetKey(TargetType targetType, TargetKey targetKey) {
         return feePolicyJpaRepository.findByTargetTypeAndTargetKey(targetType, targetKey.getValueAsString())
+                .map(feePolicyMapper::toDomainEntity);
+    }
+
+    @Override
+    public Optional<FeePolicy> findApplicablePolicy(Long sellerId, UUID categoryId) {
+        return feePolicyJpaRepository.findByTargetTypeAndTargetKey(TargetType.MERCHANT, sellerId.toString())
+                .or(() ->
+                        feePolicyJpaRepository.findByTargetTypeAndTargetKey(TargetType.CATEGORY, categoryId.toString())
+                )
                 .map(feePolicyMapper::toDomainEntity);
     }
 }

@@ -5,6 +5,9 @@ import com.smore.payment.feepolicy.application.FeePolicyService;
 import com.smore.payment.feepolicy.application.command.CreateFeePolicyCommand;
 import com.smore.payment.feepolicy.application.query.GetFeePolicyQuery;
 import com.smore.payment.feepolicy.domain.model.FeePolicy;
+import com.smore.payment.feepolicy.domain.model.TargetKeyLong;
+import com.smore.payment.feepolicy.domain.model.TargetKeyUUID;
+import com.smore.payment.feepolicy.domain.model.TargetType;
 import com.smore.payment.feepolicy.presentation.dto.request.CreateFeePolicyRequestDto;
 import com.smore.payment.feepolicy.presentation.dto.request.GetFeePolicyRequestDto;
 import com.smore.payment.feepolicy.presentation.dto.response.GetFeePolicyResponseDto;
@@ -26,7 +29,7 @@ public class FeePolicyController {
     @PostMapping
     public ResponseEntity<?> createFeePolicy(
             @Valid @RequestBody CreateFeePolicyRequestDto createFeePolicyDto,
-            @RequestHeader("X-User-Id") UUID userId
+            @RequestHeader("X-User-Id") Long userId
     ) {
         UserContextHolder.set(userId);
 
@@ -38,15 +41,28 @@ public class FeePolicyController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getFeePolicy(@Valid @RequestBody GetFeePolicyRequestDto getFeePolicyRequestDto) {
+    public ResponseEntity<?> getFeePolicy(
+            @RequestParam String targetType,
+            @RequestParam String targetKey
+    ) {
 
-        FeePolicy feePolicy = feePolicyService.getFeePolicy(getFeePolicyRequestDto.toQuery());
+        TargetType type = TargetType.of(targetType);
+
+        GetFeePolicyQuery getFeePolicyQuery = new GetFeePolicyQuery(
+                type,
+                switch (type) {
+                    case CATEGORY -> new TargetKeyLong(Long.parseLong(targetKey));
+                    case MERCHANT -> new TargetKeyUUID(UUID.fromString(targetKey));
+                    case USER_TYPE -> null;
+                }
+        );
+        FeePolicy feePolicy = feePolicyService.getFeePolicy(getFeePolicyQuery);
 
         return ResponseEntity.ok(ApiResponse.ok(GetFeePolicyResponseDto.from(feePolicy)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteFeePolicy(@PathVariable UUID id, @RequestHeader("X-User-Id") UUID userId) {
+    public ResponseEntity<?> deleteFeePolicy(@PathVariable UUID id, @RequestHeader("X-User-Id") Long userId) {
         UserContextHolder.set(userId);
         feePolicyService.deleteFeePolicy(id, userId);
         UserContextHolder.clear();

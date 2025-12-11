@@ -31,7 +31,7 @@ public class CancelPolicyRepositoryImpl implements CancelPolicyRepository {
     }
 
     @Override
-    public void delete(CancelPolicy cancelPolicy, UUID userId) {
+    public void delete(CancelPolicy cancelPolicy, Long userId) {
         CancelPolicyEntity entity = cancelPolicyJpaRepository.findById(cancelPolicy.getId())
                 .orElseThrow(() -> new IllegalArgumentException("취소 정책을 찾을 수 없습니다."));
 

@@ -14,7 +14,9 @@ public interface FeePolicyRepository {
 
     Optional<FeePolicy> findById(UUID id);
 
-    void delete(FeePolicy feePolicy, UUID userId);
+    void delete(FeePolicy feePolicy, Long userId);
 
     Optional<FeePolicy> findByTargetTypeAndTargetKey(TargetType targetType, TargetKey targetKey);
+
+    Optional<FeePolicy> findApplicablePolicy(Long sellerId, UUID categoryId);
 }
