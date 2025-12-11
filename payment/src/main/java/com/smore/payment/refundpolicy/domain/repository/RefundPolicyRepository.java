@@ -5,7 +5,6 @@ import com.smore.payment.refundpolicy.domain.model.RefundTargetType;
 import com.smore.payment.refundpolicy.domain.model.TargetKey;
 import org.springframework.stereotype.Repository;
 
-import java.lang.ScopedValue;
 import java.util.Optional;
 import java.util.UUID;
 
