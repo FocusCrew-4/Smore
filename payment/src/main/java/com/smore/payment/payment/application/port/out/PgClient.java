@@ -1,14 +1,13 @@
 package com.smore.payment.payment.application.port.out;
 
-import com.smore.payment.payment.domain.model.PgApproveResult;
+import com.smore.payment.payment.domain.model.PgResponseResult;
 
 import java.math.BigDecimal;
 
 public interface PgClient {
 
-    PgApproveResult approve(String paymentKey, String pgOrderId, BigDecimal amount);
+    PgResponseResult approve(String paymentKey, String pgOrderId, BigDecimal amount);
 
-//    PgCancelResult cancel(String transactionKey, BigDecimal amount, String reason);
+    PgResponseResult refund(String paymentKey, BigDecimal refundAmount, String refundReason);
 
-//    PgRefundResult refund(String transactionKey, BigDecimal amount, String reason);
 }

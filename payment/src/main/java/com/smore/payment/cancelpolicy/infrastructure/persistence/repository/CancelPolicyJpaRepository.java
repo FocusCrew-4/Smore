@@ -9,4 +9,5 @@ import java.util.UUID;
 
 public interface CancelPolicyJpaRepository extends JpaRepository<CancelPolicyEntity, UUID> {
     Optional<CancelPolicyEntity> findByCancelTargetTypeAndTargetKey(CancelTargetType cancelTargetType, String targetKey);
+
 }

@@ -1,5 +1,6 @@
 package com.smore.payment.refundpolicy.infrastructure.persistence.repository;
 
+import com.smore.payment.cancelpolicy.domain.model.CancelTargetType;
 import com.smore.payment.refundpolicy.domain.model.RefundPolicy;
 import com.smore.payment.refundpolicy.domain.model.RefundTargetType;
 import com.smore.payment.refundpolicy.domain.model.TargetKey;
@@ -44,6 +45,18 @@ public class RefundPolicyRepositoryImpl implements RefundPolicyRepository {
     @Override
     public Optional<RefundPolicy> findById(UUID id) {
         return refundPolicyJpaRepository.findById(id)
+                .map(refundPolicyMapper::toDomainEntity);
+    }
+
+    @Override
+    public Optional<RefundPolicy> findApplicablePolicy(Long sellerId, UUID categoryId, String auctionType) {
+        return refundPolicyJpaRepository.findByRefundTargetTypeAndTargetKey(RefundTargetType.MERCHANT, sellerId.toString())
+                .or(() ->
+                        refundPolicyJpaRepository.findByRefundTargetTypeAndTargetKey(RefundTargetType.CATEGORY, categoryId.toString())
+                )
+                .or(() ->
+                        refundPolicyJpaRepository.findByRefundTargetTypeAndTargetKey(RefundTargetType.AUCTION_TYPE, auctionType)
+                )
                 .map(refundPolicyMapper::toDomainEntity);
     }
 }

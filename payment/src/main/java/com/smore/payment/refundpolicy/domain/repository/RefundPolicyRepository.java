@@ -17,4 +17,6 @@ public interface RefundPolicyRepository {
     Optional<RefundPolicy> findByTargetTypeAndTargetKey(RefundTargetType refundTargetType, TargetKey targetKey);
 
     Optional<RefundPolicy> findById(UUID id);
+
+    Optional<RefundPolicy> findApplicablePolicy(Long sellerId, UUID categoryId, String auctionType);
 }

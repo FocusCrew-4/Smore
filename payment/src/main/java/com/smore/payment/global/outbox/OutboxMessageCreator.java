@@ -1,9 +1,7 @@
 package com.smore.payment.global.outbox;
 
 import com.smore.payment.global.util.JsonUtil;
-import com.smore.payment.payment.application.event.outbound.PaymentApprovedEvent;
-import com.smore.payment.payment.application.event.outbound.PaymentFailedEvent;
-import com.smore.payment.payment.application.event.outbound.SettlementCalculatedEvent;
+import com.smore.payment.payment.application.event.outbound.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,12 +24,18 @@ public class OutboxMessageCreator {
     @Value("${topic.order.failed}")
     private String orderFailedTopic;
 
+    @Value("${topic.order.refund}")
+    private String orderRefundTopic;
+
+    @Value("${topic.order.refund-fail}")
+    private String orderRefundFailTopic;
+
     public OutboxMessage paymentApproved(PaymentApprovedEvent event) {
         return new OutboxMessage(
                 "PAYMENT",
-                event.getPaymentId(),
+                event.paymentId(),
                 event.getClass().getSimpleName(),
-                event.getIdempotencyKey(),
+                event.idempotencyKey(),
                 orderApprovedTopic,
                 jsonUtil.jsonToString(event),
                 3,
@@ -42,7 +46,7 @@ public class OutboxMessageCreator {
     public OutboxMessage paymentFailed(PaymentFailedEvent event) {
         return new OutboxMessage(
                 "PAYMENT",
-                event.getOrderId(),
+                event.orderId(),
                 event.getClass().getSimpleName(),
                 UUID.randomUUID(),
                 orderFailedTopic,
@@ -59,6 +63,32 @@ public class OutboxMessageCreator {
                 event.getClass().getSimpleName(),
                 event.idempotencyKey(),
                 sellerApprovedTopic,
+                jsonUtil.jsonToString(event),
+                3,
+                OutboxStatus.PENDING
+        );
+    }
+
+    public OutboxMessage paymentRefundFailed(PaymentRefundFailedEvent event) {
+        return new OutboxMessage(
+                "REFUND_FAIL",
+                event.orderId(),
+                event.getClass().getSimpleName(),
+                UUID.randomUUID(),
+                orderFailedTopic,
+                jsonUtil.jsonToString(event),
+                3,
+                OutboxStatus.PENDING
+        );
+    }
+
+    public OutboxMessage paymentRefunded(PaymentRefundSucceededEvent event) {
+        return new OutboxMessage(
+                "REFUND_SUCCESS",
+                event.orderId(),
+                event.getClass().getSimpleName(),
+                UUID.randomUUID(),
+                orderRefundTopic,
                 jsonUtil.jsonToString(event),
                 3,
                 OutboxStatus.PENDING

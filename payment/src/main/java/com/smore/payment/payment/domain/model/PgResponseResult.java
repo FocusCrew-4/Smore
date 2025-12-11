@@ -3,7 +3,7 @@ package com.smore.payment.payment.domain.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record PgApproveResult(
+public record PgResponseResult(
         // PG 정보
         String pgProvider,
         String paymentKey,

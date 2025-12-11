@@ -147,4 +147,5 @@ public class PaymentMapper {
                 paymentEntity.getAuctionType()
         );
     }
+
 }

@@ -16,19 +16,19 @@ public class CreateTemporaryPaymentService {
     @Transactional
     public void create(PaymentRequestedEvent paymentRequestedEvent) {
 
-        if (redisRepository.existsByOrderId(paymentRequestedEvent.getOrderId())) {
+        if (redisRepository.existsByOrderId(paymentRequestedEvent.orderId())) {
             return;
         }
 
         TemporaryPayment temp = TemporaryPayment.create(
-                paymentRequestedEvent.getIdempotencyKey(),
-                paymentRequestedEvent.getOrderId(),
-                paymentRequestedEvent.getUserId(),
-                paymentRequestedEvent.getAmount(),
-                paymentRequestedEvent.getSellerId(),
-                paymentRequestedEvent.getCategoryId(),
-                paymentRequestedEvent.getAuctionType(),
-                paymentRequestedEvent.getExpiredAt()
+                paymentRequestedEvent.idempotencyKey(),
+                paymentRequestedEvent.orderId(),
+                paymentRequestedEvent.userId(),
+                paymentRequestedEvent.amount(),
+                paymentRequestedEvent.sellerId(),
+                paymentRequestedEvent.categoryId(),
+                paymentRequestedEvent.auctionType(),
+                paymentRequestedEvent.expiredAt()
         );
 
         redisRepository.save(temp);

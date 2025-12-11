@@ -2,7 +2,6 @@ package com.smore.payment.payment.application;
 
 import com.smore.payment.global.outbox.OutboxMessage;
 import com.smore.payment.global.outbox.OutboxMessageCreator;
-import com.smore.payment.global.util.JsonUtil;
 import com.smore.payment.payment.application.command.ApprovePaymentCommand;
 import com.smore.payment.payment.application.event.outbound.SettlementCalculatedEvent;
 import com.smore.payment.payment.application.facade.FeePolicyFacade;
@@ -11,7 +10,7 @@ import com.smore.payment.payment.application.port.out.PgClient;
 import com.smore.payment.payment.application.event.outbound.PaymentApprovedEvent;
 import com.smore.payment.payment.domain.model.Payment;
 //import com.smore.payment.payment.domain.document.PgApproveLog;
-import com.smore.payment.payment.domain.model.PgApproveResult;
+import com.smore.payment.payment.domain.model.PgResponseResult;
 import com.smore.payment.payment.domain.model.TemporaryPayment;
 import com.smore.payment.payment.domain.repository.MongoRepository;
 import com.smore.payment.payment.domain.repository.OutboxRepository;
@@ -23,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -52,7 +49,7 @@ public class CreatePaymentService {
                     throw new IllegalStateException("이미 결제가 승인되었습니다.");
                 });
 
-        PgApproveResult result;
+        PgResponseResult result;
 
         try {
             result = pgClient.approve(

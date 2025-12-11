@@ -78,7 +78,7 @@ public class Payment {
             Long sellerId,
             UUID categoryId,
             String auctionType,
-            PgApproveResult result
+            PgResponseResult result
     ) {
         Payment payment = new Payment(
                 idempotencyKey,
@@ -254,5 +254,11 @@ public class Payment {
     public UUID getCategoryId() { return categoryId; }
     public String getAuctionType() { return auctionType; }
 
-    // … setter 없음 — 생성/승인/복원 전용 생성 메소드 사용 권장
+    public void updateRefund(BigDecimal refundAmount, LocalDateTime refundedAt) {
+
+    }
+
+    public void updateRefund(String reason, BigDecimal refundAmount, LocalDateTime refundedAt, String cancelTransactionKey, BigDecimal refundableAmount) {
+        this.refund = new PaymentRefund(reason, refundAmount, refundedAt, cancelTransactionKey, refundableAmount);
+    }
 }

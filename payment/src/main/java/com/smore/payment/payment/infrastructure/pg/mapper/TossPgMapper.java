@@ -1,6 +1,6 @@
 package com.smore.payment.payment.infrastructure.pg.mapper;
 
-import com.smore.payment.payment.domain.model.PgApproveResult;
+import com.smore.payment.payment.domain.model.PgResponseResult;
 import com.smore.payment.payment.infrastructure.pg.dto.TossPaymentResponse;
 
 import java.math.BigDecimal;
@@ -8,11 +8,11 @@ import java.time.OffsetDateTime;
 
 public class TossPgMapper {
 
-    public static PgApproveResult toDomain(TossPaymentResponse res) {
+    public static PgResponseResult toDomain(TossPaymentResponse res) {
         OffsetDateTime requested = OffsetDateTime.parse(res.requestedAt());
         OffsetDateTime approved = OffsetDateTime.parse(res.approvedAt());
 
-        return new PgApproveResult(
+        return new PgResponseResult(
                 "tosspayments",
                 res.paymentKey(),
                 res.orderId(),
@@ -41,7 +41,7 @@ public class TossPgMapper {
                 res.failure() != null ? res.failure().code() : null,
                 res.failure() != null ? res.failure().message() : null,
                 res.cancels() != null
-                        ? new PgApproveResult.CancellationInfo(
+                        ? new PgResponseResult.CancellationInfo(
                         BigDecimal.valueOf(res.cancels().cancelAmount()),
                         res.cancels().cancelReason(),
                         BigDecimal.valueOf(res.cancels().refundableAmount()),
