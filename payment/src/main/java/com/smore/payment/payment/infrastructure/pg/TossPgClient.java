@@ -20,12 +20,14 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class TossPgClient implements PgClient {
 
-    private final WebClient tossWebClientBuilder;
+    private final WebClient tossApproveWebClient;
+
+    private final WebClient tossFailWebClient;
 
     @Override
     public PgResponseResult approve(String paymentKey, String pgOrderId, BigDecimal amount) {
         try {
-            TossPaymentResponse response = tossWebClientBuilder.post()
+            TossPaymentResponse response = tossApproveWebClient.post()
                     .uri("/v1/payments/confirm")
                     .bodyValue(new TossApproveRequest(paymentKey, pgOrderId, amount))
                     .retrieve()
@@ -48,9 +50,9 @@ public class TossPgClient implements PgClient {
     @Override
     public PgResponseResult refund(String paymentKey, BigDecimal refundAmount, String refundReason) {
         try {
-            TossPaymentResponse response = tossWebClientBuilder.post()
+            TossPaymentResponse response = tossFailWebClient.post()
                     .uri("/v1/payments/{paymentKey}/cancel", paymentKey)
-                    .bodyValue(new TossCancelRequest(refundAmount, refundReason))
+                    .bodyValue(new TossCancelRequest(refundReason, refundAmount))
                     .retrieve()
                     .onStatus(HttpStatusCode::isError, clientResponse ->
                             clientResponse.bodyToMono(String.class)
@@ -64,7 +66,7 @@ public class TossPgClient implements PgClient {
 
             return TossPgMapper.toDomain(response);
         } catch (Exception e) {
-            throw new RuntimeException("Toss PG 승인 실패", e);
+            throw new RuntimeException("Toss PG 환불 실패", e);
         }
     }
 }

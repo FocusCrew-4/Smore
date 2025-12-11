@@ -50,9 +50,9 @@ topic:
       request: acution.winnerconfirm.v1
 
   payment:
-    completed: payment.completed.v1
-    refund-completed: payment.refund-completed.v1
-    refund-failed: payment.refund-failed.v1
+    completed: payment.approved.v1
+    refund-completed: payment.refund.v1
+    refund-failed: payment.refund-fail.v1
     failed: payment.failed.v1
 
 consumer:

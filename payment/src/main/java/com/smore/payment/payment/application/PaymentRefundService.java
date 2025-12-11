@@ -63,15 +63,18 @@ public class PaymentRefundService {
             );
 
             if (!refundResult.refundable(payment.getApprovedAt(), event.publishedAt())) {
-                // Todo: 환불 불가로 실패 이벤트 발행으로 수정
-                throw new IllegalArgumentException("취소 및 환불 정책 모두 적용 불가한 요청입니다.");
+                OutboxMessage failedMsg = outboxCreator.paymentRefundFailed(
+                        PaymentRefundFailedEvent.of(event.orderId(), event.refundId(), event.refundAmount(), "환불이 불가능 한 상품입니다.")
+                );
+                outboxRepository.save(failedMsg);
+                return;
             }
         }
 
         //
         // 5) 최종 환불 금액 계산
         //
-        final var refundAmount = (cancelAvailable)
+        final BigDecimal refundAmount = (cancelAvailable)
                 ? cancelResult.calculateCancelFee(event.refundAmount())
                 : refundResult.calculateRefundFee(event.refundAmount());
 
@@ -110,6 +113,7 @@ public class PaymentRefundService {
         );
         paymentRepository.updateRefund(payment.getId(), payment.getRefund());
 
+        // Todo: 환불 후 정산금 어떻게 하지..........
         //
         // 8) 환불 성공 이벤트 Outbox 저장
         //
