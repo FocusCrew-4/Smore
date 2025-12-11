@@ -61,7 +61,9 @@ public class Product {
             int stock,
             SaleType saleType,
             Integer thresholdForAuction,
-            ProductStatus status
+            ProductStatus status,
+            LocalDateTime startAt,
+            LocalDateTime endAt
     ) {
         LocalDateTime now = LocalDateTime.now(Clock.systemUTC());
 
@@ -77,8 +79,8 @@ public class Product {
                 .status(status)
                 .createdAt(now)
                 .updatedAt(now)
-                .startAt(null)
-                .endAt(null)
+                .startAt(startAt)
+                .endAt(endAt)
                 .biddingDuration(null)
                 .build();
     }
