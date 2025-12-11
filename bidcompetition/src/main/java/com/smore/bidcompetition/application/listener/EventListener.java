@@ -79,7 +79,7 @@ public class EventListener {
 
             ack.acknowledge();
         } catch (Exception e) {
-            log.error("orderFailed 처리 실패 : {}", message, e);
+            log.error("orderCompleted 처리 실패 : {}", message, e);
         }
     }
 
