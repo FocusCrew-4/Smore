@@ -3,6 +3,7 @@ package com.smore.product.domain.event;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -13,7 +14,7 @@ public class AuctionPendingStartEvent {
     private Long sellerId;
     private UUID productId;
     private UUID categoryId;
-    private Long productPrice;
+    private BigDecimal productPrice;
     private int stock;
 
     private UUID idempotencyKey;
