@@ -28,7 +28,7 @@ public class SellerRepositoryImpl implements SellerRepository {
     @Override
     public Seller findByMemberId(Long id) {
         SellerJpa sellerJpa = repository.findByMemberId(id)
-            .orElseThrow(() -> new NoSuchElementException("Seller with id " + id + " not found"));
+            .orElse(null);
 
         return mapper.toDomain(sellerJpa);
     }
