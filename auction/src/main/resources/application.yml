@@ -11,3 +11,12 @@ management:
         enabled: true
       exposure:
         include: "*"
+
+product:
+  topic:
+    auction-pending-start:
+      v1: product.auctionPendingStart.v1
+    auction-started:
+      v1: product.auctionStarted.v1
+    auction-ended:
+      v1: product.auctionEnded.v1

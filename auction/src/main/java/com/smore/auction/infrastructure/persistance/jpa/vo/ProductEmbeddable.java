@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProductEmbeddable {
     private UUID id;
+    private UUID categoryId;
     @Column(precision = 19, scale = 2)
     private BigDecimal price;
 }

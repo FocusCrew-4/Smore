@@ -1,0 +1,113 @@
+package com.smore.bidcompetition.application.listener;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smore.bidcompetition.application.dto.BidCreateCommand;
+import com.smore.bidcompetition.application.dto.OrderCompletedCommand;
+import com.smore.bidcompetition.application.dto.OrderFailedCommand;
+import com.smore.bidcompetition.application.dto.ServiceResult;
+import com.smore.bidcompetition.application.service.BidCompetitionService;
+import com.smore.bidcompetition.infrastructure.persistence.event.inbound.OrderCompletedEvent;
+import com.smore.bidcompetition.infrastructure.persistence.event.inbound.OrderFailedEvent;
+import com.smore.bidcompetition.infrastructure.persistence.event.inbound.ProductCreatedEvent;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.stereotype.Component;
+
+@Slf4j(topic = "EventListener")
+@Component
+@RequiredArgsConstructor
+public class EventListener {
+
+    private final BidCompetitionService service;
+    private final ObjectMapper objectMapper;
+
+    @KafkaListener(
+
+        topics = "${topic.product.created}",
+        groupId = "${consumer.group.product}",
+        concurrency = "2"
+    )
+    public void productCreated(String message, Acknowledgment ack) {
+        try {
+            ProductCreatedEvent event = objectMapper.readValue(message,
+                ProductCreatedEvent.class);
+
+            BidCreateCommand command = BidCreateCommand.of(
+                event.getProductId(),
+                event.getCategoryId(),
+                event.getSellerId(),
+                event.getProductPrice(),
+                event.getStock(),
+                event.getStartAt(),
+                event.getEndAt(),
+                event.getIdempotencyKey()
+            );
+
+            service.createBid(command);
+
+            ack.acknowledge();
+        } catch (Exception e) {
+            log.error("productCreated 처리 실패 : {}", message, e);
+        }
+    }
+
+    @KafkaListener(
+        topics = "${topic.order.completed}",
+        groupId = "${consumer.group.order}",
+        concurrency = "3"
+    )
+    public void orderCompleted(String message, Acknowledgment ack) {
+        try {
+            OrderCompletedEvent event = objectMapper.readValue(message,
+                OrderCompletedEvent.class);
+
+            OrderCompletedCommand command = OrderCompletedCommand.of(
+                event.getOrderId(),
+                event.getUserId(),
+                event.getCurrentOrderStatus(),
+                event.getIdempotencyKey(),
+                event.getPaidAt()
+            );
+
+            ServiceResult result = service.orderCompleted(command);
+
+            if (result.isFailed()) {
+                // TODO: 만료 스케줄러는 WINNER의 상태를 EXPIRED로 변경하고 재고를 복구하는 기능을 수행, 즉 보상 트랜잭션 트리거가 아님
+                // TODO: 재고 확정 실패 이벤트 발행 -> 주문 (재고 확보 실패) -> 결제 취소 -> 결제 취소 완료 -> 주문 (주문 실패)
+                // TODO: Winner를 찾지 못해 NotFoundWinnerException이 터질 경우 재시도 루프를 막기 위한 처리 전략 수립
+            }
+
+            ack.acknowledge();
+        } catch (Exception e) {
+            log.error("orderCompleted 처리 실패 : {}", message, e);
+        }
+    }
+
+    @KafkaListener(
+        topics = "${topic.order.failed}",
+        groupId = "${consumer.group.order}",
+        concurrency = "3"
+    )
+    public void orderFailed(String message, Acknowledgment ack) {
+        try {
+            OrderFailedEvent event = objectMapper.readValue(message,
+                OrderFailedEvent.class);
+
+            OrderFailedCommand command = OrderFailedCommand.of(
+                event.getAllocationKey(),
+                event.getProductId(),
+                event.getUserId(),
+                event.getQuantity(),
+                event.getPublishedAt()
+            );
+
+            service.orderFailed(command);
+
+            ack.acknowledge();
+        } catch (Exception e) {
+            log.error("orderFailed 처리 실패 : {}", message, e);
+        }
+    }
+}

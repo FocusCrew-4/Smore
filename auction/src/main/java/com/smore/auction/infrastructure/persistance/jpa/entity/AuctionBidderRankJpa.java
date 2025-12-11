@@ -43,6 +43,7 @@ public class AuctionBidderRankJpa {
         @AttributeOverride(name = "status", column = @Column(name = "bidder_status"))
     })
     private BidderEmbeddable bidder;
+    private Long rank;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

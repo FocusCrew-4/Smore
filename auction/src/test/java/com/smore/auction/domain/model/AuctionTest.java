@@ -21,10 +21,12 @@ class AuctionTest {
     void create() {
         // given
         UUID productIdFix = UUID.randomUUID();
+        UUID productCategoryIdFix = UUID.randomUUID();
 
         // when
         var test = Auction.create(
             productIdFix,
+            productCategoryIdFix,
             BigDecimal.valueOf(1000L),
             10L,
             1L,
@@ -35,6 +37,7 @@ class AuctionTest {
         assertAll(
             () -> assertNull(test.getId()),
             () -> assertEquals(productIdFix, test.getProduct().id()),
+            () -> assertEquals(productCategoryIdFix, test.getProduct().categoryId()),
             () -> assertEquals(10L, test.getStock()),
             () -> assertEquals(1L, test.getSellerId()),
             () -> assertEquals(BigDecimal.valueOf(1000L), test.getProduct().price())

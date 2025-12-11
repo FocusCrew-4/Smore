@@ -1,8 +1,5 @@
 # auction - test/resources/application.yml
 spring:
-  config:
-    activate:
-      on-profile: test
   jpa:
     generate-ddl: true
     defer-datasource-initialization: true

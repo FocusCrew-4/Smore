@@ -56,6 +56,7 @@ public class MemberController {
             .body(ApiResponse.ok("로그인 성공"));
     }
 
+    // TODO: SELLER 회원가입 요청시 사용대기 상태로 두고 Member 에 이벤트 발행하여 수락하면 ACTIVE 되는 코드 구현 필요
     @PostMapping("/register")
     public ResponseEntity<CommonResponse<?>> register(
         @RequestHeader("X-User-Role") Role role,

@@ -8,10 +8,12 @@ services:
       - "8001:8001"
     volumes:
       - ./docker/db/redis/redis-stack-data:/data
-    command: [ "redis-stack-server",
-               "--notify-keyspace-events",
-               "Ex"
-              ]
+    command:
+      [
+        "redis-stack-server",
+        "--notify-keyspace-events",
+        "Ex"
+      ]
     networks:
       - msa-network
 
@@ -266,6 +268,7 @@ services:
     build: ./auction/.
     ports:
       - "6600:6600"
+      - "5005:5005"
     environment:
       SPRING_PROFILES_ACTIVE: dev
     networks:

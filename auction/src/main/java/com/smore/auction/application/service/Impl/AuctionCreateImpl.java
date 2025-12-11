@@ -8,7 +8,6 @@ import com.smore.auction.domain.model.Auction;
 import java.time.Clock;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +34,7 @@ public class AuctionCreateImpl implements AuctionCreate {
 
         var auction = Auction.create(
             command.productId(),
+            command.productCategoryId(),
             command.productPrice(),
             command.stock(),
             command.sellerId(),
