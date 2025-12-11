@@ -12,4 +12,6 @@ public interface BidCompetitionJpaRepositoryCustom {
 
     int decreaseStock(UUID bidId, Integer quantity, LocalDateTime now);
 
+    int increaseStock(UUID bidId, Integer quantity);
+
 }
