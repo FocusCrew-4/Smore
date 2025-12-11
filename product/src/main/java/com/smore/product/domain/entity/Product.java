@@ -48,6 +48,10 @@ public class Product {
     private LocalDateTime deletedAt;
     private Long deletedBy;
 
+    private LocalDateTime startAt;
+    private LocalDateTime endAt;
+    private java.time.Duration biddingDuration;
+
     public static Product create(
             Long sellerId,
             UUID categoryId,
@@ -73,6 +77,9 @@ public class Product {
                 .status(status)
                 .createdAt(now)
                 .updatedAt(now)
+                .startAt(null)
+                .endAt(null)
+                .biddingDuration(null)
                 .build();
     }
 
@@ -149,4 +156,5 @@ public class Product {
         this.stock -= quantity;
         this.updatedAt = LocalDateTime.now(Clock.systemUTC());
     }
+
 }
