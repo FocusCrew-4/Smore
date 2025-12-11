@@ -102,7 +102,7 @@ public class Winner {
             .build();
     }
 
-    public boolean isCompleted() {
+    public boolean isPaid() {
         return this.winnerStatus == WinnerStatus.PAID;
     }
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.bidcompetition.application.dto.BidCreateCommand;
 import com.smore.bidcompetition.application.dto.CompetitionCommand;
 import com.smore.bidcompetition.application.dto.OrderCompletedCommand;
+import com.smore.bidcompetition.application.dto.OrderFailedCommand;
 import com.smore.bidcompetition.application.dto.ServiceResult;
 import com.smore.bidcompetition.application.exception.WinnerConflictException;
 import com.smore.bidcompetition.application.repository.BidCompetitionRepository;
@@ -179,7 +180,7 @@ public class BidCompetitionService {
 
         Winner winner = winnerRepository.findByAllocationKey(command.getAllocationKey());
 
-        if (winner.isCompleted()) {
+        if (winner.isPaid()) {
             log.info("이미 처리된 작업입니다. allocationKey : {}", command.getAllocationKey());
             return ServiceResult.SUCCESS;
         }
