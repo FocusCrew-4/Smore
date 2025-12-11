@@ -1,6 +1,11 @@
 package com.smore.product.application.service;
 
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.smore.product.domain.entity.ProductStatus;
+import com.smore.product.domain.event.AuctionPendingStartEvent;
+import com.smore.product.domain.event.AuctionStartedEvent;
+import com.smore.product.domain.event.LimitedSalePendingStartEvent;
+import com.smore.product.domain.event.publisher.ProductEventPublisher;
 import com.smore.product.domain.sale.dto.ProductSaleResponse;
 import com.smore.product.domain.sale.repository.ProductSaleRepository;
 import com.smore.product.domain.stock.dto.StockLogResponse;
@@ -14,13 +19,24 @@ import com.smore.product.domain.entity.Product;
 import com.smore.product.domain.entity.SaleType;
 import com.smore.product.domain.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +44,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductSaleRepository productSaleRepository;
     private final StockLogRepository stockLogRepository;
+    private final ProductEventPublisher eventPublisher;
 
     @Transactional
     public ProductResponse createProduct(CreateProductRequest req) {
@@ -105,11 +122,44 @@ public class ProductService {
         Product product = productRepository.findByIdForUpdate(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
-        if (req.getStatus() == null) {
-            throw new IllegalArgumentException("상태 값이 필요합니다.");
-        }
-
+        ProductStatus oldStatus = product.getStatus();
         product.changeStatus(req.getStatus());
+
+        //상태가 ON_SALE로 바뀌는 순간 이벤트 발행
+        if (oldStatus != ProductStatus.ON_SALE && req.getStatus() == ProductStatus.ON_SALE) {
+
+            switch (product.getSaleType()) {
+
+                case AUCTION -> {
+                    eventPublisher.publishAuctionPendingStart(
+                            AuctionPendingStartEvent.builder()
+                                    .sellerId(product.getSellerId())
+                                    .productId(product.getId())
+                                    .categoryId(product.getCategoryId())
+                                    .productPrice(product.getPrice())
+                                    .stock(product.getStock())
+                                    .idempotencyKey(UUID.randomUUID())
+                                    .createdAt(LocalDateTime.now())
+                                    .build()
+                    );
+                }
+
+                case NORMAL, LIMITED_TO_AUCTION -> {
+                    eventPublisher.publishLimitedSalePendingStart(
+                            LimitedSalePendingStartEvent.builder()
+                                    .productId(product.getId())
+                                    .categoryId(product.getCategoryId())
+                                    .sellerId(product.getSellerId())
+                                    .productPrice(product.getPrice())
+                                    .stock(product.getStock())
+                                    .startAt(product.getStartAt())
+                                    .endAt(product.getEndAt())
+                                    .idempotencyKey(UUID.randomUUID())
+                                    .build()
+                    );
+                }
+            }
+        }
 
         return new ProductResponse(product);
     }
@@ -158,5 +208,21 @@ public class ProductService {
 
         productRepository.save(product);
         // 여기서 StockLog 남기고 싶으면 나중에 추가
+    }
+
+    @Transactional
+    public void startAuction(UUID productId) {
+
+        Product product = productRepository.findByIdForUpdate(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품 없음"));
+
+        eventPublisher.publishAuctionStarted(
+                AuctionStartedEvent.builder()
+                        .productId(product.getId())
+                        .biddingDuration(product.getBiddingDuration())
+                        .idempotencyKey(UUID.randomUUID())
+                        .createdAt(LocalDateTime.now())
+                        .build()
+        );
     }
 }
