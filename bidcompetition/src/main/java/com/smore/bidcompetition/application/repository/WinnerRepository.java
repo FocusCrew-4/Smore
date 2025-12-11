@@ -7,5 +7,9 @@ public interface WinnerRepository {
 
     Winner findByIdempotencyKey(UUID idempotencyKey);
 
+    Winner findByAllocationKey(UUID allocationKey);
+
+    int winnerPaid(UUID allocationKey, UUID orderId, Long version);
+
     Winner save(Winner winner);
 }

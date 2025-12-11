@@ -1,11 +1,12 @@
 package com.smore.bidcompetition.application.repository;
 
 import com.smore.bidcompetition.domain.model.BidCompetition;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface BidCompetitionRepository {
+
+    BidCompetition findById(UUID bidId);
 
     BidCompetition findByIdempotencyKey(UUID idempotencyKey);
 
