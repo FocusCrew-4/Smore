@@ -35,7 +35,7 @@ spring:
     init:
       mode: always
 
-  kafka:
+  Kafka:
     # 로컬에서 Docker로 띄운 브로커 외부 포트에 맞춰 설정 (docker-compose의 EXTERNAL 매핑)
     bootstrap-servers: localhost:19092,localhost:29092,localhost:39092
 
