@@ -13,6 +13,8 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -81,5 +83,16 @@ public class RedisConfig {
             // 캐시를 트랜잭션과 함께 동작하도록
             .transactionAware()
             .build();
+    }
+
+    @Bean
+    public RedisMessageListenerContainer redisMessageListenerContainer(
+        RedisConnectionFactory cf,
+        RedisEventListener listener
+    ) {
+        var container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(cf);
+        container.addMessageListener(listener, new PatternTopic("__keyevent@0__:expired"));
+        return container;
     }
 }
