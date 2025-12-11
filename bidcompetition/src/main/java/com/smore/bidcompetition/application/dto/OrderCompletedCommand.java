@@ -1,6 +1,5 @@
-package com.smore.order.application.event.outbound;
+package com.smore.bidcompetition.application.dto;
 
-import com.smore.order.domain.status.OrderStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -11,25 +10,24 @@ import lombok.Getter;
 @Getter
 @Builder(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderCompletedEvent implements OrderEvent {
+public class OrderCompletedCommand {
 
     private final UUID orderId;
     private final Long userId;
     private final String currentOrderStatus;
-    private final UUID idempotencyKey;
+    private final UUID allocationKey;
     private final LocalDateTime paidAt;
 
-    public static OrderCompletedEvent of(
-        UUID orderId, Long userId, OrderStatus currentOrderStatus, UUID idempotencyKey,
-        LocalDateTime paidAt) {
-
-        return OrderCompletedEvent.builder()
+    public static OrderCompletedCommand of(
+        UUID orderId, Long userId, String currentOrderStatus, UUID allocationKey,
+        LocalDateTime paidAt
+    ) {
+        return OrderCompletedCommand.builder()
             .orderId(orderId)
             .userId(userId)
-            .currentOrderStatus(String.valueOf(currentOrderStatus))
-            .idempotencyKey(idempotencyKey)
+            .currentOrderStatus(currentOrderStatus)
+            .allocationKey(allocationKey)
             .paidAt(paidAt)
             .build();
     }
-
 }

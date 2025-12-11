@@ -74,7 +74,8 @@ public class EventListener {
             CompletedPaymentCommand command = CompletedPaymentCommand.of(
                 event.getOrderId(),
                 event.getPaymentId(),
-                event.getAmount().intValue() // TODO: 나중에 돈과 관련된 모든 필드는 BigDecimal로 변경될 예정
+                event.getAmount().intValue(), // TODO: 나중에 돈과 관련된 모든 필드는 BigDecimal로 변경될 예정
+                event.getApprovedAt()
             );
 
             service.completeOrder(command);

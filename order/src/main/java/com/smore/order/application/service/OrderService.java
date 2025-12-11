@@ -142,7 +142,7 @@ public class OrderService {
             order.getUserId(),
             OrderStatus.COMPLETED,
             UUID.randomUUID(),
-            LocalDateTime.now(clock)
+            command.getApprovedAt()
         );
 
         Outbox outbox = Outbox.create(

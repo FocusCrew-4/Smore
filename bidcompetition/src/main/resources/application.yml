@@ -50,6 +50,7 @@ consumer:
   group:
     bid: bid-consumer-group
     product: product-consumer-group
+    order: order-consumer-group
 
 
 retry:

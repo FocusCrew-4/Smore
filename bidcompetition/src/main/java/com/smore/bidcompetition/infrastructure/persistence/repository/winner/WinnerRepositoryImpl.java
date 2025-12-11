@@ -2,7 +2,9 @@ package com.smore.bidcompetition.infrastructure.persistence.repository.winner;
 
 import com.smore.bidcompetition.application.repository.WinnerRepository;
 import com.smore.bidcompetition.domain.model.Winner;
+import com.smore.bidcompetition.infrastructure.error.BidErrorCode;
 import com.smore.bidcompetition.infrastructure.persistence.entity.WinnerEntity;
+import com.smore.bidcompetition.infrastructure.persistence.exception.NotFoundWinnerException;
 import com.smore.bidcompetition.infrastructure.persistence.mapper.WinnerMapper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,16 @@ public class WinnerRepositoryImpl implements WinnerRepository {
     }
 
     @Override
+    public Winner findByAllocationKey(UUID allocationKey) {
+
+        WinnerEntity entity = winnerJpaRepository.findByAllocationKey(allocationKey);
+
+        if (entity == null) throw new NotFoundWinnerException(BidErrorCode.NOT_FOUND_WINNER);
+
+        return WinnerMapper.toDomain(entity);
+    }
+
+    @Override
     public Winner save(Winner winner) {
 
         WinnerEntity entity = winnerJpaRepository.save(
@@ -34,5 +46,10 @@ public class WinnerRepositoryImpl implements WinnerRepository {
         );
 
         return WinnerMapper.toDomain(entity);
+    }
+
+    @Override
+    public int winnerPaid(UUID allocationKey, UUID orderId, Long version) {
+        return winnerJpaRepository.winnerPaid(allocationKey, orderId, version);
     }
 }

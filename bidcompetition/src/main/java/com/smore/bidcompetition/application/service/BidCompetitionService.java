@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.bidcompetition.application.dto.BidCreateCommand;
 import com.smore.bidcompetition.application.dto.CompetitionCommand;
+import com.smore.bidcompetition.application.dto.OrderCompletedCommand;
+import com.smore.bidcompetition.application.dto.ServiceResult;
+import com.smore.bidcompetition.application.exception.WinnerConflictException;
 import com.smore.bidcompetition.application.repository.BidCompetitionRepository;
 import com.smore.bidcompetition.application.repository.OutboxRepository;
 import com.smore.bidcompetition.application.repository.WinnerRepository;
@@ -12,6 +15,7 @@ import com.smore.bidcompetition.domain.model.Outbox;
 import com.smore.bidcompetition.domain.model.Winner;
 import com.smore.bidcompetition.domain.status.AggregateType;
 import com.smore.bidcompetition.domain.status.EventType;
+import com.smore.bidcompetition.infrastructure.error.BidErrorCode;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.WinnerCreatedEvent;
 import com.smore.bidcompetition.presentation.dto.BidResponse;
 import java.time.Clock;
@@ -168,6 +172,41 @@ public class BidCompetitionService {
             savedWinner.getExpireAt()
         );
 
+    }
+
+    @Transactional
+    public ServiceResult orderCompleted(OrderCompletedCommand command) {
+
+        Winner winner = winnerRepository.findByAllocationKey(command.getAllocationKey());
+
+        if (winner.isCompleted()) {
+            log.info("이미 처리된 작업입니다. allocationKey : {}", command.getAllocationKey());
+            return ServiceResult.SUCCESS;
+        }
+
+        if (winner.isExpired()) {
+            log.warn("이미 만료된 Winner에 대한 결제 완료 이벤트 입니다. allocationKey : {}",
+                command.getAllocationKey());
+            return ServiceResult.FAIL;
+
+        }
+
+        LocalDateTime validAt = winner.getExpireAt().plusSeconds(bufferTimeSeconds);
+        LocalDateTime now = LocalDateTime.now(clock);
+
+        if (now.isAfter(validAt)) {
+            log.error("결제 유효 시간을 초과하셨습니다.");
+            return ServiceResult.FAIL;
+        }
+
+        int updated = winnerRepository.winnerPaid(command.getAllocationKey(), command.getOrderId(), winner.getVersion());
+
+        if (updated == 0) {
+            log.error("동시성 충돌로 인해 작업을 처리하지 못했습니다. allocationKey : {}", command.getAllocationKey());
+            throw new WinnerConflictException(BidErrorCode.WINNER_CONFLICT);
+        }
+
+        return ServiceResult.SUCCESS;
     }
 
     // TODO: 나중에 클래스로 분리할 예정
