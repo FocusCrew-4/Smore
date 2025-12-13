@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.seller.application.command.ApplyCommand;
 import com.smore.seller.application.result.SellerResult;
+import com.smore.seller.application.usecase.RequestSettlement;
 import com.smore.seller.application.usecase.SellerApply;
 import com.smore.seller.application.usecase.SellerApprove;
 import com.smore.seller.application.usecase.SellerReject;
@@ -54,6 +55,9 @@ class SellerControllerTest {
 
     @MockitoBean
     SellerApprove sellerApprove;
+
+    @MockitoBean
+    RequestSettlement requestSettlement;
 
     @Nested
     @DisplayName("POST /api/v1/sellers")

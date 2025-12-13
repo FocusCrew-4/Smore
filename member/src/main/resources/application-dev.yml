@@ -56,14 +56,3 @@ eureka:
   instance:
     prefer-ip-address: true
 
-seller:
-  topic:
-    seller-register:
-      v1: seller.register.v1
-      v2: seller.register.v2
-
-member:
-  topic:
-    seller-register:
-      v1: seller.register.v1
-      v2: seller.register.v2

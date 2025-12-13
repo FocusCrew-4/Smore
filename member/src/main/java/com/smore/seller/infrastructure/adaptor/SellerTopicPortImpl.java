@@ -12,6 +12,11 @@ public class SellerTopicPortImpl implements SellerTopicPort {
     private final SellerTopicProperties sellerTopicProperties;
 
     @Override
+    public String getSellerSettlementTopic(String version) {
+        return sellerTopicProperties.getSellerSettlement().get(version);
+    }
+
+    @Override
     public String getSellerRegisterTopic(String version) {
         return sellerTopicProperties.getSellerRegister().get(version);
     }

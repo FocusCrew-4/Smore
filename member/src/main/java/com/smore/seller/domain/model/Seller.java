@@ -2,6 +2,7 @@ package com.smore.seller.domain.model;
 
 import com.smore.seller.domain.enums.SellerStatus;
 import com.smore.seller.domain.vo.Money;
+import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -49,6 +50,11 @@ public class Seller {
 
     public void approveApply(Clock clock) {
         this.status = SellerStatus.ACTIVE;
+        this.updatedAt = LocalDateTime.now(clock);
+    }
+
+    public void settle(BigDecimal amount, Clock clock) {
+        this.money = this.money.minus(Money.of(amount));
         this.updatedAt = LocalDateTime.now(clock);
     }
 }

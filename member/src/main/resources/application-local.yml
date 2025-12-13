@@ -30,7 +30,7 @@ spring:
         format_sql: true
         # SQL 실행 시 주석 포함
         use_sql_comments: true
-    show_sql: true
+    show_sql: false
   sql:
     init:
       mode: always
@@ -76,15 +76,3 @@ springdoc:
 eureka:
   client:
     enabled: false
-
-seller:
-  topic:
-    seller-register:
-      v1: seller.register.v1
-      v2: seller.register.v2
-
-member:
-  topic:
-    seller-register:
-      v1: seller.register.v1
-      v2: seller.register.v2

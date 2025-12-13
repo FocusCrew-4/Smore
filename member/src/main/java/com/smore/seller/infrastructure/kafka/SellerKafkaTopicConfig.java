@@ -51,4 +51,12 @@ public class SellerKafkaTopicConfig {
             .replicas(3)
             .build();
     }
+
+    @Bean
+    public NewTopic SellerSettlementV1() {
+        return TopicBuilder.name("seller.settlement.v1")
+            .partitions(2)
+            .replicas(3)
+            .build();
+    }
 }
