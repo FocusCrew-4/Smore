@@ -6,16 +6,22 @@ import com.smore.bidcompetition.application.dto.BidCreateCommand;
 import com.smore.bidcompetition.application.dto.CompetitionCommand;
 import com.smore.bidcompetition.application.dto.OrderCompletedCommand;
 import com.smore.bidcompetition.application.dto.OrderFailedCommand;
+import com.smore.bidcompetition.application.dto.RefundSucceededCommand;
 import com.smore.bidcompetition.application.dto.ServiceResult;
+import com.smore.bidcompetition.application.exception.BidConflictException;
 import com.smore.bidcompetition.application.exception.WinnerConflictException;
 import com.smore.bidcompetition.application.repository.BidCompetitionRepository;
+import com.smore.bidcompetition.application.repository.BidInventoryLogRepository;
 import com.smore.bidcompetition.application.repository.OutboxRepository;
 import com.smore.bidcompetition.application.repository.WinnerRepository;
 import com.smore.bidcompetition.domain.model.BidCompetition;
+import com.smore.bidcompetition.domain.model.BidInventoryLog;
 import com.smore.bidcompetition.domain.model.Outbox;
 import com.smore.bidcompetition.domain.model.Winner;
 import com.smore.bidcompetition.domain.status.AggregateType;
 import com.smore.bidcompetition.domain.status.EventType;
+import com.smore.bidcompetition.domain.status.InventoryChangeType;
+import com.smore.bidcompetition.domain.status.WinnerStatus;
 import com.smore.bidcompetition.infrastructure.error.BidErrorCode;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.WinnerCreatedEvent;
 import com.smore.bidcompetition.presentation.dto.BidResponse;
@@ -25,6 +31,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +49,7 @@ public class BidCompetitionService {
     private final BidCompetitionRepository bidCompetitionRepository;
     private final WinnerRepository winnerRepository;
     private final OutboxRepository outboxRepository;
+    private final BidInventoryLogRepository bidInventoryLogRepository;
     private final ObjectMapper objectMapper;
     private final Clock clock;
 
@@ -224,6 +232,7 @@ public class BidCompetitionService {
         int updated = winnerRepository.markCancelled(
             winner.getBidId(),
             command.getAllocationKey(),
+            WinnerStatus.CANCELABLE_STATUSES,
             winner.getVersion()
         );
 
