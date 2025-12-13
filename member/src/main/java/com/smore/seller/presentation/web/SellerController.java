@@ -3,14 +3,19 @@ package com.smore.seller.presentation.web;
 import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
 import com.smore.seller.application.result.SellerResult;
+import com.smore.seller.application.usecase.RequestSettlement;
 import com.smore.seller.application.usecase.SellerApply;
 import com.smore.seller.application.usecase.SellerApprove;
 import com.smore.seller.application.usecase.SellerReject;
+import com.smore.seller.presentation.web.dto.SettlementRequestDto;
 import com.smore.seller.presentation.web.dto.request.SellerApplyRequestDto;
 import com.smore.seller.presentation.web.mapper.SellerControllerMapper;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.core.NoContentException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/sellers")
 @RequiredArgsConstructor
@@ -32,6 +38,7 @@ public class SellerController {
     private final SellerApply sellerApply;
     private final SellerReject sellerReject;
     private final SellerApprove sellerApprove;
+    private final RequestSettlement requestSettlement;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -43,7 +50,7 @@ public class SellerController {
     public ResponseEntity<CommonResponse<?>> applySeller(
         @RequestHeader("X-User-Id") Long requesterId,
         @RequestHeader("X-User-Role") String role,
-        @RequestBody SellerApplyRequestDto requestDto
+        @RequestBody @Valid SellerApplyRequestDto requestDto
     ) throws URISyntaxException {
         if (!role.equals("CONSUMER")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -88,6 +95,20 @@ public class SellerController {
         sellerApprove.approveSeller(id);
 
         return ResponseEntity.ok(ApiResponse.ok("승인 성공"));
+    }
+
+    @PostMapping("/settlements/request")
+    public ResponseEntity<CommonResponse<?>> requestSettlement(
+        @RequestHeader("X-User-Id") Long requesterId,
+        @RequestHeader("X-User-Role") String role,
+        @Valid @RequestBody SettlementRequestDto requestDto
+    ) throws NoContentException {
+        if (!role.equals("SELLER") && !role.equals("ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error("S401", "권한이 없습니다"));
+        }
+            requestSettlement.sendSettlementRequest(mapper.toSettlementRequestCommand(requesterId, role, requestDto));
+        return ResponseEntity.ok(ApiResponse.ok("요청 성공"));
     }
 
 }

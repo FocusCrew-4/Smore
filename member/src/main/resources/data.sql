@@ -2,13 +2,15 @@
 INSERT INTO p_member (id, role, email, password, nickname, auction_cancel_count, status, created_at, updated_at, deleted_at, deleted_by)
 VALUES
     (1, 'ADMIN', 'admin@example.com', '$2a$10$sFHAFHXkl0ohQkv3uCuOAOmsfZgI/Aca4FH6hnkKP6jj1Fqw1Prg2', 'admin', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
+    (2, 'SELLER', 'seller@seller.com', '$2b$12$Hs3mLffihQf6SQi40osFGetwp1j6o.dIApD5T4IQOB2m3Ezj8Cmf.', 'seller', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
     (4, 'CONSUMER', 'consumer_changed_from_seller4@example.com', 'hashed-consumer-password', 'consumer_from4', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL)
 ON CONFLICT DO NOTHING;
 
 -- Seed sellers by status (linked to seller members above)
-INSERT INTO p_seller (id, member_id, account_num, status, created_at, updated_at, deleted_at, deleted_by)
+INSERT INTO p_seller (id, member_id, account_num, status, amount, created_at, updated_at, deleted_at, deleted_by)
 VALUES
-    ('00000000-0000-0000-0000-000000000001', 4, '111-11-111111', 'PENDING', NOW(), NOW(), NULL, NULL)
+    ('00000000-0000-0000-0000-000000000001', 4, '111-11-111111', 'PENDING', 0, NOW(), NOW(), NULL, NULL),
+    ('00000000-0000-0000-0000-000000000002', 2, '222-22-222222', 'ACTIVE', 3000.00, NOW(), NOW(), NULL, NULL)
 ON CONFLICT DO NOTHING;
 
 -- Seed: seller outbox pending 230 rows
