@@ -161,6 +161,28 @@ public class BidCompetitionService {
             command.getZipcode()
         );
 
+        String idempotencyKey = InventoryChangeType.RESERVE.idempotencyKey(
+            String.valueOf(allocationKey)
+        );
+
+        Integer delta = command.getQuantity();
+
+        Integer stockBefore = bid.getStock();
+        Integer stockAfter = stockBefore - delta;
+
+        BidInventoryLog log = BidInventoryLog.create(
+            bid.getId(),
+            savedWinner.getId(),
+            InventoryChangeType.RESERVE,
+            stockBefore,
+            stockAfter,
+            delta,
+            idempotencyKey,
+            now
+        );
+
+        bidInventoryLogRepository.saveAndFlush(log);
+
 
         Outbox outbox = Outbox.create(
             AggregateType.BID,
