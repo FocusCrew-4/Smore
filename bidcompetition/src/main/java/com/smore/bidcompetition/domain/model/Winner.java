@@ -114,4 +114,8 @@ public class Winner {
         return this.winnerStatus != WinnerStatus.PAYMENT_PENDING;
     }
 
+    public boolean isNotPaid() {
+        return !isPaid();
+    }
+
 }

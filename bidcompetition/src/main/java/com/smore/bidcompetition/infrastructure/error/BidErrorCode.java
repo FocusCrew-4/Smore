@@ -7,6 +7,7 @@ public enum BidErrorCode implements ErrorCode {
     NOT_FOUND_OUTBOX("71404", "Outbox를 찾을 수 없습니다."),
     NOT_FOUND_WINNER("72404", "Winner를 찾을 수 없습니다."),
 
+    BID_CONFLICT("70409", "Bid를 생성하던 도중 예외가 발생했습니다."),
     WINNER_CONFLICT("72409", "Winner를 생성하던 도중 예외가 발생했습니다."),
 
     CREATE_OUTBOX_CONFLICT("71409", "Outbox를 생성하던 도중 예외가 발생했습니다."),
