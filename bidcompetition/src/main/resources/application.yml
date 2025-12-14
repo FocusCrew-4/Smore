@@ -61,3 +61,4 @@ app:
   allocation:
     valid-duration: 180
     propagation-buffer-time: 60
+    close-grace-seconds : 600
