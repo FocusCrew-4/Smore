@@ -59,4 +59,14 @@ public class SellerKafkaTopicConfig {
             .replicas(3)
             .build();
     }
+
+    // DLT 는 확장 고려 대상이 아니고 쌓이기 시작하면 시스템에 문제가 있는 부분이기 때문에
+    // 1 파티션 설정 또한 2 개의 레플리카를 운영함으로써 복제를 아예 안 하는 부분은 아니게 설정하였습니다
+    @Bean
+    public NewTopic SellerDeadLetterV1() {
+        return TopicBuilder.name("seller.deadLetter.v1")
+            .partitions(1)
+            .replicas(2)
+            .build();
+    }
 }
