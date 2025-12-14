@@ -8,6 +8,7 @@ import com.smore.bidcompetition.infrastructure.persistence.entity.BidCompetition
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
@@ -41,7 +42,33 @@ public class BidCompetitionJpaRepositoryCustomImpl implements BidCompetitionJpaR
     }
 
     @Override
-    public int decreaseStock(UUID bidId, Integer quantity, LocalDateTime now) {
+    public List<UUID> findBidsToActivate(LocalDateTime now) {
+
+        return queryFactory
+            .select(bidCompetitionEntity.id)
+            .from(bidCompetitionEntity)
+            .where(
+                bidCompetitionEntity.bidStatus.eq(BidStatus.SCHEDULED),
+                bidCompetitionEntity.startAt.loe(now)
+            )
+            .fetch();
+    }
+
+    // endAt은 now - 10분이 와야 함
+    @Override
+    public List<UUID> findBidsToClose(LocalDateTime endAt) {
+        return queryFactory
+            .select(bidCompetitionEntity.id)
+            .from(bidCompetitionEntity)
+            .where(
+                bidCompetitionEntity.bidStatus.eq(BidStatus.ACTIVE),
+                bidCompetitionEntity.endAt.loe(endAt)
+            )
+            .fetch();
+    }
+
+    @Override
+    public int decreaseStock(UUID bidId, Integer quantity, LocalDateTime acceptedAt) {
 
         long updated = queryFactory
             .update(bidCompetitionEntity)
@@ -49,10 +76,10 @@ public class BidCompetitionJpaRepositoryCustomImpl implements BidCompetitionJpaR
             .where(
                 bidCompetitionEntity.id.eq(bidId),
                 bidCompetitionEntity.stock.goe(quantity),
-                bidCompetitionEntity.endAt.goe(now),
+                bidCompetitionEntity.endAt.goe(acceptedAt),
                 bidCompetitionEntity.stock.gt(0),
-                bidCompetitionEntity.bidStatus.eq(BidStatus.ACTIVE),
-                bidCompetitionEntity.startAt.loe(now),
+                bidCompetitionEntity.bidStatus.in(BidStatus.ACTIVE, BidStatus.CLOSED),
+                bidCompetitionEntity.startAt.loe(acceptedAt),
                 bidCompetitionEntity.deletedAt.isNull()
             )
             .execute();

@@ -61,8 +61,8 @@ public class BidCompetitionRepositoryImpl implements BidCompetitionRepository {
     }
 
     @Override
-    public int decreaseStock(UUID bidId, Integer quantity, LocalDateTime now) {
-        return bidCompetitionJpaRepository.decreaseStock(bidId, quantity, now);
+    public int decreaseStock(UUID bidId, Integer quantity, LocalDateTime acceptedAt) {
+        return bidCompetitionJpaRepository.decreaseStock(bidId, quantity, acceptedAt);
     }
 
     @Override
