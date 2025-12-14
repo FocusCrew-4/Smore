@@ -49,12 +49,12 @@ public class BidCompetitionJpaRepositoryCustomImpl implements BidCompetitionJpaR
             .from(bidCompetitionEntity)
             .where(
                 bidCompetitionEntity.bidStatus.eq(BidStatus.SCHEDULED),
-                bidCompetitionEntity.startAt.loe(now)
+                bidCompetitionEntity.startAt.loe(now),
+                bidCompetitionEntity.deletedAt.isNull()
             )
             .fetch();
     }
 
-    // endAt은 now - 10분이 와야 함
     @Override
     public List<UUID> findBidsToClose(LocalDateTime endAt) {
         return queryFactory
@@ -62,7 +62,24 @@ public class BidCompetitionJpaRepositoryCustomImpl implements BidCompetitionJpaR
             .from(bidCompetitionEntity)
             .where(
                 bidCompetitionEntity.bidStatus.eq(BidStatus.ACTIVE),
-                bidCompetitionEntity.endAt.loe(endAt)
+                bidCompetitionEntity.endAt.loe(endAt),
+                bidCompetitionEntity.deletedAt.isNull()
+            )
+            .fetch();
+    }
+
+    @Override
+    public List<UUID> findBidsToEnd(LocalDateTime now, long closeGraceSeconds) {
+
+        LocalDateTime cutoff = now.minusSeconds(closeGraceSeconds);
+
+        return queryFactory
+            .select(bidCompetitionEntity.id)
+            .from(bidCompetitionEntity)
+            .where(
+                bidCompetitionEntity.bidStatus.eq(BidStatus.CLOSED),
+                bidCompetitionEntity.endAt.loe(cutoff),
+                bidCompetitionEntity.deletedAt.isNull()
             )
             .fetch();
     }
@@ -97,6 +114,62 @@ public class BidCompetitionJpaRepositoryCustomImpl implements BidCompetitionJpaR
             .set(bidCompetitionEntity.stock, bidCompetitionEntity.stock.add(quantity))
             .where(
                 bidCompetitionEntity.id.eq(bidId)
+            )
+            .execute();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int bulkActivateByStartAt(List<UUID> ids, LocalDateTime now) {
+        if (ids == null || ids.isEmpty()) return 0;
+
+        long updated = queryFactory
+            .update(bidCompetitionEntity)
+            .set(bidCompetitionEntity.bidStatus, BidStatus.ACTIVE)
+            .where(
+                bidCompetitionEntity.id.in(ids),
+                bidCompetitionEntity.bidStatus.eq(BidStatus.SCHEDULED),
+                bidCompetitionEntity.startAt.loe(now),
+                bidCompetitionEntity.deletedAt.isNull()
+            )
+            .execute();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int bulkCloseByEndAt(List<UUID> ids, LocalDateTime now) {
+        if (ids == null || ids.isEmpty()) return 0;
+
+        long updated = queryFactory
+            .update(bidCompetitionEntity)
+            .set(bidCompetitionEntity.bidStatus, BidStatus.CLOSED)
+            .where(
+                bidCompetitionEntity.id.in(ids),
+                bidCompetitionEntity.bidStatus.eq(BidStatus.ACTIVE),
+                bidCompetitionEntity.endAt.loe(now),
+                bidCompetitionEntity.deletedAt.isNull()
+            )
+            .execute();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int bulkFinalizeByValidAt(List<UUID> ids, LocalDateTime now, long closeGraceSeconds) {
+        if (ids == null || ids.isEmpty()) return 0;
+
+        LocalDateTime cutoff = now.minusSeconds(closeGraceSeconds);
+
+        long updated = queryFactory
+            .update(bidCompetitionEntity)
+            .set(bidCompetitionEntity.bidStatus, BidStatus.END)
+            .where(
+                bidCompetitionEntity.id.in(ids),
+                bidCompetitionEntity.bidStatus.eq(BidStatus.CLOSED),
+                bidCompetitionEntity.endAt.loe(cutoff),
+                bidCompetitionEntity.deletedAt.isNull()
             )
             .execute();
 

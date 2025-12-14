@@ -15,8 +15,15 @@ public interface BidCompetitionJpaRepositoryCustom {
 
     List<UUID> findBidsToClose(LocalDateTime now);
 
+    List<UUID> findBidsToEnd(LocalDateTime now, long closeGraceSeconds);
+
     int decreaseStock(UUID bidId, Integer quantity, LocalDateTime acceptedAt);
 
     int increaseStock(UUID bidId, Integer quantity);
 
+    int bulkActivateByStartAt(List<UUID> ids, LocalDateTime now);
+
+    int bulkCloseByEndAt(List<UUID> ids, LocalDateTime now);
+
+    int bulkFinalizeByValidAt(List<UUID> ids, LocalDateTime now, long closeGraceSeconds);
 }
