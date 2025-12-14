@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:postgresql://postgresql-server:5432/category
+    username: root
+    password: root
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:18800/eureka/
