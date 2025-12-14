@@ -53,8 +53,13 @@ public class Seller {
         this.updatedAt = LocalDateTime.now(clock);
     }
 
-    public void settle(BigDecimal amount, Clock clock) {
+    public void debitBalanceForSettlement(BigDecimal amount, Clock clock) {
         this.money = this.money.minus(Money.of(amount));
+        this.updatedAt = LocalDateTime.now(clock);
+    }
+
+    public void creditBalanceFromSales(BigDecimal amount, Clock clock) {
+        this.money = this.money.add(Money.of(amount));
         this.updatedAt = LocalDateTime.now(clock);
     }
 }

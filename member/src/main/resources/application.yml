@@ -26,7 +26,7 @@ seller:
       v2: seller.register.v2
     seller-settlement:
       v1: seller.settlement.v1
-    seller-deadLetter:
+    seller-dead-letter:
       v1: seller.deadLetter.v1
 
 member:

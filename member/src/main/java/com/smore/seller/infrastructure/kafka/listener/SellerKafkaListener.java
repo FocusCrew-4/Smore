@@ -6,6 +6,7 @@ import com.smore.seller.application.port.in.InboxService;
 import com.smore.seller.application.usecase.CreditSellerMoney;
 import com.smore.seller.infrastructure.kafka.SellerTopicProperties;
 import com.smore.seller.infrastructure.kafka.listener.dto.SettlementFailedV1;
+import com.smore.seller.infrastructure.kafka.listener.dto.SettlementV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -67,7 +68,7 @@ public class SellerKafkaListener {
 
         try {
             var settlement
-                = objectMapper.readValue(event, SettlementFailedV1.class);
+                = objectMapper.readValue(event, SettlementV1.class);
 
             log.info("AuctionStartedV1 deserialize {}", settlement);
 
@@ -79,9 +80,6 @@ public class SellerKafkaListener {
                     settlement.amount()
                 )
             );
-
-            // 메서드 내부에서 재시도로직 존재
-            creditSellerMoney.credit(settlement.id(), settlement.amount());
 
             ack.acknowledge();
 

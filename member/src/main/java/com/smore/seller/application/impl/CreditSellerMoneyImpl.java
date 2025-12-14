@@ -50,7 +50,7 @@ public class CreditSellerMoneyImpl implements CreditSellerMoney {
             throw new RuntimeException("찾는 회원이 존재하지 않습니다");
         }
 
-        target.settle(amount, clock);
+        target.creditBalanceFromSales(amount, clock);
         log.info("고객의 금액 증가: {}", target.getMoney());
 
         repository.save(target);
