@@ -23,4 +23,16 @@ public class AsyncConfig {
         return executor;
     }
 
+    @Bean(name = "bidTaskExecutor")
+    public Executor bidTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(3);
+        executor.setMaxPoolSize(3);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("bid-task");
+        executor.initialize();
+        return executor;
+    }
+
 }
