@@ -1,9 +1,9 @@
 server:
-  port: 3300
+  port: 8800
 
 spring:
   application:
-    name: category-service
+    name: product-service
 
   cloud:
     config:
@@ -16,7 +16,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
   instance:
-    hostname: category-service
+    hostname: product-service
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 30
     lease-expiration-duration-in-seconds: 90

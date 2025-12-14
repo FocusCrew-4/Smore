@@ -4,10 +4,11 @@ spring:
       on-profile: local
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/category
+    url: jdbc:postgresql://localhost:5432/product-db
     username: root
     password: root
     driver-class-name: org.postgresql.Driver
+
 
   jpa:
     hibernate:
