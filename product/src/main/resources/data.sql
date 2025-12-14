@@ -1,6 +1,4 @@
-\c produc
-
-CREATE TABLE p_product_stock_log
+CREATE TABLE IF NOT EXISTS p_product_stock_log
 (
     id           UUID PRIMARY KEY,
     product_id   UUID      NOT NULL,
@@ -9,7 +7,7 @@ CREATE TABLE p_product_stock_log
     created_at   TIMESTAMP NOT NULL
 );
 
-CREATE TABLE p_product_sale
+CREATE TABLE IF NOT EXISTS p_product_sale
 (
     id                UUID PRIMARY KEY,
     product_id        UUID           NOT NULL,
