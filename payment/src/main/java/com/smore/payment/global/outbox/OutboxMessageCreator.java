@@ -30,6 +30,15 @@ public class OutboxMessageCreator {
     @Value("${topic.order.refund-fail}")
     private String orderRefundFailTopic;
 
+    @Value("${topic.seller.success}")
+    private String sellerSuccessTopic;
+
+    @Value("${topic.seller.failed}")
+    private String sellerFailedTopic;
+
+    @Value("${topic.seller.dlt}")
+    private String sellerDltTopic;
+
     public OutboxMessage paymentApproved(PaymentApprovedEvent event) {
         return new OutboxMessage(
                 "PAYMENT",
@@ -75,7 +84,7 @@ public class OutboxMessageCreator {
                 event.orderId(),
                 event.getClass().getSimpleName(),
                 UUID.randomUUID(),
-                orderFailedTopic,
+                orderRefundFailTopic,
                 jsonUtil.jsonToString(event),
                 3,
                 OutboxStatus.PENDING
@@ -92,6 +101,45 @@ public class OutboxMessageCreator {
                 jsonUtil.jsonToString(event),
                 3,
                 OutboxStatus.PENDING
+        );
+    }
+
+    public OutboxMessage settlementCompleted(SettlementSuccessEvent event) {
+        return new OutboxMessage(
+                "SETTLEMENT_SUCCESS",
+                UUID.randomUUID(),
+                event.getClass().getSimpleName(),
+                UUID.randomUUID(),
+                sellerSuccessTopic,
+                jsonUtil.jsonToString(event),
+                3,
+                OutboxStatus.PENDING
+        );
+    }
+
+    public OutboxMessage settlementFailed(SettlementFailedEvent event) {
+        return new OutboxMessage(
+                "SETTLEMENT_FAILED",
+                UUID.randomUUID(),
+                event.getClass().getSimpleName(),
+                UUID.randomUUID(),
+                sellerFailedTopic,
+                jsonUtil.jsonToString(event),
+                3,
+                OutboxStatus.PENDING
+        );
+    }
+
+    public OutboxMessage settlementDlt(SettlementFailedEvent event) {
+        return new OutboxMessage(
+                "SETTLEMENT_FAILED",
+                UUID.randomUUID(),
+                event.getClass().getSimpleName(),
+                UUID.randomUUID(),
+                sellerDltTopic,
+                jsonUtil.jsonToString(event),
+                3,
+                OutboxStatus.FAILED
         );
     }
 }
