@@ -81,6 +81,8 @@ public class BidCompetitionService {
     @Transactional
     public BidResponse competition(CompetitionCommand command) {
 
+        LocalDateTime now = LocalDateTime.now(clock);
+
         Winner winner = winnerRepository.findByIdempotencyKey(command.getIdempotencyKey());
 
         if (winner != null) {
@@ -98,7 +100,6 @@ public class BidCompetitionService {
         // 비관락
         BidCompetition bid = bidCompetitionRepository.findByIdForUpdate(command.getBidId());
 
-        LocalDateTime now = LocalDateTime.now(clock);
         LocalDateTime expireAt = now.plusSeconds(validDurationSeconds);
 
         // 경쟁 상태 점검

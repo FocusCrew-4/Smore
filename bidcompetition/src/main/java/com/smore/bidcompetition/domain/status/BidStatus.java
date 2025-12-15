@@ -3,8 +3,9 @@ package com.smore.bidcompetition.domain.status;
 public enum BidStatus {
     SCHEDULED("시작 전"),
     ACTIVE("진행 중"),
-    CLOSED("종료 됨"),
-    CANCELLED("취소 됨")
+    CLOSED("판매 종료"),
+    CANCELLED("취소"),
+    END("정산 종료")
     ;
 
     private final String description;
