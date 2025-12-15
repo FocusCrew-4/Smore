@@ -1,6 +1,7 @@
 package com.smore.order.domain.model;
 
 import com.smore.order.domain.status.RefundStatus;
+import com.smore.order.domain.status.RefundTriggerType;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -25,6 +26,7 @@ public class Refund {
     private String reason;
     private String refundFailReason;
     private RefundStatus status;
+    private RefundTriggerType refundTriggerType;
     private LocalDateTime requestedAt;
     private LocalDateTime completedAt;
 
@@ -36,6 +38,7 @@ public class Refund {
         Integer refundQuantity,
         UUID idempotencyKey,
         String reason,
+        RefundTriggerType refundTriggerType,
         LocalDateTime now
     ) {
 
@@ -47,6 +50,7 @@ public class Refund {
         if (refundQuantity <= 0) throw new IllegalArgumentException("환불 수량은 1개 이상이어야 합니다.");
         if (idempotencyKey == null) throw new IllegalArgumentException("환불 요청의 멱등키는 필수값입니다.");
         if (reason == null || reason.isBlank()) throw new IllegalArgumentException("환불 사유는 필수값입니다.");
+        if (refundTriggerType == null) throw new IllegalArgumentException("환불 트리거 타입은 필수값입니다.");
         if (now == null) throw new IllegalArgumentException("환불 요청 시각(requestedAt)은 필수값입니다.");
         if (paymentId == null) throw new IllegalArgumentException("paymentId는 필수값입니다.");
 
@@ -62,6 +66,7 @@ public class Refund {
             .idempotencyKey(idempotencyKey)
             .reason(reason)
             .status(RefundStatus.REQUESTED)
+            .refundTriggerType(refundTriggerType)
             .requestedAt(now)
             .build();
     }
@@ -78,6 +83,7 @@ public class Refund {
         String reason,
         String refundFailReason,
         RefundStatus status,
+        RefundTriggerType refundTriggerType,
         LocalDateTime requestedAt,
         LocalDateTime completedAt
     ) {
@@ -94,6 +100,7 @@ public class Refund {
             .reason(reason)
             .refundFailReason(refundFailReason)
             .status(status)
+            .refundTriggerType(refundTriggerType)
             .requestedAt(requestedAt)
             .completedAt(completedAt)
             .build();
@@ -105,6 +112,14 @@ public class Refund {
 
     public boolean notEqualOrderId(UUID orderId) {
         return !this.orderId.equals(orderId);
+    }
+
+    public boolean isNotUserRequest() {
+        return !isUserRequest();
+    }
+
+    public boolean isUserRequest() {
+        return refundTriggerType == RefundTriggerType.USER_REQUEST;
     }
 
     private static Integer calculateRefundAmount(Integer productPrice, Integer refundQuantity) {
