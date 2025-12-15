@@ -92,7 +92,7 @@ public class AuctionCloseImpl implements AuctionClose {
 
                         if (isWinner) {
                             return AuctionBidderRank.createWinner(
-                                auction,
+                                auction.getId(),
                                 Long.valueOf(data.userId()),
                                 data.bidPrice(),
                                 data.quantity(),
@@ -101,7 +101,7 @@ public class AuctionCloseImpl implements AuctionClose {
                             );
                         } else {
                             return AuctionBidderRank.createStandBy(
-                                auction,
+                                auction.getId(),
                                 Long.valueOf(data.userId()),
                                 data.bidPrice(),
                                 data.quantity(),

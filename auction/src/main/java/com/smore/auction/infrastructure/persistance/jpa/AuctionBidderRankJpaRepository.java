@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AuctionBidderRankJpaRepository extends JpaRepository<AuctionBidderRankJpa, UUID> {
 
-    Optional<AuctionBidderRankJpa> findByAuction_IdAndBidder_Id(UUID uuid, Long userId);
+    Optional<AuctionBidderRankJpa> findByAuctionIdAndBidder_Id(UUID uuid, Long userId);
 }
