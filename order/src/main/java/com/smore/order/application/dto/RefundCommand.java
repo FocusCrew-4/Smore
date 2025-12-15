@@ -1,5 +1,6 @@
 package com.smore.order.application.dto;
 
+import com.smore.order.domain.status.RefundTriggerType;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,19 +17,23 @@ public class RefundCommand {
     private final Integer refundQuantity;
     private final String reason;
     private final UUID idempotencyKey;
+    private final RefundTriggerType type;
 
     public static RefundCommand of(
         UUID orderId,
         Long userId,
         Integer refundQuantity,
         String reason,
-        UUID idempotencyKey
+        UUID idempotencyKey,
+        RefundTriggerType type
     ) {
         if (orderId == null) throw new IllegalArgumentException("orderId는 필수값입니다.");
         if (userId == null) throw new IllegalArgumentException("userId는 필수값입니다.");
         if (refundQuantity == null || refundQuantity <= 0) throw new IllegalArgumentException("환불 수량은 1개 이상이어야 합니다.");
         if (idempotencyKey == null) throw new IllegalArgumentException("멱등키는 필수값입니다.");
         if (reason == null || reason.isBlank()) throw new IllegalArgumentException("환불 사유는 필수값입니다.");
+        if (type == null) throw new IllegalArgumentException("환불 트리거 타입은 필수값입니다.");
+
 
         return RefundCommand.builder()
             .orderId(orderId)
@@ -36,6 +41,7 @@ public class RefundCommand {
             .refundQuantity(refundQuantity)
             .reason(reason)
             .idempotencyKey(idempotencyKey)
+            .type(type)
             .build();
     }
 
