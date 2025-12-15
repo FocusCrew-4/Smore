@@ -1,11 +1,13 @@
 package com.smore.auction.infrastructure.kafka.listener;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smore.auction.application.usecase.AuctionCreate;
 import com.smore.auction.application.usecase.AuctionStart;
+import com.smore.auction.infrastructure.inbox.InboxHandler;
+import com.smore.auction.infrastructure.kafka.listener.dto.AuctionPendingStartedV1;
 import com.smore.auction.infrastructure.kafka.listener.dto.AuctionStartedV1;
 import com.smore.auction.infrastructure.kafka.mapper.AuctionKafkaMapper;
-import com.smore.auction.application.usecase.AuctionCreate;
-import com.smore.auction.infrastructure.kafka.listener.dto.AuctionPendingStartedV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -19,8 +21,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ProductTopicListener {
 
+    private final InboxHandler inboxHandler;
     private final ObjectMapper objectMapper;
-    // TODO: 인터페이스 풀고 Listener 가 하는일 직접 정의
     private final AuctionCreate auctionCreate;
     private final AuctionStart auctionStart;
     private final AuctionKafkaMapper appMapper;
@@ -29,31 +31,30 @@ public class ProductTopicListener {
     @KafkaListener(
         topics = "${topic.auction-pending-start.v1}"
     )
-    public void productAuctionPendingStartedV1(String event, Acknowledgment ack) {
-        try {
-            var auctionPendingStartedV1
-                = objectMapper.readValue(event, AuctionPendingStartedV1.class);
-            auctionCreate.create(appMapper.toCommand(auctionPendingStartedV1));
-            ack.acknowledge();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
+    public void productAuctionPendingStartedV1(String event, Acknowledgment ack)
+        throws JsonProcessingException {
+        var auctionPendingStartedV1
+            = objectMapper.readValue(event, AuctionPendingStartedV1.class);
+        inboxHandler.processOnce(
+            auctionPendingStartedV1.idempotencyKey(),
+            () -> auctionCreate.create(appMapper.toCommand(auctionPendingStartedV1))
+        );
+        ack.acknowledge();
     }
 
     @KafkaListener(
         topics = "${topic.auction-started.v1}"
     )
-    public void productAuctionStarted(String event, Acknowledgment ack) {
-        try {
-            var auctionStartedV1
-                = objectMapper.readValue(event, AuctionStartedV1.class);
+    public void productAuctionStarted(String event, Acknowledgment ack)
+        throws JsonProcessingException {
+        var auctionStartedV1
+            = objectMapper.readValue(event, AuctionStartedV1.class);
 
-            auctionStart.start(appMapper.toCommand(auctionStartedV1));
-
-            ack.acknowledge();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
+        inboxHandler.processOnce(
+            auctionStartedV1.idempotencyKey(),
+            () -> auctionStart.start(appMapper.toCommand(auctionStartedV1))
+        );
+        ack.acknowledge();
     }
 
 }

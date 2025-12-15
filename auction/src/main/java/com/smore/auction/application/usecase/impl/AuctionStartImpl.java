@@ -8,7 +8,6 @@ import com.smore.auction.application.sql.AuctionSqlRepository;
 import com.smore.auction.application.usecase.AuctionStart;
 import com.smore.auction.domain.model.Auction;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.core.NoContentException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class AuctionStartImpl implements AuctionStart {
 
     // 경매시작 비즈니스 로직
     @Override
-    public void start(AuctionStartCommand command) throws NoContentException {
+    public void start(AuctionStartCommand command){
 
         Auction auction
         = auctionRepository.findByProductId(command.productId());
