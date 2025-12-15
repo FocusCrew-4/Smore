@@ -44,6 +44,7 @@ topic:
   bid:
     order:
       request: bid.winnerconfirm.v1
+      inventory-confirm-timeout: bid.inventoryconfirmtimeout.v1
 
   auction:
     order:

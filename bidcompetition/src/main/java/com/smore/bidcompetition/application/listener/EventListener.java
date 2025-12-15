@@ -79,6 +79,8 @@ public class EventListener {
                 // TODO: 만료 스케줄러는 WINNER의 상태를 EXPIRED로 변경하고 재고를 복구하는 기능을 수행, 즉 보상 트랜잭션 트리거가 아님
                 // TODO: 재고 확정 실패 이벤트 발행 -> 주문 (재고 확보 실패) -> 결제 취소 -> 결제 취소 완료 -> 주문 (주문 실패)
                 // TODO: Winner를 찾지 못해 NotFoundWinnerException이 터질 경우 재시도 루프를 막기 위한 처리 전략 수립
+
+
             }
 
             ack.acknowledge();
