@@ -6,16 +6,22 @@ import com.smore.bidcompetition.application.dto.BidCreateCommand;
 import com.smore.bidcompetition.application.dto.CompetitionCommand;
 import com.smore.bidcompetition.application.dto.OrderCompletedCommand;
 import com.smore.bidcompetition.application.dto.OrderFailedCommand;
+import com.smore.bidcompetition.application.dto.RefundSucceededCommand;
 import com.smore.bidcompetition.application.dto.ServiceResult;
+import com.smore.bidcompetition.application.exception.BidConflictException;
 import com.smore.bidcompetition.application.exception.WinnerConflictException;
 import com.smore.bidcompetition.application.repository.BidCompetitionRepository;
+import com.smore.bidcompetition.application.repository.BidInventoryLogRepository;
 import com.smore.bidcompetition.application.repository.OutboxRepository;
 import com.smore.bidcompetition.application.repository.WinnerRepository;
 import com.smore.bidcompetition.domain.model.BidCompetition;
+import com.smore.bidcompetition.domain.model.BidInventoryLog;
 import com.smore.bidcompetition.domain.model.Outbox;
 import com.smore.bidcompetition.domain.model.Winner;
 import com.smore.bidcompetition.domain.status.AggregateType;
 import com.smore.bidcompetition.domain.status.EventType;
+import com.smore.bidcompetition.domain.status.InventoryChangeType;
+import com.smore.bidcompetition.domain.status.WinnerStatus;
 import com.smore.bidcompetition.infrastructure.error.BidErrorCode;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.WinnerCreatedEvent;
 import com.smore.bidcompetition.presentation.dto.BidResponse;
@@ -25,6 +31,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +49,7 @@ public class BidCompetitionService {
     private final BidCompetitionRepository bidCompetitionRepository;
     private final WinnerRepository winnerRepository;
     private final OutboxRepository outboxRepository;
+    private final BidInventoryLogRepository bidInventoryLogRepository;
     private final ObjectMapper objectMapper;
     private final Clock clock;
 
@@ -224,6 +232,7 @@ public class BidCompetitionService {
         int updated = winnerRepository.markCancelled(
             winner.getBidId(),
             command.getAllocationKey(),
+            WinnerStatus.CANCELABLE_STATUSES,
             winner.getVersion()
         );
 
@@ -237,6 +246,85 @@ public class BidCompetitionService {
         if (updated == 0) {
             log.error("예기치 못한 예외로 인해 처리하지 못했습니다. allocationKey : {}", command.getAllocationKey());
             throw new WinnerConflictException(BidErrorCode.WINNER_CONFLICT);
+        }
+    }
+
+    @Transactional
+    public void refundSuccess(RefundSucceededCommand command) {
+
+        Winner winner = winnerRepository.findByAllocationKey(command.getAllocationKey());
+
+        if (winner.isNotPaid()) {
+            log.info("이미 처리된 작업입니다. allocationKey : {}", command.getAllocationKey());
+            return;
+        }
+
+        BidCompetition bid = bidCompetitionRepository.findByIdForUpdate(winner.getBidId());
+
+        Integer delta = command.getQuantity();
+        if (delta == null || delta <= 0 || delta > winner.getQuantity()) {
+            log.error("delta 값이 잘못되었습니다.");
+            throw new IllegalArgumentException("delta 값이 잘못되었습니다.");
+        }
+
+        Integer stockBefore = bid.getStock();
+        Integer stockAfter = stockBefore + delta;
+
+        // 로그 기록 필요
+        BidInventoryLog inventoryLog = BidInventoryLog.create(
+            winner.getBidId(),
+            winner.getId(),
+            InventoryChangeType.REFUND,
+            stockBefore,
+            stockAfter,
+            delta,
+            InventoryChangeType.REFUND.idempotencyKey(String.valueOf(command.getRefundId())),
+            LocalDateTime.now(clock)
+        );
+
+        try {
+            bidInventoryLogRepository.saveAndFlush(inventoryLog);
+        } catch (DataIntegrityViolationException e) {
+            String message = e.getMostSpecificCause() != null
+                ? e.getMostSpecificCause().getMessage()
+                : e.getMessage();
+
+            if (message != null && message.contains(("uk_bid_idempotency_key"))) {
+                log.info("이미 처리된 환불 이벤트입니다. bidId={}, refundId={}",
+                    winner.getBidId(), command.getRefundId());
+                return;
+            }
+
+            log.error("재고 로그 저장 실패 (중복 아님). bidId={}, refundId={}, cause={}",
+                winner.getBidId(), command.getRefundId(), message, e);
+            throw e;
+        }
+
+        // 재고 복구
+        int updated = bidCompetitionRepository.increaseStock(
+            winner.getBidId(),
+            command.getQuantity()
+        );
+
+        if (updated == 0) {
+            log.error("예기치 못한 예외로 인해 처리하지 못했습니다. allocationKey : {}", command.getAllocationKey());
+            throw new BidConflictException(BidErrorCode.BID_CONFLICT);
+        }
+
+        // 전체 환불인 경우
+        if (command.isRefunded()) {
+            updated = winnerRepository.markCancelled(
+                winner.getBidId(),
+                command.getAllocationKey(),
+                WinnerStatus.CANCELABLE_STATUSES,
+                winner.getVersion()
+            );
+
+            // 낙관락이므로 동일한 상태에 대해서 변경을 시도했을 수 있음
+            if (updated == 0) {
+                log.error("동시성 충돌로 인해 작업을 처리하지 못했습니다. allocationKey : {}", command.getAllocationKey());
+                throw new WinnerConflictException(BidErrorCode.WINNER_CONFLICT);
+            }
         }
     }
 

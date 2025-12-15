@@ -313,9 +313,12 @@ public class OrderService {
 
         OrderRefundSucceededEvent event = OrderRefundSucceededEvent.of(
             refund.getOrderId(),
+            refund.getId(),
             order.getUserId(),
+            refund.getRefundQuantity(),
             order.getIdempotencyKey(),
             command.getRefundAmount(),
+            status,
             LocalDateTime.now(clock)
         );
 
