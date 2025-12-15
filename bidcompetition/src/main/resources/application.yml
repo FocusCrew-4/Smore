@@ -44,6 +44,7 @@ topic:
     finished: bid.limitedSaleFinished.v1
     product-inventory-adjusted: bid.productinventoryadjusted.v1
     product-sale-finished: bid.limitedSaleFinished.v1
+    inventory-confirm-timeout: bid.inventoryconfirmtimeout.v1
 
   product:
     created: product.limitedSalePendingStart.v1
