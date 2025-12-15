@@ -7,6 +7,7 @@ import com.smore.common.response.CommonResponse;
 import com.smore.order.application.dto.ModifyOrderCommand;
 import com.smore.order.application.dto.RefundCommand;
 import com.smore.order.application.service.OrderService;
+import com.smore.order.domain.status.RefundTriggerType;
 import com.smore.order.presentation.auth.OrderRole;
 import com.smore.order.presentation.dto.DeleteOrderResponse;
 import com.smore.order.presentation.dto.IsOrderCreatedResponse;
@@ -80,7 +81,8 @@ public class ExternalOrderControllerV1 implements ExternalOrderController {
             requesterId,
             request.refundQuantity(),
             request.reason(),
-            request.idempotencyKey()
+            request.idempotencyKey(),
+            RefundTriggerType.USER_REQUEST
         );
 
         RefundResponse response =  orderService.refund(command);
