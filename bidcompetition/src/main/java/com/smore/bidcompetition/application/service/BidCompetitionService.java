@@ -161,6 +161,28 @@ public class BidCompetitionService {
             command.getZipcode()
         );
 
+        String idempotencyKey = InventoryChangeType.RESERVE.idempotencyKey(
+            String.valueOf(allocationKey)
+        );
+
+        Integer delta = command.getQuantity();
+
+        Integer stockBefore = bid.getStock();
+        Integer stockAfter = stockBefore - delta;
+
+        BidInventoryLog log = BidInventoryLog.create(
+            bid.getId(),
+            savedWinner.getId(),
+            InventoryChangeType.RESERVE,
+            stockBefore,
+            stockAfter,
+            delta,
+            idempotencyKey,
+            now
+        );
+
+        bidInventoryLogRepository.saveAndFlush(log);
+
 
         Outbox outbox = Outbox.create(
             AggregateType.BID,
@@ -229,6 +251,8 @@ public class BidCompetitionService {
             return;
         }
 
+        BidCompetition bid = bidCompetitionRepository.findByIdForUpdate(winner.getBidId());
+
         int updated = winnerRepository.markCancelled(
             winner.getBidId(),
             command.getAllocationKey(),
@@ -240,6 +264,41 @@ public class BidCompetitionService {
             log.error("동시성 충돌로 인해 작업을 처리하지 못했습니다. allocationKey : {}", command.getAllocationKey());
             throw new WinnerConflictException(BidErrorCode.WINNER_CONFLICT);
         }
+
+        Integer delta = winner.getQuantity();
+        Integer stockBefore = bid.getStock();
+        Integer stockAfter = stockBefore + delta;
+
+        // 로그 기록 필요
+        BidInventoryLog inventoryLog = BidInventoryLog.create(
+            winner.getBidId(),
+            winner.getId(),
+            InventoryChangeType.EXPIRED,
+            stockBefore,
+            stockAfter,
+            delta,
+            InventoryChangeType.EXPIRED.idempotencyKey(String.valueOf(winner.getAllocationKey())),
+            LocalDateTime.now(clock)
+        );
+
+        try {
+            bidInventoryLogRepository.saveAndFlush(inventoryLog);
+        } catch (DataIntegrityViolationException e) {
+            String message = e.getMostSpecificCause() != null
+                ? e.getMostSpecificCause().getMessage()
+                : e.getMessage();
+
+            if (message != null && message.contains(("uk_bid_idempotency_key"))) {
+                log.info("이미 처리된 실패 이벤트입니다. bidId={}, allocationKey={}",
+                    winner.getBidId(), command.getAllocationKey());
+                return;
+            }
+
+            log.error("재고 로그 저장 실패 (중복 아님). bidId={}, allocationKey={}, cause={}",
+                winner.getBidId(), command.getAllocationKey(), message, e);
+            throw e;
+        }
+
 
         updated = bidCompetitionRepository.increaseStock(winner.getBidId(), winner.getQuantity());
 
