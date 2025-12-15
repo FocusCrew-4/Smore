@@ -7,10 +7,13 @@ import com.smore.bidcompetition.infrastructure.error.BidErrorCode;
 import com.smore.bidcompetition.infrastructure.persistence.entity.WinnerEntity;
 import com.smore.bidcompetition.infrastructure.persistence.exception.NotFoundWinnerException;
 import com.smore.bidcompetition.infrastructure.persistence.mapper.WinnerMapper;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Slf4j(topic = "WinnerRepositoryImpl")
@@ -19,6 +22,16 @@ import org.springframework.stereotype.Repository;
 public class WinnerRepositoryImpl implements WinnerRepository {
 
     private final WinnerJpaRepository winnerJpaRepository;
+
+    @Override
+    public Winner findById(UUID winnerId) {
+
+        WinnerEntity entity = winnerJpaRepository.findById(winnerId).orElseThrow(
+            () -> new NotFoundWinnerException(BidErrorCode.NOT_FOUND_WINNER)
+        );
+
+        return WinnerMapper.toDomain(entity);
+    }
 
     @Override
     public Winner findByIdempotencyKey(UUID idempotencyKey) {
@@ -41,6 +54,11 @@ public class WinnerRepositoryImpl implements WinnerRepository {
     }
 
     @Override
+    public Page<UUID> findExpiredWinners(LocalDateTime now, long bufferTime, Pageable pageable) {
+        return winnerJpaRepository.findExpiredWinners(now, bufferTime, pageable);
+    }
+
+    @Override
     public Winner save(Winner winner) {
 
         WinnerEntity entity = winnerJpaRepository.save(
@@ -58,5 +76,10 @@ public class WinnerRepositoryImpl implements WinnerRepository {
     @Override
     public int markCancelled(UUID bidId, UUID allocationKey, Collection<WinnerStatus> statuses, Long version) {
         return winnerJpaRepository.markCancelled(bidId, allocationKey, statuses, version);
+    }
+
+    @Override
+    public int markExpired(UUID winnerId, Long version) {
+        return winnerJpaRepository.markExpired(winnerId, version);
     }
 }
