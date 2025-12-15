@@ -25,6 +25,7 @@ import com.smore.bidcompetition.domain.status.WinnerStatus;
 import com.smore.bidcompetition.infrastructure.error.BidErrorCode;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.BidEvent;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.BidProductInventoryAdjustedEvent;
+import com.smore.bidcompetition.infrastructure.persistence.event.outbound.InventoryConfirmationTimeOutEvent;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.WinnerCreatedEvent;
 import com.smore.bidcompetition.presentation.dto.BidResponse;
 import java.time.Clock;
@@ -222,6 +223,25 @@ public class BidCompetitionService {
         if (winner.isExpired()) {
             log.warn("이미 만료된 Winner에 대한 결제 완료 이벤트 입니다. allocationKey : {}",
                 command.getAllocationKey());
+
+            InventoryConfirmationTimeOutEvent event = InventoryConfirmationTimeOutEvent.of(
+                command.getOrderId(),
+                command.getUserId(),
+                winner.getQuantity(),
+                "재고 확보 실패",
+                winner.getAllocationKey()
+            );
+
+            Outbox outbox = Outbox.create(
+                AggregateType.BID,
+                winner.getBidId(),
+                EventType.BID_INVENTORY_CONFIRM_TIMEOUT,
+                UUID.randomUUID(),
+                makePayload(event)
+            );
+
+            outboxRepository.save(outbox);
+
             return ServiceResult.FAIL;
 
         }
@@ -231,6 +251,25 @@ public class BidCompetitionService {
 
         if (now.isAfter(validAt)) {
             log.error("결제 유효 시간을 초과하셨습니다.");
+
+            InventoryConfirmationTimeOutEvent event = InventoryConfirmationTimeOutEvent.of(
+                command.getOrderId(),
+                command.getUserId(),
+                winner.getQuantity(),
+                "재고 확보 실패",
+                winner.getAllocationKey()
+            );
+
+            Outbox outbox = Outbox.create(
+                AggregateType.BID,
+                winner.getBidId(),
+                EventType.BID_INVENTORY_CONFIRM_TIMEOUT,
+                UUID.randomUUID(),
+                makePayload(event)
+            );
+
+            outboxRepository.save(outbox);
+
             return ServiceResult.FAIL;
         }
 
