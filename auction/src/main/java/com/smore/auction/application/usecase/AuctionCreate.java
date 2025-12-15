@@ -1,4 +1,4 @@
-package com.smore.auction.application.service.usecase;
+package com.smore.auction.application.usecase;
 
 import com.smore.auction.application.command.AuctionCreateCommand;
 import com.smore.auction.domain.model.Auction;

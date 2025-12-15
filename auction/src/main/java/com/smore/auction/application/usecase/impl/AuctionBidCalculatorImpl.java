@@ -1,9 +1,9 @@
-package com.smore.auction.infrastructure.adapter;
+package com.smore.auction.application.usecase.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.auction.application.result.AuctionBidCalculateResult;
-import com.smore.auction.application.service.usecase.AuctionBidCalculator;
+import com.smore.auction.application.usecase.AuctionBidCalculator;
 import com.smore.auction.infrastructure.redis.RedisKeyFactory;
 import java.math.BigDecimal;
 import java.math.RoundingMode;

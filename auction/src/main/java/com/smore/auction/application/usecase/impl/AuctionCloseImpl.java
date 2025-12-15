@@ -1,11 +1,11 @@
-package com.smore.auction.infrastructure.adapter;
+package com.smore.auction.application.usecase.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smore.auction.application.service.usecase.AuctionClose;
+import com.smore.auction.application.usecase.AuctionClose;
 import com.smore.auction.application.sql.AuctionSqlRepository;
 import com.smore.auction.domain.model.Auction;
 import com.smore.auction.domain.model.AuctionBidderRank;
-import com.smore.auction.infrastructure.adapter.AuctionBidCalculatorImpl.RedisBidData;
+import com.smore.auction.application.usecase.impl.AuctionBidCalculatorImpl.RedisBidData;
 import com.smore.auction.infrastructure.redis.RedisKeyFactory;
 import jakarta.transaction.Transactional;
 import java.time.Clock;

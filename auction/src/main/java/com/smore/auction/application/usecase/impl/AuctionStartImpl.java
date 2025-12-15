@@ -1,7 +1,7 @@
-package com.smore.auction.infrastructure.adapter;
+package com.smore.auction.application.usecase.impl;
 
 import com.smore.auction.application.command.AuctionStartCommand;
-import com.smore.auction.application.service.usecase.AuctionStart;
+import com.smore.auction.application.usecase.AuctionStart;
 import com.smore.auction.application.sql.AuctionSqlRepository;
 import com.smore.auction.domain.model.Auction;
 import com.smore.auction.infrastructure.redis.RedisKeyFactory;

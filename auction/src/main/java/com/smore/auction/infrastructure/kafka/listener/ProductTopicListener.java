@@ -1,10 +1,10 @@
 package com.smore.auction.infrastructure.kafka.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smore.auction.application.service.usecase.AuctionStart;
+import com.smore.auction.application.usecase.AuctionStart;
 import com.smore.auction.infrastructure.kafka.listener.dto.AuctionStartedV1;
 import com.smore.auction.infrastructure.kafka.mapper.AuctionKafkaMapper;
-import com.smore.auction.application.service.usecase.AuctionCreate;
+import com.smore.auction.application.usecase.AuctionCreate;
 import com.smore.auction.infrastructure.kafka.listener.dto.AuctionPendingStartedV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,20 +31,12 @@ public class ProductTopicListener {
     )
     public void productAuctionPendingStartedV1(String event, Acknowledgment ack) {
         try {
-
-            log.info("Received event {}", event);
-
             var auctionPendingStartedV1
                 = objectMapper.readValue(event, AuctionPendingStartedV1.class);
-
-            log.info("AuctionStartedV1 received {}", auctionPendingStartedV1);
-
             auctionCreate.create(appMapper.toCommand(auctionPendingStartedV1));
-
             ack.acknowledge();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-
         }
     }
 

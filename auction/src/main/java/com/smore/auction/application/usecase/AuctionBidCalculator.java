@@ -1,4 +1,4 @@
-package com.smore.auction.application.service.usecase;
+package com.smore.auction.application.usecase;
 
 import com.smore.auction.application.result.AuctionBidCalculateResult;
 import java.math.BigDecimal;
