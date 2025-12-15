@@ -72,6 +72,7 @@ public class BidCompetitionService {
             command.getSellerId(),
             command.getProductPrice(),
             command.getStock(),
+            command.getStock(),
             command.getIdempotencyKey(),
             command.getStartAt(),
             command.getEndAt()
