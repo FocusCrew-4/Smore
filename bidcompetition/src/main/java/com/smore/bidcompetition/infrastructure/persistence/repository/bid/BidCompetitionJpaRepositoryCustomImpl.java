@@ -85,6 +85,22 @@ public class BidCompetitionJpaRepositoryCustomImpl implements BidCompetitionJpaR
     }
 
     @Override
+    public List<BidCompetitionEntity> findBidListToEnd(LocalDateTime now, long closeGraceSeconds) {
+
+        LocalDateTime cutoff = now.minusSeconds(closeGraceSeconds);
+
+        return queryFactory
+            .select(bidCompetitionEntity)
+            .from(bidCompetitionEntity)
+            .where(
+                bidCompetitionEntity.bidStatus.eq(BidStatus.CLOSED),
+                bidCompetitionEntity.endAt.loe(cutoff),
+                bidCompetitionEntity.deletedAt.isNull()
+            )
+            .fetch();
+    }
+
+    @Override
     public int decreaseStock(UUID bidId, Integer quantity, LocalDateTime acceptedAt) {
 
         long updated = queryFactory
@@ -168,6 +184,25 @@ public class BidCompetitionJpaRepositoryCustomImpl implements BidCompetitionJpaR
             .set(bidCompetitionEntity.bidStatus, BidStatus.END)
             .where(
                 bidCompetitionEntity.id.in(ids),
+                bidCompetitionEntity.bidStatus.eq(BidStatus.CLOSED),
+                bidCompetitionEntity.endAt.loe(cutoff),
+                bidCompetitionEntity.deletedAt.isNull()
+            )
+            .execute();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int finalizeByValidAt(UUID bidId, LocalDateTime now, long closeGraceSeconds) {
+
+        LocalDateTime cutoff = now.minusSeconds(closeGraceSeconds);
+
+        long updated = queryFactory
+            .update(bidCompetitionEntity)
+            .set(bidCompetitionEntity.bidStatus, BidStatus.END)
+            .where(
+                bidCompetitionEntity.id.eq(bidId),
                 bidCompetitionEntity.bidStatus.eq(BidStatus.CLOSED),
                 bidCompetitionEntity.endAt.loe(cutoff),
                 bidCompetitionEntity.deletedAt.isNull()

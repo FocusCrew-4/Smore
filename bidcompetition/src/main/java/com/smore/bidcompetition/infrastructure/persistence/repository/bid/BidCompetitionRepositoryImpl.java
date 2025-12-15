@@ -55,6 +55,16 @@ public class BidCompetitionRepositoryImpl implements BidCompetitionRepository {
     }
 
     @Override
+    public List<BidCompetition> findBidListToEnd(LocalDateTime now, long closeGraceSeconds) {
+
+        List<BidCompetitionEntity> entityList = bidCompetitionJpaRepository.findBidListToEnd(now, closeGraceSeconds);
+
+        return entityList.stream()
+            .map(BidMapper::toDomain)
+            .toList();
+    }
+
+    @Override
     public BidCompetition findByIdForUpdate(UUID bidId) {
 
         BidCompetitionEntity entity = bidCompetitionJpaRepository.findByIdForUpdate(bidId);
@@ -99,5 +109,10 @@ public class BidCompetitionRepositoryImpl implements BidCompetitionRepository {
     @Override
     public int bulkFinalizeByValidAt(List<UUID> ids, LocalDateTime now, long closeGraceSeconds) {
         return bidCompetitionJpaRepository.bulkFinalizeByValidAt(ids, now, closeGraceSeconds);
+    }
+
+    @Override
+    public int finalizeByValidAt(UUID bidId, LocalDateTime now, long closeGraceSeconds) {
+        return bidCompetitionJpaRepository.finalizeByValidAt(bidId, now, closeGraceSeconds);
     }
 }
