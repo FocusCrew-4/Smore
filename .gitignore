@@ -54,3 +54,4 @@ bin/
 /docker/db/mongo/
 /docker/db/redis/
 /org/instancio/settings/Keys.class
+/.editorconfig
