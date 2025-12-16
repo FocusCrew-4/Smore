@@ -14,11 +14,11 @@ INSERT INTO fee_policies (
 ) VALUES
       (
           '1b5e6f7a-8b9c-4dad-9e0f-1a2b3c4d5e6f',
-          'CATEGORY',
-          '11111111-1111-1111-1111-111111111111',
+          'MERCHANT',
+          '2002',
           'RATE',
           0.02,
-          NULL,
+          500.0,
           true,
           now(),
           now()
@@ -38,6 +38,19 @@ INSERT INTO cancel_policies (
     created_at,
     updated_at
 ) VALUES
+      (
+          '5f0a1b2c-3d4e-5f6a-9b7c-8d9e0f1a2b3k',
+          'MERCHANT',
+          '2002',
+          1800000000000,   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
+          'MIXED',
+          0.04,
+          300,
+          false,
+          true,
+          now(),
+          now()
+      ),
       (
           '3d8e9f0a-1b2c-4d3e-9f4a-5b6c7d8e9f0a',
           'AUCTION_TYPE',
@@ -80,6 +93,19 @@ INSERT INTO refund_policies (
     updated_at
 ) VALUES
       (
+          '5f0a1b2c-3d4e-5f6a-9b7c-8d9e0f1a2b3a',
+          'MERCHANT',
+          '2002',
+          259200000000000,   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
+          'MIXED',
+          0.04,
+          300,
+          false,
+          true,
+          now(),
+          now()
+      ),
+      (
           '5f0a1b2c-3d4e-5f6a-9b7c-8d9e0f1a2b3c',
           'AUCTION_TYPE',
           'BID',
@@ -87,7 +113,7 @@ INSERT INTO refund_policies (
           'MIXED',
           0.04,
           300,
-          false,
+          true,
           true,
           now(),
           now()
