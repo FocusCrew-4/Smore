@@ -18,6 +18,9 @@ public class KafkaConfig {
     @Value("${topic.bid.finished}")
     private String bidFinished;
 
+    @Value("${topic.bid.inventory-confirm-timeout}")
+    private String bidInventoryConfirmTimeoutTopic;
+
     @Bean
     public NewTopic bidWinnerConfirmTopic() {
         return TopicBuilder.name(bidWinnerConfirm)
@@ -42,4 +45,11 @@ public class KafkaConfig {
             .build();
     }
 
+    @Bean
+    public NewTopic bidInventoryConfirmTimeoutTopic() {
+        return TopicBuilder.name(bidInventoryConfirmTimeoutTopic)
+            .partitions(3)
+            .replicas(3)
+            .build();
+    }
 }
