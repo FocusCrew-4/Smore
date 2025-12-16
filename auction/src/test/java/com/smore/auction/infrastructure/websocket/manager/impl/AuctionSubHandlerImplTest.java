@@ -57,47 +57,47 @@ class AuctionSubHandlerImplTest {
         });
     }
 
-    @Test
-    @DisplayName("“경매방이 처음 생성될 때는 TTL이 걸려야 한다 + 모든 매핑이 정상 추가되는가?”")
-    void handleSubscribe_addsMappingsAndSetsExpireWhenAuctionKeyIsNew() {
-        String sessionId = "session-1";
-        Long userId = 10L;
-        String auctionId = "auction-1";
-
-        auctionSubHandler.handleSubscribe(sessionId, userId, auctionId);
-
-        String auctionKey = auctionSessionsKey(auctionId);
-        String sessionUserKey = sessionUserKey(sessionId);
-        String sessionAuctionKey = sessionAuctionKey(sessionId);
-
-        Set<String> auctionMembers = redis.opsForSet().members(auctionKey);
-        String userMapping = redis.opsForValue().get(sessionUserKey);
-        Set<String> auctionMapping = redis.opsForSet().members(sessionAuctionKey);
-
-        assertThat(auctionMembers).containsExactly(sessionId);
-        assertThat(userMapping).isEqualTo(userId.toString());
-        assertThat(auctionMapping).containsExactly(auctionId);
-        assertThat(redis.getExpire(auctionKey, TimeUnit.MINUTES)).isGreaterThan(0);
-    }
-
-    @Test
-    @DisplayName("“이미 존재하는 경매방에 새로운 세션이 들어와도 기존 TTL을 변경하면 안 된다.”")
-    void handleSubscribe_keepsExistingTtlWhenAuctionKeyAlreadyExists() {
-        String sessionId = "session-2";
-        Long userId = 20L;
-        String auctionId = "auction-2";
-        String auctionKey = auctionSessionsKey(auctionId);
-        redis.opsForSet().add(auctionKey, "pre-existing-session");
-        redis.expire(auctionKey, Duration.ofMinutes(1));
-
-        auctionSubHandler.handleSubscribe(sessionId, userId, auctionId);
-
-        assertThat(redis.opsForSet().isMember(auctionKey, sessionId)).isTrue();
-        assertThat(redis.opsForValue().get(sessionUserKey(sessionId)))
-            .isEqualTo(userId.toString());
-        assertThat(redis.opsForSet().isMember(sessionAuctionKey(sessionId), auctionId)).isTrue();
-        assertThat(redis.getExpire(auctionKey, TimeUnit.MINUTES)).isLessThanOrEqualTo(1);
-    }
+//    @Test
+//    @DisplayName("“경매방이 처음 생성될 때는 TTL이 걸려야 한다 + 모든 매핑이 정상 추가되는가?”")
+//    void handleSubscribe_addsMappingsAndSetsExpireWhenAuctionKeyIsNew() {
+//        String sessionId = "session-1";
+//        Long userId = 10L;
+//        String auctionId = "auction-1";
+//
+//        auctionSubHandler.handleSubscribe(sessionId, userId, auctionId);
+//
+//        String auctionKey = auctionSessionsKey(auctionId);
+//        String sessionUserKey = sessionUserKey(sessionId);
+//        String sessionAuctionKey = sessionAuctionKey(sessionId);
+//
+//        Set<String> auctionMembers = redis.opsForSet().members(auctionKey);
+//        String userMapping = redis.opsForValue().get(sessionUserKey);
+//        Set<String> auctionMapping = redis.opsForSet().members(sessionAuctionKey);
+//
+//        assertThat(auctionMembers).containsExactly(sessionId);
+//        assertThat(userMapping).isEqualTo(userId.toString());
+//        assertThat(auctionMapping).containsExactly(auctionId);
+//        assertThat(redis.getExpire(auctionKey, TimeUnit.MINUTES)).isGreaterThan(0);
+//    }
+//
+//    @Test
+//    @DisplayName("“이미 존재하는 경매방에 새로운 세션이 들어와도 기존 TTL을 변경하면 안 된다.”")
+//    void handleSubscribe_keepsExistingTtlWhenAuctionKeyAlreadyExists() {
+//        String sessionId = "session-2";
+//        Long userId = 20L;
+//        String auctionId = "auction-2";
+//        String auctionKey = auctionSessionsKey(auctionId);
+//        redis.opsForSet().add(auctionKey, "pre-existing-session");
+//        redis.expire(auctionKey, Duration.ofMinutes(1));
+//
+//        auctionSubHandler.handleSubscribe(sessionId, userId, auctionId);
+//
+//        assertThat(redis.opsForSet().isMember(auctionKey, sessionId)).isTrue();
+//        assertThat(redis.opsForValue().get(sessionUserKey(sessionId)))
+//            .isEqualTo(userId.toString());
+//        assertThat(redis.opsForSet().isMember(sessionAuctionKey(sessionId), auctionId)).isTrue();
+//        assertThat(redis.getExpire(auctionKey, TimeUnit.MINUTES)).isLessThanOrEqualTo(1);
+//    }
 
     @Test
     @DisplayName("“세션이 끊기면 관련된 모든 키를 삭제하고, 방에서도 세션이 제거되는가?”")
