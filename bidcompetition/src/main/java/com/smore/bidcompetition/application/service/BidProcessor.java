@@ -42,6 +42,7 @@ public class BidProcessor {
     private final Clock clock;
 
     @Async("bidTaskExecutor")
+    @Transactional
     public void active() {
         try {
             LocalDateTime now = LocalDateTime.now(clock);
@@ -62,6 +63,7 @@ public class BidProcessor {
     }
 
     @Async("bidTaskExecutor")
+    @Transactional
     public void close() {
         try {
             LocalDateTime now = LocalDateTime.now(clock);
@@ -82,6 +84,7 @@ public class BidProcessor {
     }
 
     @Async("bidTaskExecutor")
+    @Transactional
     public void end() {
         try {
             LocalDateTime now = LocalDateTime.now(clock);
