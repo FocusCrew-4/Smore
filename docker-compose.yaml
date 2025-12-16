@@ -251,18 +251,22 @@ services:
     networks:
       - msa-network
 
-  rabbitmq:
-    image: rabbitmq:3.13-management
-    container_name: rabbitmq
+# TODO: STOMP 연계 어떻게 되는건지 정리 필요
+  artemis:
+    image: quay.io/artemiscloud/activemq-artemis-broker:latest
+    container_name: artemis
     restart: always
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: rabbitmq
-      RABBITMQ_DEFAULT_PASS: rabbitmq
+      AMQ_USER: artemis
+      AMQ_PASSWORD: artemis
+      AMQ_MIN_MEMORY: 256M
+      AMQ_MAX_MEMORY: 512M
+    ports:
+      - "61616:61616"  # Core/AMQP
+      - "61613:61613"  # STOMP
+      - "8161:8161"    # Web console
     volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
+      - artemis-data:/var/lib/artemis/data
     networks:
       - msa-network
 
@@ -316,7 +320,7 @@ volumes:
   kafka-3-data:
   mongo-data:
     driver: local
-  rabbitmq-data:
+  artemis-data:
     driver: local
 
 networks:

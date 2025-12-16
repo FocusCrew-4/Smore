@@ -26,16 +26,24 @@ public class AuctionStompInterceptor implements ChannelInterceptor {
     private final AuctionSessionManager sessionManager;
     private final AuctionPubManager pubManager;
 
-    // 정규식 문자열
-    private static final Pattern AUCTION_ID_PATTERN =
-        Pattern.compile("^/(sub|pub)/auction/([A-Za-z0-9-]+)");
+    // 정규식 문자열 (SUB: /topic/auction/{id}, SEND: /pub/auction/{id})
+    private static final Pattern SUBSCRIBE_AUCTION_PATTERN =
+        Pattern.compile("^/topic/auction/([A-Za-z0-9-]+)");
+    private static final Pattern SEND_AUCTION_PATTERN =
+        Pattern.compile("^/pub/auction/([A-Za-z0-9-]+)");
 
     @Override
     public @Nullable Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor =
             MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-        if (accessor.getCommand() == StompCommand.DISCONNECT) {
+        if (accessor == null) {
+            return message;
+        }
+
+        StompCommand command = accessor.getCommand();
+
+        if (command == StompCommand.DISCONNECT) {
             log.info("disconnect 수신 및 동작 \n\n\n");
             sessionManager.handleDisconnect(accessor.getSessionId());
             return message;
@@ -44,18 +52,27 @@ public class AuctionStompInterceptor implements ChannelInterceptor {
         Principal principal = accessor.getUser();
         String destination = accessor.getDestination();
 
-        if (principal == null || destination == null) {
-            return null;
+        // CONNECT, HEARTBEAT 등 destination 없는 프레임은 통과
+        if (command == StompCommand.CONNECT || command == StompCommand.STOMP || command == null) {
+            return message;
         }
 
-        // 2. SUBSCRIBE 검증 (/sub/auction/** 만 허용)
-        if (accessor.getCommand() == StompCommand.SUBSCRIBE) {
+        if (principal == null) {
+            return null; // 인증 안 된 사용자 차단
+        }
+
+        // 2. SUBSCRIBE 검증 (/topic/auction/{id} 만 허용)
+        if (command == StompCommand.SUBSCRIBE) {
             log.info("sub 요청 감지");
-            if (!destination.startsWith("/sub/auction/")) {
+            if (destination == null) {
+                return null;
+            }
+            if (!destination.startsWith("/topic/auction/")) {
                 log.info("이상한 sub 금지\n\n\n");
+                log.info(destination);
                 return null; // 이상한 토픽 구독 차단
             }
-            String auctionId = extractAuctionId(destination);
+            String auctionId = extractAuctionId(destination, true);
             sessionManager.handleSubscribe(
                 accessor.getSessionId(),
                 Long.valueOf(principal.getName()),
@@ -64,12 +81,15 @@ public class AuctionStompInterceptor implements ChannelInterceptor {
         }
 
         // 3. SEND 검증 (/pub/auction/** 만 처리)
-        if (accessor.getCommand() == StompCommand.SEND) {
+        if (command == StompCommand.SEND) {
+            if (destination == null) {
+                return null;
+            }
             if (!destination.startsWith("/pub/auction/")) {
                 return message; // 우리가 관리 안 하는 SEND 는 통과
             }
 
-            String auctionId = extractAuctionId(destination);
+            String auctionId = extractAuctionId(destination, false);
 
             try {
                 pubManager.validateSend(accessor.getSessionId(), auctionId);
@@ -84,11 +104,13 @@ public class AuctionStompInterceptor implements ChannelInterceptor {
     }
 
     // TODO: 정규식 활용 공부
-    private String extractAuctionId(String destination) {
-        // "/sub/auction/{id}" 또는 "/pub/auction/{id}/..." 에서 {id} 파싱하는 로직 구현
-        Matcher m = AUCTION_ID_PATTERN.matcher(destination);
-        if (m.find()) {
-            return m.group(2); // UUID 부분만 반환
+    private String extractAuctionId(String destination, boolean isSubscribe) {
+        Matcher matcher = isSubscribe
+            ? SUBSCRIBE_AUCTION_PATTERN.matcher(destination)
+            : SEND_AUCTION_PATTERN.matcher(destination);
+
+        if (matcher.find()) {
+            return matcher.group(1); // UUID 부분만 반환
         }
         throw new IllegalArgumentException("Invalid destination: " + destination);
     }

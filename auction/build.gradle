@@ -39,6 +39,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//    TODO: STOMP 릴레이시 netty 가 필요한 이유 공부
+    implementation 'io.projectreactor.netty:reactor-netty'
 
     // kafka
     implementation 'org.springframework.kafka:spring-kafka'

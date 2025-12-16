@@ -22,6 +22,7 @@ public class AuctionSessionManagerImpl implements AuctionSessionManager {
         log.info("구독매니저 진입 경매진행 중인지 확인 후 sub");
 
         Boolean auctionExist = redis.hasKey(key.auctionOpen(auctionId));
+        log.info("경매방 검증: {}", redis.hasKey(key.auctionOpen(auctionId)));
         if (!auctionExist) {
             return;
         }
@@ -38,7 +39,7 @@ public class AuctionSessionManagerImpl implements AuctionSessionManager {
 
     @Override
     public void handleDisconnect(String sessionId) {
-
+        log.info("디스코넥트 처리중");
         Set<String> auctionIds = redis.opsForSet()
             .members(key.sessionAuctions(sessionId));
 

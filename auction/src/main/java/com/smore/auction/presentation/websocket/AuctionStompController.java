@@ -37,7 +37,7 @@ public class AuctionStompController {
                     String.valueOf(auctionId), principal.getName())
             );
         simpMessagingTemplate.convertAndSend(
-            "/sub/auction/" + auctionId,
+            "/topic/auction/" + auctionId,
             "1위 입찰가" + res.highestBid() + ", 10위 입찰가"
                 + res.minQualifyingBid()
         );
