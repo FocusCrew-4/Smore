@@ -1,10 +1,8 @@
 package com.smore.auction.infrastructure.websocket.interceptor;
 
-import com.smore.auction.infrastructure.websocket.AuctionUserPrincipal;
 import com.smore.auction.infrastructure.websocket.manager.AuctionPubManager;
 import com.smore.auction.infrastructure.websocket.manager.AuctionSessionManager;
 import java.security.Principal;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +13,6 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
@@ -35,19 +32,8 @@ public class AuctionStompInterceptor implements ChannelInterceptor {
 
     @Override
     public @Nullable Message<?> preSend(Message<?> message, MessageChannel channel) {
-
-        log.info("preSend 진입하였습니다\n\n\n\n");
-        log.info("message raw: {}", message);
         StompHeaderAccessor accessor =
             MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-        // 1. CONNECT 시점에 Principal 등록
-        if (accessor.getCommand() == StompCommand.CONNECT) {
-            log.info("principal 등록: 코넥트 동작\n\n\n\n");
-            Long userId = (Long) Objects.requireNonNull(accessor.getSessionAttributes()).get("userId");
-            String role = (String) Objects.requireNonNull(accessor.getSessionAttributes()).get("role");
-            accessor.setUser(new AuctionUserPrincipal(userId, role));
-            return MessageBuilder.createMessage(message.getPayload(), accessor.getMessageHeaders());
-        }
 
         if (accessor.getCommand() == StompCommand.DISCONNECT) {
             log.info("disconnect 수신 및 동작 \n\n\n");
@@ -59,13 +45,8 @@ public class AuctionStompInterceptor implements ChannelInterceptor {
         String destination = accessor.getDestination();
 
         if (principal == null || destination == null) {
-            log.info("null 방어코드 동작");
-            log.info("destination null? {}", destination == null);
-            log.info("principal null? {}", principal== null);
-            return null; // 방어
+            return null;
         }
-        log.info("principal: {}", principal.getName());
-        log.info("destination: {}", destination);
 
         // 2. SUBSCRIBE 검증 (/sub/auction/** 만 허용)
         if (accessor.getCommand() == StompCommand.SUBSCRIBE) {

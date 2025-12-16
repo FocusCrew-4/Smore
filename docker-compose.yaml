@@ -251,6 +251,20 @@ services:
     networks:
       - msa-network
 
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - msa-network
 
 
   member-service:
@@ -301,6 +315,8 @@ volumes:
   kafka-2-data:
   kafka-3-data:
   mongo-data:
+    driver: local
+  rabbitmq-data:
     driver: local
 
 networks:
