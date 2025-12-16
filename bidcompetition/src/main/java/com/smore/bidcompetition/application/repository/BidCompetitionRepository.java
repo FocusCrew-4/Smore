@@ -19,6 +19,8 @@ public interface BidCompetitionRepository {
 
     List<UUID> findBidsToEnd(LocalDateTime now, long closeGraceSeconds);
 
+    List<BidCompetition> findBidListToEnd(LocalDateTime now, long closeGraceSeconds);
+
     BidCompetition save(BidCompetition bidCompetition);
 
     int decreaseStock(UUID bidId, Integer quantity, LocalDateTime acceptedAt);
@@ -30,4 +32,6 @@ public interface BidCompetitionRepository {
     int bulkCloseByEndAt(List<UUID> ids, LocalDateTime now);
 
     int bulkFinalizeByValidAt(List<UUID> ids, LocalDateTime now, long closeGraceSeconds);
+
+    int finalizeByValidAt(UUID bidId, LocalDateTime now, long closeGraceSeconds);
 }

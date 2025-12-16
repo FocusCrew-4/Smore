@@ -43,6 +43,7 @@ topic:
     winner-confirm: bid.winnerconfirm.v1
     finished: bid.limitedSaleFinished.v1
     product-inventory-adjusted: bid.productinventoryadjusted.v1
+    product-sale-finished: bid.limitedSaleFinished.v1
 
   product:
     created: product.limitedSalePendingStart.v1
