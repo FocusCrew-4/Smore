@@ -49,7 +49,7 @@ topic:
 
   auction:
     order:
-      request: acution.winnerconfirm.v1
+      request: auction.winnerConfirm.v1
 
   payment:
     completed: payment.approved.v1
@@ -61,6 +61,7 @@ consumer:
   group:
     payment: payment-consumer-group
     bid: bid-consumer-group
+    auction: auction-consumer-group
 
 retry:
   count:
