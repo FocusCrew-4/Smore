@@ -1,6 +1,7 @@
 package com.smore.order.infrastructure.persistence.entity.order;
 
 import com.smore.order.domain.status.RefundStatus;
+import com.smore.order.domain.status.RefundTriggerType;
 import com.smore.order.infrastructure.persistence.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -68,6 +69,10 @@ public class RefundEntity extends BaseEntity {
     @Column(name = "refund_status", nullable = false)
     private RefundStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "refund_trigger_type", nullable = false)
+    private RefundTriggerType refundTriggerType;
+
     @Column(name = "requested_at", nullable = false, updatable = false)
     private LocalDateTime requestedAt;
 
@@ -83,6 +88,7 @@ public class RefundEntity extends BaseEntity {
         UUID idempotencyKey,
         String reason,
         RefundStatus status,
+        RefundTriggerType refundTriggerType,
         LocalDateTime requestedAt
     ) {
         if (orderId == null) throw new IllegalArgumentException("orderId는 필수값입니다.");
@@ -94,6 +100,7 @@ public class RefundEntity extends BaseEntity {
         if (idempotencyKey == null) throw new IllegalArgumentException("환불 요청의 멱등키는 필수값입니다.");
         if (reason == null || reason.isBlank()) throw new IllegalArgumentException("환불 사유는 필수값입니다.");
         if (status == null) throw new IllegalArgumentException("환불 상태는 필수값입니다.");
+        if (refundTriggerType == null) throw new IllegalArgumentException("환불 트리거 타입은 필수값입니다.");
         if (requestedAt == null) throw new IllegalArgumentException("환불 요청 시각(requestedAt)은 필수값입니다.");
 
         return RefundEntity.builder()
@@ -106,6 +113,7 @@ public class RefundEntity extends BaseEntity {
             .idempotencyKey(idempotencyKey)
             .reason(reason)
             .status(status)
+            .refundTriggerType(refundTriggerType)
             .requestedAt(requestedAt)
             .build();
     }

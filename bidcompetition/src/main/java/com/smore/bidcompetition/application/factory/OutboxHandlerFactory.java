@@ -23,6 +23,9 @@ public class OutboxHandlerFactory {
     @Value("${topic.bid.finished}")
     private String bidResultFinalizedTopic;
 
+    @Value("${topic.bid.inventory-confirm-timeout}")
+    private String bidInventoryConfirmTimeoutTopic;
+
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     public OutboxHandler from(Outbox outbox) {
@@ -30,6 +33,7 @@ public class OutboxHandlerFactory {
             case BID_WINNER_SELECTED -> new WinnerCreatedHandler(winerCreatedTopic, kafkaTemplate, outbox);
             case PRODUCT_INVENTORY_ADJUSTED -> new ProductInventoryAdjustedHandler(productInventoryAdjustedTopic, kafkaTemplate, outbox);
             case BID_RESULT_FINALIZED -> new BidResultFinalizedHandler(bidResultFinalizedTopic, kafkaTemplate, outbox);
+            case BID_INVENTORY_CONFIRM_TIMEOUT -> new BidResultFinalizedHandler(bidInventoryConfirmTimeoutTopic, kafkaTemplate, outbox);
             default -> throw new IllegalArgumentException(
                 "지원되지 않은 이벤트입니다." + outbox.getEventType()
             );

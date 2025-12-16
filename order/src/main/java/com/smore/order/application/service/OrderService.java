@@ -220,6 +220,7 @@ public class OrderService {
             command.getRefundQuantity(),
             command.getIdempotencyKey(),
             command.getReason(),
+            command.getType(),
             LocalDateTime.now(clock)
         );
 
@@ -311,26 +312,28 @@ public class OrderService {
             );
         }
 
-        OrderRefundSucceededEvent event = OrderRefundSucceededEvent.of(
-            refund.getOrderId(),
-            refund.getId(),
-            order.getUserId(),
-            refund.getRefundQuantity(),
-            order.getIdempotencyKey(),
-            command.getRefundAmount(),
-            status,
-            LocalDateTime.now(clock)
-        );
+        if (refund.isUserRequest()) {
+            OrderRefundSucceededEvent event = OrderRefundSucceededEvent.of(
+                refund.getOrderId(),
+                refund.getId(),
+                order.getUserId(),
+                refund.getRefundQuantity(),
+                order.getIdempotencyKey(),
+                command.getRefundAmount(),
+                status,
+                LocalDateTime.now(clock)
+            );
 
-        Outbox outbox = Outbox.create(
-            AggregateType.ORDER,
-            command.getOrderId(),
-            EventType.REFUND_SUCCESS,
-            UUID.randomUUID(),
-            makePayload(event)
-        );
+            Outbox outbox = Outbox.create(
+                AggregateType.ORDER,
+                command.getOrderId(),
+                EventType.REFUND_SUCCESS,
+                UUID.randomUUID(),
+                makePayload(event)
+            );
 
-        outboxRepository.save(outbox);
+            outboxRepository.save(outbox);
+        }
     }
 
     @Transactional

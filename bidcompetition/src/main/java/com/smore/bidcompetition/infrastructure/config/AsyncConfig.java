@@ -35,4 +35,15 @@ public class AsyncConfig {
         return executor;
     }
 
+    @Bean(name = "winnerTaskExecutor")
+    public Executor winnerTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("winner-task");
+        executor.initialize();
+        return executor;
+    }
 }

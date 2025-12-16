@@ -6,12 +6,15 @@ import com.smore.order.application.dto.CompletedRefundCommand;
 import com.smore.order.application.dto.CreateOrderCommand;
 import com.smore.order.application.dto.FailedOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
+import com.smore.order.application.dto.RefundCommand;
+import com.smore.order.application.event.inbound.BidInventoryConfirmationTimedOutEvent;
 import com.smore.order.application.event.inbound.PaymentFailedEvent;
 import com.smore.order.application.service.OrderService;
 import com.smore.order.application.event.inbound.BidWinnerConfirmedEvent;
 import com.smore.order.application.event.inbound.PaymentCompletedEvent;
 import com.smore.order.application.event.inbound.PaymentRefundSucceededEvent;
 import com.smore.order.application.event.inbound.PaymentRefundFailedEvent;
+import com.smore.order.domain.status.RefundTriggerType;
 import com.smore.order.domain.status.SaleType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -158,6 +161,33 @@ public class EventListener {
             ack.acknowledge();
         } catch (Exception e) {
             log.error("PaymentFailed 처리 실패: {}", message, e);
+        }
+    }
+
+    @KafkaListener(
+        topics = "${topic.bid.order.inventory-confirm-timeout}",
+        groupId = "${consumer.group.bid}",
+        concurrency = "2"
+    )
+    public void inventoryConfirmTimeout(String message, Acknowledgment ack) {
+        try {
+            BidInventoryConfirmationTimedOutEvent event = objectMapper.readValue(message,
+                BidInventoryConfirmationTimedOutEvent.class);
+
+            RefundCommand command = RefundCommand.of(
+                event.getOrderId(),
+                event.getUserId(),
+                event.getRefundQuantity(),
+                event.getReason(),
+                event.getIdempotencyKey(),
+                RefundTriggerType.INVENTORY_CONFIRM_TIMEOUT
+            );
+
+            service.refund(command);
+
+            ack.acknowledge();
+        } catch (Exception e) {
+            log.error("inventoryConfirmTimeout 처리 실패: {}", message, e);
         }
     }
 }
