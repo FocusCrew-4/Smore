@@ -295,6 +295,25 @@ services:
     networks:
       - msa-network
 
+  bid-service:
+    container_name: bid-service
+    build: ./bidcompetition/.
+    ports:
+      - "7700:7700"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - msa-network
+
+  order-service:
+    container_name: order-service
+    build: ./order/.
+    ports:
+      - "5500:5500"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - msa-network
 
 volumes:
   kafka-1-data:
