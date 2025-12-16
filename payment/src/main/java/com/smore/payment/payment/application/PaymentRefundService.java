@@ -60,7 +60,7 @@ public class PaymentRefundService implements RefundPaymentUseCase {
             OutboxMessage failedMsg = outboxCreator.paymentRefundFailed(
                     PaymentRefundFailedEvent.of(event.orderId(), event.refundId(), event.refundAmount(), refundDecision.failureReason())
             );
-            outboxRepository.save(failedMsg);
+            outboxPort.save(failedMsg);
             return;
         }
 
