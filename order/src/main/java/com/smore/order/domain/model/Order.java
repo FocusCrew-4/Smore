@@ -188,6 +188,10 @@ public class Order {
     public boolean isFailed() {
         return this.orderStatus == OrderStatus.FAILED;
     }
+
+    public boolean isAuction() {
+        return this.saleType == SaleType.AUCTION;
+    }
   
     private static Integer calculateTotalPrice(Integer price, Integer quantity) {
         return price * quantity;
