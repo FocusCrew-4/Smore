@@ -40,6 +40,7 @@ topic:
     refund-success: order.refund-success.v1
     refund-fail: order.refund-fail.v1
     failed: order.failed.v1
+    auction-failed: order.auctionfailed.v1
 
   bid:
     order:
