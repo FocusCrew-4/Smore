@@ -35,8 +35,13 @@ public class AuctionStompController {
         log.info("Received a bid request for {}", auctionBidRequestDto);
         AuctionBidResponseDto res
             = mapper.toAuctionBidResponseDto(
-                auctionBidCalculator.calculateBid(auctionBidRequestDto.bidPrice(), auctionBidRequestDto.quantity(),
-                    String.valueOf(auctionId), principal.getName())
+                auctionBidCalculator.calculateBid(
+                    auctionBidRequestDto.bidPrice(),
+                    auctionBidRequestDto.quantity(),
+                    auctionBidRequestDto.idempotencyKey(),
+                    String.valueOf(auctionId),
+                    principal.getName()
+                )
             );
         simpMessagingTemplate.convertAndSend(
             "/topic/auction/" + auctionId,
