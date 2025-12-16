@@ -33,7 +33,7 @@ public class RequestSettlementImpl implements RequestSettlement {
             throw new NoContentException("Seller not found");
         }
 
-        findSeller.settle(command.amount(), clock);
+        findSeller.debitBalanceForSettlement(command.amount(), clock);
 
         var event
             = SellerSettlementV1Event.create(
