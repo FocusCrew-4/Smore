@@ -1,6 +1,6 @@
 package com.smore.payment.payment.domain.repository;
 
-import com.smore.payment.payment.domain.model.TemporaryPayment;
+import com.smore.payment.payment.infrastructure.persistence.redis.model.TemporaryPayment;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

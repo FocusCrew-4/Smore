@@ -4,6 +4,7 @@ import com.smore.auction.infrastructure.websocket.handler.AuctionHandshakeHandle
 import com.smore.auction.infrastructure.websocket.interceptor.AuctionHandshakeInterceptor;
 import com.smore.auction.infrastructure.websocket.interceptor.AuctionStompInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -19,6 +20,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final AuctionHandshakeInterceptor auctionHandshakeInterceptor;
     private final AuctionHandshakeHandler auctionHandshakeHandler;
     private final AuctionStompInterceptor auctionStompInterceptor;
+    @Value("${stomp.relay.host}")
+    private String relayHost;
+    @Value("${stomp.relay.port:61613}")
+    private Integer relayPort;
+    @Value("${stomp.relay.login}")
+    private String relayLogin;
+    @Value("${stomp.relay.passcode}")
+    private String relayPasscode;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -33,8 +42,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 서버가 클라이언트에게 push 서버 -> 클라이언트
-        registry.enableSimpleBroker("/sub");
+        // 외부 STOMP 브로커(RabbitMQ 등)로 메시지 릴레이.
+        // RabbitMQ STOMP 기본 topic 접두사에 맞춰 "/topic" 사용.
+        registry.enableStompBrokerRelay("/topic")
+            .setRelayHost(relayHost)
+            .setRelayPort(relayPort)
+            .setClientLogin(relayLogin)
+            .setClientPasscode(relayPasscode)
+            .setSystemLogin(relayLogin)
+            .setSystemPasscode(relayPasscode);
         // 클라이언트가 서버로 보낼때 클라이언트 -> 서버
         registry.setApplicationDestinationPrefixes("/pub");
     }

@@ -32,7 +32,9 @@ public class JwtValidationFilter implements GlobalFilter, Ordered {
 
         String bearerJwt
             = request.getHeaders().getFirst("Authorization");
+        log.info("jwt 필터 진입");
         if (bearerJwt == null) {
+            log.info("jwt 없을때 헤더 진입");
             ServerHttpRequest newRequest = exchange.getRequest()
                 .mutate()
                 .headers(h -> {

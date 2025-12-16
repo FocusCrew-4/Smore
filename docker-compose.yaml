@@ -1,4 +1,4 @@
-services:
+﻿services:
 
   redis-stack:
     image: redis/redis-stack:latest
@@ -251,6 +251,24 @@ services:
     networks:
       - msa-network
 
+# TODO: STOMP 연계 어떻게 되는건지 정리 필요
+  artemis:
+    image: quay.io/artemiscloud/activemq-artemis-broker:latest
+    container_name: artemis
+    restart: always
+    environment:
+      AMQ_USER: artemis
+      AMQ_PASSWORD: artemis
+      AMQ_MIN_MEMORY: 256M
+      AMQ_MAX_MEMORY: 512M
+    ports:
+      - "61616:61616"  # Core/AMQP
+      - "61613:61613"  # STOMP
+      - "8161:8161"    # Web console
+    volumes:
+      - artemis-data:/var/lib/artemis/data
+    networks:
+      - msa-network
 
 
   member-service:
@@ -312,14 +330,43 @@ services:
       - "5500:5500"
     environment:
       SPRING_PROFILES_ACTIVE: dev
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - msa-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana-data:/var/lib/grafana
+      
     networks:
       - msa-network
 
 volumes:
+  grafana-data:
   kafka-1-data:
   kafka-2-data:
   kafka-3-data:
   mongo-data:
+    driver: local
+  artemis-data:
     driver: local
 
 networks:

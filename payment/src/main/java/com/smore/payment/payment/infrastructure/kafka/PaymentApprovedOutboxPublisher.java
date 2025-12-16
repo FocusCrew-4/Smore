@@ -25,6 +25,19 @@ public class PaymentApprovedOutboxPublisher {
         log.info("이벤트 발행 시작");
         List<OutboxEntity> pendingMessages = outboxJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
         log.info("아웃박스 찾아오기 {}", pendingMessages.size());
+        send(pendingMessages);
+    }
+
+    @Scheduled(fixedDelay = 30000)
+    @Transactional
+    public void retry() {
+        log.info("이벤트 재전송 시작");
+        List<OutboxEntity> pendingMessages = outboxJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.FAILED);
+        log.info("재전송 아웃박스 찾아오기 {}", pendingMessages.size());
+        send(pendingMessages);
+    }
+
+    private void send(List<OutboxEntity> pendingMessages) {
         for (OutboxEntity message : pendingMessages) {
             try {
                 messageBrokerPublisher.publish(
@@ -49,4 +62,8 @@ public class PaymentApprovedOutboxPublisher {
             }
         }
     }
+
+
+
+
 }

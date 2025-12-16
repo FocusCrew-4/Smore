@@ -2,8 +2,8 @@ package com.smore.auction.presentation.web;
 
 import com.smore.auction.application.command.BidConfirmCommand;
 import com.smore.auction.application.result.AuctionBidderRankResult;
-import com.smore.auction.application.service.usecase.ConfirmAuctionBid;
-import com.smore.auction.application.service.usecase.FindUserBidInAuction;
+import com.smore.auction.application.usecase.ConfirmAuctionBid;
+import com.smore.auction.application.usecase.FindUserBidInAuction;
 import com.smore.common.response.ApiResponse;
 import com.smore.common.response.CommonResponse;
 import jakarta.ws.rs.core.NoContentException;

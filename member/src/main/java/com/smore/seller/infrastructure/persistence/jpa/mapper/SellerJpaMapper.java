@@ -16,8 +16,8 @@ public interface SellerJpaMapper {
 
     MoneyEmbeddable toDomain(Money money);
 
-    @Mapping(target = "add",  ignore = true)
-    @Mapping(target = "subtract",  ignore = true)
+    @Mapping(target = "add", ignore = true)
+    @Mapping(target = "minus", ignore = true)
     Money toEntity(MoneyEmbeddable moneyEmbeddable);
 
 }

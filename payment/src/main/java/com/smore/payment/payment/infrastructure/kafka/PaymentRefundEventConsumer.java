@@ -42,7 +42,6 @@ public class PaymentRefundEventConsumer {
                 event.getPublishedAt()
         );
 
-        // 만료되지 않았으면 정상 처리
         paymentRefundService.refund(paymentRequestedEvent);
         ack.acknowledge();
     }

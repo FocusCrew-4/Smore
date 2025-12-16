@@ -1,7 +1,7 @@
 package com.smore.payment.payment.application;
 
 import com.smore.payment.payment.application.event.inbound.PaymentRequestedEvent;
-import com.smore.payment.payment.domain.model.TemporaryPayment;
+import com.smore.payment.payment.infrastructure.persistence.redis.model.TemporaryPayment;
 import com.smore.payment.payment.domain.repository.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

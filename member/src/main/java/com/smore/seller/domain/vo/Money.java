@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class Money {
-    private final BigDecimal amount;
+    private BigDecimal amount;
     private static final BigDecimal MAX_AMOUNT = new BigDecimal("1000000000000.00");
 
     public Money(BigDecimal amount) {
@@ -40,7 +40,10 @@ public class Money {
         return new Money(this.amount.add(money.amount));
     }
 
-    public Money subtract(Money money) {
+    public Money minus(Money money) {
+        if (this.amount.subtract(money.amount).compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("보유금보다 많은 금액을 정산 할 수 없습니다");
+        }
         return new Money(this.amount.subtract(money.amount));
     }
 

@@ -32,6 +32,15 @@ public class KafkaConfig {
     @Value("${topic.order.refund-fail}")
     private String orderRefundFailTopic;
 
+    @Value("${topic.seller.success}")
+    private String sellerSuccessTopic;
+
+    @Value("${topic.seller.failed}")
+    private String sellerFailedTopic;
+
+    @Value("${topic.seller.dlt}")
+    private String sellerDltTopic;
+
     @Bean
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<>();
@@ -74,6 +83,30 @@ public class KafkaConfig {
     @Bean
     public NewTopic paymentRefundFailTopic() {
         return TopicBuilder.name(orderRefundFailTopic)
+                .partitions(3)
+                .replicas(3)
+                .build();
+    }
+
+    @Bean
+    public NewTopic sellerSuccessTopic() {
+        return TopicBuilder.name(sellerSuccessTopic)
+                .partitions(3)
+                .replicas(3)
+                .build();
+    }
+
+    @Bean
+    public NewTopic sellerFailedTopic() {
+        return TopicBuilder.name(sellerFailedTopic)
+                .partitions(3)
+                .replicas(3)
+                .build();
+    }
+
+    @Bean
+    public NewTopic sellerDltTopic() {
+        return TopicBuilder.name(sellerDltTopic)
                 .partitions(3)
                 .replicas(3)
                 .build();

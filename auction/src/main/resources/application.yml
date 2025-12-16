@@ -21,3 +21,9 @@ topic:
     v1: product.auctionEnded.v1
   winner-confirm:
     v1: auction.winnerConfirm.v1
+
+stomp:
+  relay:
+    port: 61613
+    login: artemis
+    passcode: artemis
