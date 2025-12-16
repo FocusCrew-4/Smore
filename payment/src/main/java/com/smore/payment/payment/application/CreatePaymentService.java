@@ -11,7 +11,7 @@ import com.smore.payment.payment.application.event.outbound.PaymentApprovedEvent
 import com.smore.payment.payment.domain.model.Payment;
 //import com.smore.payment.payment.domain.document.PgApproveLog;
 import com.smore.payment.payment.domain.model.PgResponseResult;
-import com.smore.payment.payment.domain.model.TemporaryPayment;
+import com.smore.payment.payment.infrastructure.persistence.redis.model.TemporaryPayment;
 import com.smore.payment.payment.domain.repository.MongoRepository;
 import com.smore.payment.payment.domain.repository.OutboxRepository;
 import com.smore.payment.payment.domain.repository.PaymentRepository;

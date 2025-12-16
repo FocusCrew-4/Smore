@@ -85,6 +85,9 @@ topic:
     refund-fail: payment.refund-fail.v1
   seller:
     approved: payment.settlement.v1
+    success: payment.settlement-success.v1
+    failed: payment.settlement-failed.v1
+    dlt: payment.settlement-dlt.v1
 
 springdoc:
   swagger-ui:

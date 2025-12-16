@@ -1,4 +1,4 @@
-package com.smore.payment.payment.domain.model;
+package com.smore.payment.payment.infrastructure.persistence.redis.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

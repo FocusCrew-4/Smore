@@ -3,7 +3,7 @@ package com.smore.payment.payment.infrastructure.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.smore.payment.payment.domain.model.TemporaryPayment;
+import com.smore.payment.payment.infrastructure.persistence.redis.model.TemporaryPayment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

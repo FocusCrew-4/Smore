@@ -1,6 +1,6 @@
 package com.smore.payment.payment.infrastructure.persistence.redis.repository;
 
-import com.smore.payment.payment.domain.model.TemporaryPayment;
+import com.smore.payment.payment.infrastructure.persistence.redis.model.TemporaryPayment;
 import com.smore.payment.payment.domain.repository.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
