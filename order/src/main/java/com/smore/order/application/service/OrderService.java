@@ -141,7 +141,7 @@ public class OrderService {
             order.getId(),
             order.getUserId(),
             OrderStatus.COMPLETED,
-            UUID.randomUUID(),
+            order.getIdempotencyKey(),
             command.getApprovedAt()
         );
 
@@ -529,6 +529,7 @@ public class OrderService {
         return pageable;
     }
 
+    @Transactional
     public void failOrder(FailedOrderCommand command) {
 
         Order order = orderRepository.findById(command.getOrderId());
