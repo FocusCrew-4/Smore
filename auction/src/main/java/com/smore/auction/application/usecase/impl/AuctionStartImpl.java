@@ -20,6 +20,7 @@ public class AuctionStartImpl implements AuctionStart {
     private final AuctionRoomRegistry roomRegistry;
 
     // 경매시작 비즈니스 로직
+    // TODO: 경매 시작시 stock(불변) 값을 가진 auction:{auctionId}:open:stock 키 생성해서 값으로 stock 저장
     @Override
     public void start(AuctionStartCommand command){
 

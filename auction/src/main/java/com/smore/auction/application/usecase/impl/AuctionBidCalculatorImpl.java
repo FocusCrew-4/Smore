@@ -25,9 +25,7 @@ public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
     private final ObjectMapper objectMapper;
     private final Clock clock;
 
-    // TODO: 한 경매에 관해서 입찰한 내역이 중복으로 계속 들어가는 상황 발생
-    // zset -> userId, score 로 관리
-    // hset -> userId, metaData 로 관리 예정
+    // TODO: 한 경매에 관해서 입찰한 내역이 중복으로 계속 들어가는 상황 발생 -> 이렇게 해서 다중수량을 구매하게 가능 quantity 필드는 삭제
     // hset -> auctionId -> auction meta 로 기본시작 경매금 및 minStep 등 관리
     @Override
     public AuctionBidCalculateResult calculateBid(BigDecimal bidPrice, Integer quantity, String auctionId, String userId) {
