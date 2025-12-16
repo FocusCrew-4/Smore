@@ -38,7 +38,6 @@ public class AuctionStompController {
                 auctionBidCalculator.calculateBid(
                     auctionBidRequestDto.bidPrice(),
                     auctionBidRequestDto.quantity(),
-                    auctionBidRequestDto.idempotencyKey(),
                     String.valueOf(auctionId),
                     principal.getName()
                 )
