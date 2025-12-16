@@ -39,6 +39,7 @@ public class AuctionCloseImpl implements AuctionClose {
     6. 상품쪽에 이벤트 발행?
      */
     // TODO: 멀티서버시 SETNX close-lock 활용 해서 동시성 제어
+    // TODO: session 이 참여중인 auction 도 잡아서 지워야함
     @Override
     public void close(String auctionId) {
         Auction auction
