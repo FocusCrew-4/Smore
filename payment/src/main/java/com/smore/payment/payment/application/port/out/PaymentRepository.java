@@ -1,13 +1,11 @@
-package com.smore.payment.payment.domain.repository;
+package com.smore.payment.payment.application.port.out;
 
 import com.smore.payment.payment.domain.model.Payment;
 import com.smore.payment.payment.domain.model.PaymentRefund;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
 public interface PaymentRepository {
     void save(Payment payment);
 

@@ -1,30 +1,26 @@
 package com.smore.payment.payment.application;
 
-import com.smore.payment.payment.domain.event.PaymentApprovedEvent;
-import com.smore.payment.payment.domain.service.SettlementAmountCalculator;
-import com.smore.payment.shared.outbox.OutboxMessage;
-import com.smore.payment.shared.outbox.OutboxMessageCreator;
-import com.smore.payment.payment.application.port.in.ApprovePaymentCommand;
-import com.smore.payment.payment.domain.event.SettlementCalculatedEvent;
 import com.smore.payment.payment.application.facade.FeePolicyFacade;
 import com.smore.payment.payment.application.facade.dto.FeePolicyResult;
+import com.smore.payment.payment.application.port.in.ApprovePaymentCommand;
 import com.smore.payment.payment.application.port.in.ApprovePaymentResult;
 import com.smore.payment.payment.application.port.in.ApprovePaymentUseCase;
 import com.smore.payment.payment.application.port.out.OutboxPort;
+import com.smore.payment.payment.application.port.out.PaymentRepository;
 import com.smore.payment.payment.application.port.out.PgClient;
 import com.smore.payment.payment.application.port.out.TemporaryPaymentPort;
+import com.smore.payment.payment.domain.event.PaymentApprovedEvent;
+import com.smore.payment.payment.domain.event.SettlementCalculatedEvent;
 import com.smore.payment.payment.domain.model.Payment;
-//import com.smore.payment.payment.domain.document.PgApproveLog;
 import com.smore.payment.payment.domain.model.PgResponseResult;
-import com.smore.payment.payment.infrastructure.persistence.redis.model.TemporaryPayment;
-import com.smore.payment.payment.domain.repository.MongoRepository;
-import com.smore.payment.payment.domain.repository.PaymentRepository;
+import com.smore.payment.payment.domain.model.TemporaryPayment;
+import com.smore.payment.payment.domain.service.SettlementAmountCalculator;
+import com.smore.payment.shared.outbox.OutboxMessage;
+import com.smore.payment.shared.outbox.OutboxMessageCreator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
 
 @Slf4j
 @Service
@@ -36,7 +32,6 @@ public class ApprovePaymentService implements ApprovePaymentUseCase {
     private final PaymentRepository paymentRepository;
     private final OutboxPort outboxPort;
     private final PgClient pgClient;
-    private final MongoRepository mongoRepository;
     private final FeePolicyFacade feePolicyFacade;
     private final OutboxMessageCreator outboxMessageCreator;
     private final SettlementAmountCalculator settlementAmountCalculator;

@@ -5,7 +5,7 @@ import com.smore.payment.payment.application.event.outbound.SettlementFailedEven
 import com.smore.payment.payment.application.event.outbound.SettlementSuccessEvent;
 import com.smore.payment.payment.application.port.in.SettlePaymentUseCase;
 import com.smore.payment.payment.application.port.out.OutboxPort;
-import com.smore.payment.payment.domain.repository.SellerSettlementLedgerRepository;
+import com.smore.payment.payment.application.port.out.SellerSettlementLedgerRepository;
 import com.smore.payment.payment.domain.service.SettlementValidationResult;
 import com.smore.payment.payment.domain.service.SettlementValidationService;
 import com.smore.payment.shared.outbox.OutboxMessageCreator;

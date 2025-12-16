@@ -1,4 +1,4 @@
-package com.smore.payment.payment.infrastructure.persistence.redis.model;
+package com.smore.payment.payment.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,7 +51,6 @@ public class TemporaryPayment {
             throw new IllegalArgumentException("요청 금액이 null입니다.");
         }
 
-        // BigDecimal은 equals 대신 compareTo 사용 권장
         if (this.amount.compareTo(requestAmount) != 0) {
             throw new IllegalArgumentException(
                     String.format("결제 금액이 일치하지 않습니다. 예상: %s, 요청: %s",

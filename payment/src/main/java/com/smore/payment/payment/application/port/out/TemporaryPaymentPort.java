@@ -1,7 +1,6 @@
 package com.smore.payment.payment.application.port.out;
 
-import com.smore.payment.payment.infrastructure.persistence.redis.model.TemporaryPayment;
-
+import com.smore.payment.payment.domain.model.TemporaryPayment;
 import java.util.Optional;
 import java.util.UUID;
 

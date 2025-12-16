@@ -1,7 +1,7 @@
 package com.smore.payment.payment.domain.service;
 
 import com.smore.payment.payment.application.event.inbound.PaymentSettlementRequestEvent;
-import com.smore.payment.payment.domain.repository.SellerSettlementLedgerRepository;
+import com.smore.payment.payment.application.port.out.SellerSettlementLedgerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

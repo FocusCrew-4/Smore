@@ -1,4 +1,4 @@
-package com.smore.payment.payment.domain.repository;
+package com.smore.payment.payment.application.port.out;
 
 import java.math.BigDecimal;
 import java.util.UUID;

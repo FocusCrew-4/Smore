@@ -1,6 +1,6 @@
 package com.smore.payment.payment.infrastructure.persistence.mongo.repository;
 
-import com.smore.payment.payment.domain.repository.SellerSettlementLedgerRepository;
+import com.smore.payment.payment.application.port.out.SellerSettlementLedgerRepository;
 import com.smore.payment.payment.infrastructure.persistence.mongo.model.SellerSettlementLedger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

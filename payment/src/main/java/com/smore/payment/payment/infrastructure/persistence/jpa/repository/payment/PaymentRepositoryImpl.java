@@ -2,7 +2,7 @@ package com.smore.payment.payment.infrastructure.persistence.jpa.repository.paym
 
 import com.smore.payment.payment.domain.model.Payment;
 import com.smore.payment.payment.domain.model.PaymentRefund;
-import com.smore.payment.payment.domain.repository.PaymentRepository;
+import com.smore.payment.payment.application.port.out.PaymentRepository;
 import com.smore.payment.payment.infrastructure.persistence.jpa.mapper.PaymentMapper;
 import com.smore.payment.payment.infrastructure.persistence.jpa.model.payment.PaymentEntity;
 import com.smore.payment.payment.infrastructure.persistence.jpa.model.payment.PaymentRefundJpa;

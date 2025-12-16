@@ -16,7 +16,7 @@ import com.smore.payment.payment.application.facade.dto.RefundPolicyResult;
 import com.smore.payment.payment.application.port.out.PgClient;
 import com.smore.payment.payment.domain.model.Payment;
 import com.smore.payment.payment.domain.model.PgResponseResult;
-import com.smore.payment.payment.domain.repository.PaymentRepository;
+import com.smore.payment.payment.application.port.out.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
