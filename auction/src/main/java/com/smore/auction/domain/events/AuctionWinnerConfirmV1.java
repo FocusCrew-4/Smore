@@ -42,7 +42,7 @@ public class AuctionWinnerConfirmV1 {
             "AUCTION",
             sellerId,
             idempotencyKey,
-            LocalDateTime.now().plusMinutes(5),
+            LocalDateTime.now().plusMinutes(60),
             "입력 필요",
             "입력 필요",
             "입력 필요"
