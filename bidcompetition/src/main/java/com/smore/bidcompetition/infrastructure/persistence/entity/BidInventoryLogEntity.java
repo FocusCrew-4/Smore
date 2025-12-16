@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Table(
     name = "p_bid_inventory_log",
     uniqueConstraints = @UniqueConstraint(
-        name = "uk_bid_idempotency_key",
+        name = "uk_bid_inventory_log_idempotency_key",
         columnNames = {"bid_id", "idempotency_key"}
     )
 )

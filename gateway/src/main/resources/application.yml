@@ -55,12 +55,12 @@ spring:
             - id: order-service
               uri: lb://order-service
               predicates:
-                - Path=/api/v*/orders/**, /api/v*/admin/orders/**
+                - Path=/api/v*/external/orders/**, /api/v*/admin/orders/**
 
-            - id: bid-competition-service
-              uri: lb://bid-competition-service
+            - id: bid-service
+              uri: lb://bid-service
               predicates:
-                - Path=/api/v*/bid-competitions/**
+                - Path=/api/v*/external/bid-competitions/**
 
 eureka:
   instance:

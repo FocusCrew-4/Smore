@@ -40,8 +40,6 @@ public class BidInventoryLog {
         if (quantityDelta == null) throw new IllegalArgumentException("재고 변경 수량은 필수값입니다");
         if (stockAfter == null) throw new IllegalArgumentException("재고 변경 후 수량은 필수값입니다");
 
-        int expectedAfter = stockBefore.intValue() + quantityDelta.intValue();
-        if (stockAfter.intValue() != expectedAfter) throw new IllegalArgumentException("재고 변경 후 수량은 [재고 변경 전 수량 + 변경 수량]과 일치해야 합니다");
         if (idempotencyKey == null || idempotencyKey.isBlank()) throw new IllegalArgumentException("idempotencyKey는 필수값입니다");
         if (createdAt == null) throw new IllegalArgumentException("생성 시간은 필수값입니다");
 

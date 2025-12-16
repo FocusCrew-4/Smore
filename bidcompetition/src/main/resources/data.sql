@@ -4,6 +4,7 @@ INSERT INTO p_bid_competition (
     category_id,
     seller_id,
     product_price,
+    total_quantity,
     stock,
     bid_status,
     idempotency_key,
@@ -19,6 +20,7 @@ VALUES
         'ccccdddd-cccc-dddd-cccc-dddddddddddd',
         2001,
         15000,
+     50,
         50,
         'SCHEDULED',  -- CREATED → SCHEDULED
         'aaaa1111-aaaa-2222-aaaa-222222222222',
@@ -34,6 +36,7 @@ VALUES
         2002,
         32000,
         120,
+     120,
         'ACTIVE',    -- OPEN → ACTIVE
         'bbbb2222-bbbb-3333-bbbb-333333333333',
         NOW() - INTERVAL '1 hour',
@@ -47,7 +50,8 @@ VALUES
         'eeeeffff-eeee-ffff-eeee-ffffffffffff',
         2003,
         8000,
-        0,
+        20,
+     1,
         'ACTIVE',    -- enum에 있음, 그대로 사용
         'cccc3333-cccc-4444-cccc-444444444444',
         NOW() - INTERVAL '2 days',
@@ -61,7 +65,8 @@ VALUES
         'eeeeffff-eeee-ffff-eeee-ffffffffffff',
         2003,
         15000,
-        0,
+        120,
+        50,
         'CLOSED',    -- enum에 있음, 그대로 사용
         'aaaa3333-aaaa-4444-dddd-444444444445',
         NOW() - INTERVAL '2 days',
@@ -75,7 +80,8 @@ VALUES
         'eeeeffff-eeee-ffff-eeee-ffffffffffff',
         2004,
         500000,
-        0,
+        300,
+     0,
         'ACTIVE',    -- enum에 있음, 그대로 사용
         'aaaa3333-aaaa-4444-dddd-444444444446',
         NOW() - INTERVAL '2 days',
