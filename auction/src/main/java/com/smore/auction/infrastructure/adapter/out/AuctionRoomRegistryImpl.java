@@ -16,8 +16,8 @@ public class AuctionRoomRegistryImpl implements AuctionRoomRegistry {
     private final StringRedisTemplate redis;
 
     @Override
-    public void register(UUID auctionId, Duration ttl) {
+    public void register(UUID auctionId, Duration ttl, Long stock) {
         redis.opsForValue()
-            .set(key.auctionOpen(String.valueOf(auctionId)), "open", ttl);
+            .set(key.auctionOpenStock(String.valueOf(auctionId)), String.valueOf(stock), ttl);
     }
 }

@@ -4,5 +4,5 @@ import java.time.Duration;
 import java.util.UUID;
 
 public interface AuctionRoomRegistry {
-    void register(UUID auctionId, Duration ttl);
+    void register(UUID auctionId, Duration ttl, Long stock);
 }

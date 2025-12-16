@@ -2,7 +2,6 @@ package com.smore.auction.infrastructure.websocket.manager.impl;
 
 import com.smore.auction.infrastructure.redis.RedisKeyFactory;
 import com.smore.auction.infrastructure.websocket.manager.AuctionSessionManager;
-import java.time.Duration;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +20,8 @@ public class AuctionSessionManagerImpl implements AuctionSessionManager {
     public void handleSubscribe(String sessionId, Long userId, String auctionId) {
         log.info("구독매니저 진입 경매진행 중인지 확인 후 sub");
 
-        Boolean auctionExist = redis.hasKey(key.auctionOpen(auctionId));
-        log.info("경매방 검증: {}", redis.hasKey(key.auctionOpen(auctionId)));
+        Boolean auctionExist = redis.hasKey(key.auctionOpenStock(auctionId));
+        log.info("경매방 검증: {}", redis.hasKey(key.auctionOpenStock(auctionId)));
         if (!auctionExist) {
             return;
         }
