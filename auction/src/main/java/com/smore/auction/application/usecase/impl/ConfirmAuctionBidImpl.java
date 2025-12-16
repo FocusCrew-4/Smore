@@ -1,8 +1,8 @@
-package com.smore.auction.infrastructure.adapter;
+package com.smore.auction.application.usecase.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.auction.application.command.BidConfirmCommand;
-import com.smore.auction.application.service.usecase.ConfirmAuctionBid;
+import com.smore.auction.application.usecase.ConfirmAuctionBid;
 import com.smore.auction.application.sql.AuctionSqlRepository;
 import com.smore.auction.domain.events.AuctionWinnerConfirmV1;
 import com.smore.auction.domain.model.Auction;
@@ -16,12 +16,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 
-// TODO: Auction 을 통해서 변경되도록 수정
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class ConfirmAuctionBidAdapter implements ConfirmAuctionBid {
+public class ConfirmAuctionBidImpl implements ConfirmAuctionBid {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final AuctionSqlRepository repository;

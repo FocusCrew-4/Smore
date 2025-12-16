@@ -17,49 +17,29 @@ public class AuctionSessionManagerImpl implements AuctionSessionManager {
     private final StringRedisTemplate redis;
     private final RedisKeyFactory key;
 
-    /*
-    Redis 네이밍 룰 [namespace]:[entity]:[identifier]:[property]
-     */
-
-    /*
-     ConcurrentMap 은 Java 에서 동시성에 안전한 Map 인터페이스
-     여러 스레드가 동시에 put/remove/get 해도 안전하게 동작하도록 설계된 Map
-     */
-    // region 지식으로만 알고있으면 됩니다
-    // auctionId → Set<sessionId>
-//    private final ConcurrentMap<String, Set<String>> auctionRoomSessions =
-//        new ConcurrentHashMap<>();
-//
-//    // sessionId → userId
-//    private final ConcurrentMap<String, Long> sessionToUser =
-//        new ConcurrentHashMap<>();
-//
-//    // sessionId → auctionId
-//    private final ConcurrentMap<String, String> sessionToAuction =
-//        new ConcurrentHashMap<>();
-    //endregion
-
     @Override
     public void handleSubscribe(String sessionId, Long userId, String auctionId) {
-        log.info("구독매니저 진입 레디스에 키 정보 기록");
+        log.info("구독매니저 진입 경매진행 중인지 확인 후 sub");
 
-        Boolean auctionExist = redis.hasKey(key.auctionSessions(auctionId));
-
+        Boolean auctionExist = redis.hasKey(key.auctionOpen(auctionId));
+        log.info("경매방 검증: {}", redis.hasKey(key.auctionOpen(auctionId)));
+        if (!auctionExist) {
+            return;
+        }
+        // 해당 경매에 참여중인 세션으로 기록 (메시지 발송용)
         redis.opsForSet()
             .add(key.auctionSessions(auctionId), sessionId);
-        redis.opsForValue()
-            .set(key.sessionUser(sessionId), userId.toString());
+        // 세션이 어느 옥션에 참여중인지 기록 (삭제용)
         redis.opsForSet()
             .add(key.sessionAuctions(sessionId), auctionId);
-
-        if (!auctionExist) {
-            redis.expire(key.auctionSessions(auctionId), Duration.ofMinutes(10));
-        }
+        // 세션이 어느 유저Id 로 들어왔는지 기록
+        redis.opsForValue()
+            .set(key.sessionUser(sessionId), userId.toString());
     }
 
     @Override
     public void handleDisconnect(String sessionId) {
-
+        log.info("디스코넥트 처리중");
         Set<String> auctionIds = redis.opsForSet()
             .members(key.sessionAuctions(sessionId));
 

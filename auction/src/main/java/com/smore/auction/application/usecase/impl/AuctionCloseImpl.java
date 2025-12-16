@@ -1,11 +1,11 @@
-package com.smore.auction.infrastructure.adapter;
+package com.smore.auction.application.usecase.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smore.auction.application.service.usecase.AuctionClose;
+import com.smore.auction.application.usecase.AuctionClose;
 import com.smore.auction.application.sql.AuctionSqlRepository;
 import com.smore.auction.domain.model.Auction;
 import com.smore.auction.domain.model.AuctionBidderRank;
-import com.smore.auction.infrastructure.adapter.AuctionBidCalculatorImpl.RedisBidData;
+import com.smore.auction.application.usecase.impl.AuctionBidCalculatorImpl.RedisBidData;
 import com.smore.auction.infrastructure.redis.RedisKeyFactory;
 import jakarta.transaction.Transactional;
 import java.time.Clock;
@@ -39,6 +39,7 @@ public class AuctionCloseImpl implements AuctionClose {
     6. 상품쪽에 이벤트 발행?
      */
     // TODO: 멀티서버시 SETNX close-lock 활용 해서 동시성 제어
+    // TODO: session 이 참여중인 auction 도 잡아서 지워야함
     @Override
     public void close(String auctionId) {
         Auction auction
@@ -92,7 +93,7 @@ public class AuctionCloseImpl implements AuctionClose {
 
                         if (isWinner) {
                             return AuctionBidderRank.createWinner(
-                                auction,
+                                auction.getId(),
                                 Long.valueOf(data.userId()),
                                 data.bidPrice(),
                                 data.quantity(),
@@ -101,7 +102,7 @@ public class AuctionCloseImpl implements AuctionClose {
                             );
                         } else {
                             return AuctionBidderRank.createStandBy(
-                                auction,
+                                auction.getId(),
                                 Long.valueOf(data.userId()),
                                 data.bidPrice(),
                                 data.quantity(),

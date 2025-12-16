@@ -251,6 +251,24 @@
     networks:
       - msa-network
 
+# TODO: STOMP 연계 어떻게 되는건지 정리 필요
+  artemis:
+    image: quay.io/artemiscloud/activemq-artemis-broker:latest
+    container_name: artemis
+    restart: always
+    environment:
+      AMQ_USER: artemis
+      AMQ_PASSWORD: artemis
+      AMQ_MIN_MEMORY: 256M
+      AMQ_MAX_MEMORY: 512M
+    ports:
+      - "61616:61616"  # Core/AMQP
+      - "61613:61613"  # STOMP
+      - "8161:8161"    # Web console
+    volumes:
+      - artemis-data:/var/lib/artemis/data
+    networks:
+      - msa-network
 
 
   member-service:
@@ -328,6 +346,8 @@ volumes:
   kafka-2-data:
   kafka-3-data:
   mongo-data:
+    driver: local
+  artemis-data:
     driver: local
 
 networks:

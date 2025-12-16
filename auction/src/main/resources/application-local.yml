@@ -69,6 +69,12 @@ spring:
       # 브로커의 리더 + 모든 ISR 에 쓰기 성공 후 ACK
       acks: all
       retries: 3
+  logging:
+    level:
+      org.springframework.messaging.simp.stomp: DEBUG
+      org.springframework.messaging.simp.broker: DEBUG
+      org.springframework.web.socket.messaging: DEBUG
+      reactor.netty: INFO
 
 springdoc:
   swagger-ui:
@@ -78,3 +84,7 @@ springdoc:
 eureka:
   client:
     enabled: false
+
+stomp:
+  relay:
+    host: localhost # ActiveMQ Artemis STOMP 호스트

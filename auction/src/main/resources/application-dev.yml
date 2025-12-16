@@ -86,3 +86,7 @@ eureka:
       defaultZone: http://eureka-server:18800/eureka/
   instance:
     prefer-ip-address: true
+
+stomp:
+  relay:
+    host: artemis

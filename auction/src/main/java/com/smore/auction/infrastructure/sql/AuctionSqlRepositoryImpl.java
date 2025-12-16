@@ -71,7 +71,7 @@ public class AuctionSqlRepositoryImpl implements AuctionSqlRepository {
     @Override
     public AuctionBidderRank findBidByAuctionIdAndBidderId(String auctionId, Long userId) {
         AuctionBidderRank auctionBidderRank
-            = bidderRankJpaRepository.findByAuction_IdAndBidder_Id(UUID.fromString(auctionId), userId)
+            = bidderRankJpaRepository.findByAuctionIdAndBidder_Id(UUID.fromString(auctionId), userId)
             .map(bidderRankJpaMapper::toDomain)
             .orElse(null);
         return auctionBidderRank;

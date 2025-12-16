@@ -14,8 +14,9 @@ import lombok.Getter;
 public class AuctionBidderRank {
 
     private final UUID id;
-    private final Auction auction;
+    private final UUID auctionId;
     private Bidder bidder;
+    private Long allocatedQyt;
     private BidderStatus status;
     private Long rank;
 
@@ -25,7 +26,7 @@ public class AuctionBidderRank {
     private Long deletedBy;
 
     public static AuctionBidderRank createWinner(
-        Auction auction,
+        UUID auctionId,
         Long userId,
         BigDecimal price,
         Integer quantity,
@@ -34,8 +35,9 @@ public class AuctionBidderRank {
     ) {
         return new AuctionBidderRank(
             null,
-            auction,
+            auctionId,
             new Bidder(userId, price, quantity),
+            0L,
             BidderStatus.WINNER,
             rank,
             LocalDateTime.now(clock),
@@ -46,7 +48,7 @@ public class AuctionBidderRank {
     }
 
     public static AuctionBidderRank createStandBy(
-        Auction auction,
+        UUID auctionId,
         Long userId,
         BigDecimal price,
         Integer quantity,
@@ -55,8 +57,9 @@ public class AuctionBidderRank {
     ) {
         return new AuctionBidderRank(
             null,
-            auction,
+            auctionId,
             new Bidder(userId, price, quantity),
+            0L,
             BidderStatus.STANDBY,
             rank,
             LocalDateTime.now(clock),

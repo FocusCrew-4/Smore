@@ -1,6 +1,6 @@
 package com.smore.auction.presentation.websocket;
 
-import com.smore.auction.application.service.usecase.AuctionBidCalculator;
+import com.smore.auction.application.usecase.AuctionBidCalculator;
 import com.smore.auction.presentation.websocket.dto.request.AuctionBidRequestDto;
 import com.smore.auction.presentation.websocket.dto.response.AuctionBidResponseDto;
 import com.smore.auction.presentation.websocket.mapper.AuctionWebSocketMapper;
@@ -37,7 +37,7 @@ public class AuctionStompController {
                     String.valueOf(auctionId), principal.getName())
             );
         simpMessagingTemplate.convertAndSend(
-            "/sub/auction/" + auctionId,
+            "/topic/auction/" + auctionId,
             "1위 입찰가" + res.highestBid() + ", 10위 입찰가"
                 + res.minQualifyingBid()
         );
