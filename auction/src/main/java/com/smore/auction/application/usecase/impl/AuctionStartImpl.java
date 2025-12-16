@@ -32,7 +32,7 @@ public class AuctionStartImpl implements AuctionStart {
         }
         auction.start();
 
-        roomRegistry.register(auction.getId(), command.duration(), auction.getStock());
+        roomRegistry.register(auction, command.duration());
 
         auctionRepository.save(auction);
     }

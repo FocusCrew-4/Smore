@@ -51,9 +51,9 @@ public class RedisKeyFactory {
     /**
      *
      * @param auctionId String
-     * @return auction:{auctionId}:open:stock
+     * @return auction:{auctionId}:open
      */
-    public String auctionOpenStock(String auctionId) {
-        return "auction:" + auctionId + ":open:stock";
+    public String auctionOpen(String auctionId) {
+        return "auction:" + auctionId + ":open";
     }
 }
