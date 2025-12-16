@@ -2,7 +2,9 @@ package com.smore.auction.application.usecase;
 
 import com.smore.auction.application.result.AuctionBidCalculateResult;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public interface AuctionBidCalculator {
-    AuctionBidCalculateResult calculateBid(BigDecimal bidPrice, Integer quantity, String auctionId, String userId);
+    AuctionBidCalculateResult calculateBid(BigDecimal bidPrice, Integer quantity,
+        UUID idempotencyKey, String auctionId, String userId);
 }
