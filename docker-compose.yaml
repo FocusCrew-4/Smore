@@ -1,4 +1,4 @@
-services:
+﻿services:
 
   redis-stack:
     image: redis/redis-stack:latest
@@ -295,8 +295,35 @@ services:
     networks:
       - msa-network
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - msa-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - msa-network
 
 volumes:
+  grafana-data:
   kafka-1-data:
   kafka-2-data:
   kafka-3-data:
