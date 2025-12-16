@@ -113,7 +113,8 @@ public class BidCompetitionJpaRepositoryCustomImpl implements BidCompetitionJpaR
             .update(bidCompetitionEntity)
             .set(bidCompetitionEntity.stock, bidCompetitionEntity.stock.add(quantity))
             .where(
-                bidCompetitionEntity.id.eq(bidId)
+                bidCompetitionEntity.id.eq(bidId),
+                bidCompetitionEntity.bidStatus.in(BidStatus.ACTIVE, BidStatus.CLOSED)
             )
             .execute();
 

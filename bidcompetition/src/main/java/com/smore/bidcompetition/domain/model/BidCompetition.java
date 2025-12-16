@@ -106,4 +106,8 @@ public class BidCompetition {
     public boolean isNotActive() {
         return this.bidStatus != BidStatus.ACTIVE;
     }
+
+    public boolean isEnd() {
+        return this.bidStatus == BidStatus.END;
+    }
 }

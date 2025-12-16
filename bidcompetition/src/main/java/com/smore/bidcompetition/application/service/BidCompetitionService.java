@@ -23,6 +23,8 @@ import com.smore.bidcompetition.domain.status.EventType;
 import com.smore.bidcompetition.domain.status.InventoryChangeType;
 import com.smore.bidcompetition.domain.status.WinnerStatus;
 import com.smore.bidcompetition.infrastructure.error.BidErrorCode;
+import com.smore.bidcompetition.infrastructure.persistence.event.outbound.BidEvent;
+import com.smore.bidcompetition.infrastructure.persistence.event.outbound.BidProductInventoryAdjustedEvent;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.WinnerCreatedEvent;
 import com.smore.bidcompetition.presentation.dto.BidResponse;
 import java.time.Clock;
@@ -321,6 +323,26 @@ public class BidCompetitionService {
 
         BidCompetition bid = bidCompetitionRepository.findByIdForUpdate(winner.getBidId());
 
+        if (bid.isEnd()) {
+            BidProductInventoryAdjustedEvent event = BidProductInventoryAdjustedEvent.of(
+                bid.getId(),
+                bid.getProductId(),
+                command.getQuantity(),
+                command.getRefundId()
+            );
+
+            Outbox outbox = Outbox.create(
+                AggregateType.PRODUCT,
+                bid.getProductId(),
+                EventType.PRODUCT_INVENTORY_ADJUSTED,
+                UUID.randomUUID(),
+                makePayload(event)
+            );
+
+            outboxRepository.save(outbox);
+            return;
+        }
+
         Integer delta = command.getQuantity();
         if (delta == null || delta <= 0 || delta > winner.getQuantity()) {
             log.error("delta 값이 잘못되었습니다.");
@@ -389,7 +411,7 @@ public class BidCompetitionService {
     }
 
     // TODO: 나중에 클래스로 분리할 예정
-    private String makePayload(WinnerCreatedEvent event)  {
+    private String makePayload(BidEvent event)  {
         try {
             return objectMapper.writeValueAsString(event);
         } catch (JsonProcessingException e) {
