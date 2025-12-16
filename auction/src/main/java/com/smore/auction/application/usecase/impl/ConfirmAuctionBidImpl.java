@@ -8,6 +8,7 @@ import com.smore.auction.domain.events.AuctionWinnerConfirmV1;
 import com.smore.auction.domain.model.Auction;
 import com.smore.auction.domain.model.AuctionBidderRank;
 import jakarta.transaction.Transactional;
+import java.time.Clock;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -25,6 +26,7 @@ public class ConfirmAuctionBidImpl implements ConfirmAuctionBid {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final AuctionSqlRepository repository;
     private final ObjectMapper objectMapper;
+    private final Clock clock;
 
     @SneakyThrows
     @Override
@@ -45,7 +47,8 @@ public class ConfirmAuctionBidImpl implements ConfirmAuctionBid {
                 auctionBidderRank.getBidder().quantity(),
                 auction.getProduct().categoryId(),
                 auction.getSellerId(),
-                UUID.randomUUID()
+                UUID.randomUUID(),
+                clock
             );
 
         var future = kafkaTemplate.send(
