@@ -1,5 +1,8 @@
 package com.smore.payment.payment.domain.model;
 
+import com.smore.payment.payment.domain.event.PaymentApprovedEvent;
+import com.smore.payment.payment.domain.event.SettlementCalculatedEvent;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -254,11 +257,25 @@ public class Payment {
     public UUID getCategoryId() { return categoryId; }
     public String getAuctionType() { return auctionType; }
 
-    public void updateRefund(BigDecimal refundAmount, LocalDateTime refundedAt) {
-
-    }
-
     public void updateRefund(String reason, BigDecimal refundAmount, LocalDateTime refundedAt, String cancelTransactionKey, BigDecimal refundableAmount) {
         this.refund = new PaymentRefund(reason, refundAmount, refundedAt, cancelTransactionKey, refundableAmount);
+    }
+
+    public PaymentApprovedEvent createApprovedEvent() {
+        return new PaymentApprovedEvent(
+                orderId,
+                id,
+                amount,
+                approvedAt,
+                idempotencyKey
+        );
+    }
+
+    public SettlementCalculatedEvent createSettlementCalculatedEvent(BigDecimal settlementAmount) {
+        return new SettlementCalculatedEvent(
+                sellerId,
+                settlementAmount,
+                idempotencyKey
+        );
     }
 }

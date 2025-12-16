@@ -1,6 +1,6 @@
 package com.smore.payment.payment.infrastructure.kafka;
 
-import com.smore.payment.global.outbox.OutboxStatus;
+import com.smore.payment.shared.outbox.OutboxStatus;
 import com.smore.payment.payment.infrastructure.persistence.jpa.model.outbox.OutboxEntity;
 import com.smore.payment.payment.infrastructure.persistence.jpa.repository.outbox.OutboxJpaRepository;
 import lombok.RequiredArgsConstructor;

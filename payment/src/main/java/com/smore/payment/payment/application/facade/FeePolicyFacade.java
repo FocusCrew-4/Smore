@@ -1,7 +1,7 @@
 package com.smore.payment.payment.application.facade;
 
-import com.smore.payment.feepolicy.domain.model.FeePolicy;
-import com.smore.payment.feepolicy.domain.repository.FeePolicyRepository;
+import com.smore.payment.policy.fee.domain.model.FeePolicy;
+import com.smore.payment.policy.fee.domain.repository.FeePolicyRepository;
 import com.smore.payment.payment.application.facade.dto.FeePolicyResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

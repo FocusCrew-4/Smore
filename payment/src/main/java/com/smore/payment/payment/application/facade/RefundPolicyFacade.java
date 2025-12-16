@@ -1,10 +1,8 @@
 package com.smore.payment.payment.application.facade;
 
-import com.smore.payment.cancelpolicy.domain.model.CancelPolicy;
-import com.smore.payment.payment.application.facade.dto.CancelPolicyResult;
 import com.smore.payment.payment.application.facade.dto.RefundPolicyResult;
-import com.smore.payment.refundpolicy.domain.model.RefundPolicy;
-import com.smore.payment.refundpolicy.domain.repository.RefundPolicyRepository;
+import com.smore.payment.policy.refund.domain.model.RefundPolicy;
+import com.smore.payment.policy.refund.domain.repository.RefundPolicyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

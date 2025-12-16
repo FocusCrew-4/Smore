@@ -1,9 +1,9 @@
 package com.smore.payment.payment.infrastructure.persistence.redis;
 
-import com.smore.payment.global.outbox.OutboxMessage;
-import com.smore.payment.global.outbox.OutboxMessageCreator;
+import com.smore.payment.shared.outbox.OutboxMessage;
+import com.smore.payment.shared.outbox.OutboxMessageCreator;
 import com.smore.payment.payment.application.event.outbound.PaymentFailedEvent;
-import com.smore.payment.payment.domain.repository.OutboxRepository;
+import com.smore.payment.payment.application.port.out.OutboxPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class FailedPaymentHandler {
 
     private final OutboxMessageCreator outboxMessageCreator;
-    private final OutboxRepository outboxRepository;
+    private final OutboxPort outboxPort;
 
     public void handleExpiredKey(String key) {
 
@@ -31,6 +31,6 @@ public class FailedPaymentHandler {
 
         // Outbox 생성 → 저장
         OutboxMessage outboxMessage = outboxMessageCreator.paymentFailed(event);
-        outboxRepository.save(outboxMessage);
+        outboxPort.save(outboxMessage);
     }
 }

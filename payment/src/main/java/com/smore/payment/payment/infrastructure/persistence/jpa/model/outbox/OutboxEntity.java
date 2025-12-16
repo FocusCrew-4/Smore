@@ -1,6 +1,6 @@
 package com.smore.payment.payment.infrastructure.persistence.jpa.model.outbox;
 
-import com.smore.payment.global.outbox.OutboxStatus;
+import com.smore.payment.shared.outbox.OutboxStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
