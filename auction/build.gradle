@@ -49,6 +49,10 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
+    // 개발 편의
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
     // 매핑
     implementation 'org.mapstruct:mapstruct:1.6.3'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
@@ -59,10 +63,6 @@ dependencies {
     implementation 'io.github.openfeign.querydsl:querydsl-core:7.0'
     implementation 'io.github.openfeign.querydsl:querydsl-jpa:7.0'
     annotationProcessor 'io.github.openfeign.querydsl:querydsl-apt:7.0:jpa'
-
-    // 개발 편의
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
 
     // 런타임 드라이버
     runtimeOnly 'org.postgresql:postgresql'
