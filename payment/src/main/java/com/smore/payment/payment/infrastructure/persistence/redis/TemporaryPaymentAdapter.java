@@ -2,7 +2,6 @@ package com.smore.payment.payment.infrastructure.persistence.redis;
 
 import com.smore.payment.payment.application.port.out.TemporaryPaymentPort;
 import com.smore.payment.payment.domain.model.TemporaryPayment;
-import com.smore.payment.payment.domain.repository.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
