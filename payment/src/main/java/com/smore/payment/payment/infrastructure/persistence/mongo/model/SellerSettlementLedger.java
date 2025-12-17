@@ -3,6 +3,7 @@ package com.smore.payment.payment.infrastructure.persistence.mongo.model;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
@@ -25,6 +26,7 @@ public class SellerSettlementLedger {
 
     private UUID paymentId;             // 결제 기반 발생이면 기록 (nullable)
 
+    @Indexed(unique = true)
     private UUID idempotencyKey;        // 중복 요청 방지용 key
 
     private LocalDateTime timestamp;    // 기록 시간

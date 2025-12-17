@@ -13,7 +13,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payments")
+@Table(
+        name = "payments",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_payments_idempotency_key", columnNames = "idempotency_key")
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class PaymentEntity {

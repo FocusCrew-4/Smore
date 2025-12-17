@@ -7,6 +7,7 @@ import com.smore.payment.payment.infrastructure.persistence.jpa.mapper.PaymentMa
 import com.smore.payment.payment.infrastructure.persistence.jpa.model.payment.PaymentEntity;
 import com.smore.payment.payment.infrastructure.persistence.jpa.model.payment.PaymentRefundJpa;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -21,8 +22,14 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 
     @Override
     public void save(Payment payment) {
-        paymentJpaRepository.save(paymentMapper.toEntity(payment));
-    }
+        try {
+            paymentJpaRepository.save(paymentMapper.toEntity(payment));
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException(
+                    "이미 처리된 결제 요청입니다. idempotencyKey=" + payment.getIdempotencyKey(),
+                    e
+            );
+        }}
 
     @Override
     public Optional<Payment> findByIdempotencyKey(UUID idempotencyKey) {

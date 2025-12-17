@@ -3,6 +3,7 @@ package com.smore.payment.payment.infrastructure.persistence.mongo.repository;
 import com.smore.payment.payment.application.port.out.SellerSettlementLedgerRepository;
 import com.smore.payment.payment.infrastructure.persistence.mongo.model.SellerSettlementLedger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -43,6 +44,10 @@ public class SellerSettlementLedgerRepositoryImpl implements SellerSettlementLed
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        sellerSettlementLedgerMongoRepository.save(ledger);
+        try {
+            sellerSettlementLedgerMongoRepository.save(ledger);
+        } catch (DuplicateKeyException e) {
+            // 동일한 idempotencyKey로 이미 기록된 경우 - 멱등성을 보장하기 위해 무시
+        }
     }
 }
