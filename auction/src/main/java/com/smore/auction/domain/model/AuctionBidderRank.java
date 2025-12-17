@@ -69,4 +69,13 @@ public class AuctionBidderRank {
     public void confirm() {
         this.status = BidderStatus.CONFIRMED;
     }
+    public void releaseWinner() {
+        this.status = BidderStatus.CANCELLED;
+    }
+    public void succeedFrom(
+        AuctionBidderRank previousWinner
+    ) {
+        previousWinner.releaseWinner();
+        this.status = BidderStatus.WINNER;
+    }
 }

@@ -55,6 +55,11 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 
+    // Querydsl
+    implementation 'io.github.openfeign.querydsl:querydsl-core:7.0'
+    implementation 'io.github.openfeign.querydsl:querydsl-jpa:7.0'
+    annotationProcessor 'io.github.openfeign.querydsl:querydsl-apt:7.0:jpa'
+
     // 개발 편의
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -82,6 +87,21 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+// Querydsl Q 클래스는 build/generated/querydsl 하위에 생성
+def generated = layout.buildDirectory.dir("generated/querydsl")
+
+tasks.named("compileJava") {
+    // Annotation processor 출력(Q 클래스)을 generated 폴더로 보냄
+    options.generatedSourceOutputDirectory.set(generated)
+}
+
+// 생성된 Querydsl 소스를 main 소스셋에 포함해 IDE/Gradle에서 Q 클래스 인식
+sourceSets {
+    main {
+        java.srcDirs += generated
     }
 }
 
