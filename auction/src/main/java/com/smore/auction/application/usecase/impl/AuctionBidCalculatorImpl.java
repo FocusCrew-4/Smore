@@ -58,6 +58,21 @@ public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
             redis.opsForZSet()
                 .zCard(key.auctionBids(auctionId));
 
+        Object value =
+            redis.opsForHash()
+                .get(key.auctionOpen(auctionId), "minPrice");
+
+        if (value == null) {
+            throw new IllegalStateException("minPrice not found");
+        }
+
+        BigDecimal minPrice =
+            new BigDecimal(value.toString());
+
+        if (bidPrice.compareTo(minPrice) < 0) {
+            throw new AppException(AppErrorCode.BID_PRICE_BELOW_MINIMUM);
+        }
+
         if (bidCount >= stock) {
             // 컷오프 존재
             Set<TypedTuple<String>> cutoff =

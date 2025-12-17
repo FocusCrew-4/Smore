@@ -44,7 +44,7 @@ public class AuctionStompController {
             );
         simpMessagingTemplate.convertAndSend(
             "/topic/auction/" + auctionId,
-            "1위 입찰가" + res.highestBid() + ", 10위 입찰가"
+            "1위 입찰가" + res.highestBid() + ", 최소 입찰가"
                 + res.minQualifyingBid()
         );
     }

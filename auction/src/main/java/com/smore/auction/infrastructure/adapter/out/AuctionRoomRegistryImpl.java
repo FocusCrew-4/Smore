@@ -26,5 +26,6 @@ public class AuctionRoomRegistryImpl implements AuctionRoomRegistry {
 
         redis.opsForHash()
             .putAll(key.auctionOpen(auction.getId().toString()), meta);
+        redis.expire(key.auctionOpen(auction.getId().toString()), ttl);
     }
 }

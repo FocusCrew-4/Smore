@@ -16,7 +16,6 @@ public class AuctionBidderRank {
     private final UUID id;
     private final UUID auctionId;
     private Bidder bidder;
-    private Long allocatedQyt;
     private BidderStatus status;
     private Long rank;
 
@@ -37,7 +36,6 @@ public class AuctionBidderRank {
             null,
             auctionId,
             new Bidder(userId, price, quantity),
-            0L,
             BidderStatus.WINNER,
             rank,
             LocalDateTime.now(clock),
@@ -59,7 +57,6 @@ public class AuctionBidderRank {
             null,
             auctionId,
             new Bidder(userId, price, quantity),
-            0L,
             BidderStatus.STANDBY,
             rank,
             LocalDateTime.now(clock),
