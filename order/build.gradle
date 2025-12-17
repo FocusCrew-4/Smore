@@ -67,6 +67,9 @@ dependencies {
     // DB 쿼리 추적 및 Zipkin 시각화 (SQL 실행 시간, 쿼리 내용 확인용)
     implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot:1.0.3'
 
+    // prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
 }
 
 dependencyManagement {
