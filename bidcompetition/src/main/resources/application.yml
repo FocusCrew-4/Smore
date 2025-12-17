@@ -31,6 +31,24 @@ spring:
 
     listener:
       ack-mode: manual
+      observation-enabled: true
+
+    template:
+      observation-enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+  tracing:
+    sampling:
+      probability: 1.0
+
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
 
 topic:
   order:
