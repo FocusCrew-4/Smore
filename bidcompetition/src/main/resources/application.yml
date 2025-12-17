@@ -36,6 +36,11 @@ spring:
     template:
       observation-enabled: true
 
+jdbc:
+  datasource-proxy:
+    enabled: true
+    include-parameter-values: true
+
 management:
   endpoints:
     web:
@@ -45,6 +50,7 @@ management:
   tracing:
     sampling:
       probability: 1.0
+    enabled: true
 
   zipkin:
     tracing:
