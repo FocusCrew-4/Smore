@@ -2,13 +2,10 @@ package com.smore.payment.payment.application;
 
 import com.smore.payment.payment.application.event.inbound.PaymentRefundEvent;
 import com.smore.payment.payment.application.event.outbound.PaymentRefundFailedEvent;
-import com.smore.payment.payment.application.event.outbound.PaymentRefundSucceededEvent;
-import com.smore.payment.payment.application.event.outbound.SettlementFailedEvent;
 import com.smore.payment.payment.application.facade.CancelPolicyFacade;
 import com.smore.payment.payment.application.facade.RefundPolicyFacade;
 import com.smore.payment.payment.application.facade.dto.CancelPolicyResult;
 import com.smore.payment.payment.application.facade.dto.RefundPolicyResult;
-import com.smore.payment.payment.application.port.in.ApprovePaymentResult;
 import com.smore.payment.payment.application.port.in.RefundPaymentUseCase;
 import com.smore.payment.payment.application.port.out.OutboxPort;
 import com.smore.payment.payment.application.port.out.PaymentRepository;
@@ -112,7 +109,6 @@ public class PaymentRefundService implements RefundPaymentUseCase {
                             )
                     )
             );
-
             throw e;
         }
 

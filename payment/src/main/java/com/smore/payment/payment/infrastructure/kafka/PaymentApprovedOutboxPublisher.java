@@ -1,8 +1,8 @@
 package com.smore.payment.payment.infrastructure.kafka;
 
 import com.smore.payment.shared.outbox.OutboxStatus;
-import com.smore.payment.payment.infrastructure.persistence.jpa.model.outbox.OutboxEntity;
-import com.smore.payment.payment.infrastructure.persistence.jpa.repository.outbox.OutboxJpaRepository;
+import com.smore.payment.payment.infrastructure.persistence.outbox.OutboxEntity;
+import com.smore.payment.payment.infrastructure.persistence.outbox.OutboxJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

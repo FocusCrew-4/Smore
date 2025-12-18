@@ -1,4 +1,4 @@
-package com.smore.payment.payment.infrastructure.persistence.redis;
+package com.smore.payment.payment.infrastructure.redis;
 
 import com.smore.payment.shared.outbox.OutboxMessage;
 import com.smore.payment.shared.outbox.OutboxMessageCreator;

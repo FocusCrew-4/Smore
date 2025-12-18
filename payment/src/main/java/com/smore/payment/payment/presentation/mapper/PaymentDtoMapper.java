@@ -12,6 +12,7 @@ public class PaymentDtoMapper {
     public ApprovePaymentCommand toCommand(ApprovePaymentRequestDto requestDto) {
         return new ApprovePaymentCommand(
                 requestDto.getOrderId(),
+                requestDto.getIdempotencyKey(),
                 requestDto.getAmount(),
                 requestDto.getPaymentKey(),
                 requestDto.getPgOrderId()

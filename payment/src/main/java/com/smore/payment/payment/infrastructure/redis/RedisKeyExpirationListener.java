@@ -1,4 +1,4 @@
-package com.smore.payment.payment.infrastructure.persistence.redis;
+package com.smore.payment.payment.infrastructure.redis;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,11 @@ public class RedisKeyExpirationListener implements MessageListener {
 
         String expiredKey = message.toString();   // 저장했던 key 문자열
         log.info("[REDIS] TTL expired key = {}", expiredKey);
+
+        if (!expiredKey.startsWith("api-inbox:payment:approve:")) {
+            log.debug("TTL expired but ignored key={}", expiredKey);
+            return;
+        }
 
         try {
             failedPaymentHandler.handleExpiredKey(expiredKey);

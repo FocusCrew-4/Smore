@@ -5,6 +5,7 @@ import java.util.UUID;
 
 public record ApprovePaymentCommand(
         UUID orderId,
+        UUID idempotencyKey,
         BigDecimal amount,
         String paymentKey,
         String pgOrderId

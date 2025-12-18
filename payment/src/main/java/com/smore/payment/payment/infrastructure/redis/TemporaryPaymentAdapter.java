@@ -1,4 +1,4 @@
-package com.smore.payment.payment.infrastructure.persistence.redis;
+package com.smore.payment.payment.infrastructure.redis;
 
 import com.smore.payment.payment.application.port.out.TemporaryPaymentPort;
 import com.smore.payment.payment.domain.model.TemporaryPayment;

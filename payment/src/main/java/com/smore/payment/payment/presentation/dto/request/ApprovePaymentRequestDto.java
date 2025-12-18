@@ -19,6 +19,9 @@ public class ApprovePaymentRequestDto {
     private UUID orderId;
 
     @NotNull
+    private UUID idempotencyKey;
+
+    @NotNull
     @DecimalMin(value = "0.0", inclusive = false)
     private BigDecimal amount;
 
