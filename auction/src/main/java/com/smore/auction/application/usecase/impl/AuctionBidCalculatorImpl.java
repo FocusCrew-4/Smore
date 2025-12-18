@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.auction.application.exception.AppErrorCode;
 import com.smore.auction.application.exception.AppException;
+import com.smore.auction.application.port.out.AuctionBidLogger;
 import com.smore.auction.application.result.AuctionBidCalculateResult;
 import com.smore.auction.application.usecase.AuctionBidCalculator;
 import com.smore.auction.infrastructure.redis.RedisKeyFactory;
@@ -16,10 +17,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
@@ -28,6 +31,7 @@ public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
     private final RedisKeyFactory key;
     private final ObjectMapper objectMapper;
     private final Clock clock;
+    private final AuctionBidLogger bidLogger;
 
     // TODO(완료): 한 경매에 관해서 입찰한 내역이 중복으로 계속 들어가는 상황 발생 -> 이렇게 해서 다중수량을 구매하게 가능 quantity 필드는 삭제
     // TODO: 유저 메타데이터 따로 두고 zset 에는 userId 에 관련된 score 만 저장 이후 다중수량 구매는 db 에 quantity 1개씩 펼쳐서 중복레코드 생성해서 각 1개별 별도 구매단위로 처리
@@ -35,9 +39,10 @@ public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
     // 위의 방식대로하면 WINNER 재선정 코드에도 변화가 없을 것으로 예상됨
     // hset -> auctionId -> auction meta 로 기본시작 경매금 및 minStep 등 관리
     @Override
-    public AuctionBidCalculateResult calculateBid(BigDecimal bidPrice, Integer quantity, String auctionId, String userId) {
+    public AuctionBidCalculateResult calculateBid(BigDecimal OriginBidPrice, Integer quantity, String auctionId, String userId) {
         // --- 입력 스케일 고정 및 저장
-        bidPrice = bidPrice.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal bidPrice =
+            OriginBidPrice.setScale(2, RoundingMode.HALF_UP);
         var metaData =
             new RedisBidData(userId, quantity, bidPrice, LocalDateTime.now(clock));
 
@@ -101,7 +106,16 @@ public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
 
         redis.opsForZSet()
             .add(key.auctionBids(auctionId), stringMetaData, scaledBid);
-
+        try {
+            bidLogger.writeBidLog(
+                UUID.fromString(auctionId),
+                Long.valueOf(userId),
+                quantity,
+                bidPrice.doubleValue()
+            );
+        } catch (Exception e) {
+            log.warn("해당 입찰이 mongoDB 에 로깅되지 않았습니다");
+        }
         Set<TypedTuple<String>> candidate =
             redis.opsForZSet()
                 .reverseRangeWithScores(key.auctionBids(auctionId), 0, stock - 1);
