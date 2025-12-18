@@ -58,8 +58,8 @@ public class WebSocketQueryAuthFilter implements GlobalFilter, Ordered {
 
         ServerHttpRequest mutated = request.mutate()
             .headers(h -> {
-                h.add("X-User-Id", jwt.getSubject());
-                h.add("X-User-Role", jwt.getClaimAsString("role"));
+                h.set("X-User-Id", jwt.getSubject());
+                h.set("X-User-Role", jwt.getClaimAsString("role"));
             })
             .uri(removeTokenQueryParam(request))
             .build();
