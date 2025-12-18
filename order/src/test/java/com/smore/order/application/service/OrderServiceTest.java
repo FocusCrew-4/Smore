@@ -13,6 +13,7 @@ import com.smore.order.domain.model.Outbox;
 import com.smore.order.domain.status.AggregateType;
 import com.smore.order.domain.status.EventType;
 import com.smore.order.domain.status.SaleType;
+import io.micrometer.tracing.Tracer;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -36,6 +37,9 @@ class OrderServiceTest {
 
     @Mock
     OutboxRepository outboxRepository;
+
+    @Spy
+    Tracer trace;
 
     @Spy
     ObjectMapper objectMapper = new ObjectMapper()

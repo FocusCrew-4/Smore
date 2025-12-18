@@ -10,6 +10,7 @@ import com.smore.bidcompetition.domain.status.AggregateType;
 import com.smore.bidcompetition.domain.status.EventType;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.BidEvent;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.BidResultFinalizedEvent;
+import io.micrometer.tracing.Tracer;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class BidEndFinalizer {
     private final BidCompetitionRepository bidCompetitionRepository;
     private final OutboxRepository outboxRepository;
     private final ObjectMapper objectMapper;
+    private final Tracer tracer;
 
     @Value("${app.allocation.close-grace-seconds}")
     private long closeGraceSeconds;
@@ -65,6 +67,13 @@ public class BidEndFinalizer {
             UUID.randomUUID(),
             makePayload(event)
         );
+
+        if (tracer.currentSpan() != null) {
+            outbox.attachTracing(
+                tracer.currentSpan().context().traceId(),
+                tracer.currentSpan().context().spanId()
+            );
+        }
 
         outboxRepository.save(outbox);
     }
