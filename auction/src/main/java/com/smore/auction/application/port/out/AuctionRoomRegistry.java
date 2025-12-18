@@ -1,8 +1,8 @@
 package com.smore.auction.application.port.out;
 
+import com.smore.auction.domain.model.Auction;
 import java.time.Duration;
-import java.util.UUID;
 
 public interface AuctionRoomRegistry {
-    void register(UUID auctionId, Duration ttl);
+    void register(Auction auction, Duration ttl);
 }
