@@ -53,7 +53,8 @@ public class OutboxHandlerFactory {
             case REFUND_REQUEST -> new RefundRequestHandler(tracer, propagator, refundRequestTopic, kafkaTemplate, outbox);
             case REFUND_SUCCESS -> new RefundSuccessHandler(tracer, propagator, refundSuccessTopic, kafkaTemplate, outbox);
             case REFUND_FAIL -> new RefundFailedHandler(tracer, propagator, refundFailTopic, kafkaTemplate, outbox);
-            case ORDER_FAILED -> new FailedOrderHandler(tracer, propagator, orderFailedTopic, kafkaTemplate, outbox);
+            case BID_ORDER_FAILED -> new FailedOrderHandler(tracer, propagator, orderFailedTopic, kafkaTemplate, outbox);
+            case AUCTION_ORDER_FAILED -> new AuctionOrderFailedHandler(tracer, propagator, orderFailedTopic, kafkaTemplate, outbox);
             default -> throw new IllegalArgumentException(
                 "지원되지 않은 이벤트입니다." + outbox.getEventType()
             );
