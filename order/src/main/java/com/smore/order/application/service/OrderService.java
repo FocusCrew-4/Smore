@@ -9,6 +9,7 @@ import com.smore.order.application.dto.FailedOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
 import com.smore.order.application.dto.ModifyOrderCommand;
 import com.smore.order.application.dto.RefundCommand;
+import com.smore.order.application.event.outbound.AuctionOrderFailedEvent;
 import com.smore.order.application.event.outbound.OrderFailedEvent;
 import com.smore.order.application.exception.OrderIdMisMatchException;
 import com.smore.order.application.exception.RefundReservationConflictException;
@@ -144,6 +145,10 @@ public class OrderService {
         if (updated == 0) {
             log.error("주문 완료 상태로 변경하지 못했습니다. orderId = {}, methodName = {}", orderId, "completeOrder");
             throw new CompleteOrderFailException(OrderErrorCode.COMPLETE_ORDER_CONFLICT);
+        }
+
+        if (order.isAuction()) {
+            return ServiceResult.SUCCESS;
         }
 
         OrderCompletedEvent event = OrderCompletedEvent.of(
@@ -586,7 +591,7 @@ public class OrderService {
             throw new UpdateOrderFailException(OrderErrorCode.UPDATE_ORDER_FAIL_CONFLICT);
         }
 
-        OrderFailedEvent event = OrderFailedEvent.of(
+        OrderEvent event = OrderFailedEvent.of(
             order.getIdempotencyKey(),
             order.getProduct().productId(),
             order.getUserId(),
@@ -594,10 +599,22 @@ public class OrderService {
             LocalDateTime.now(clock)
         );
 
+        EventType eventType = EventType.BID_ORDER_FAILED;
+
+        if (order.isAuction()) {
+            event = AuctionOrderFailedEvent.of(
+                order.getProduct().productId(),
+                order.getUserId(),
+                order.getIdempotencyKey()
+            );
+
+            eventType = EventType.AUCTION_ORDER_FAILED;
+        }
+
         Outbox outbox = Outbox.create(
             AggregateType.ORDER,
             order.getId(),
-            EventType.ORDER_FAILED,
+            eventType,
             UUID.randomUUID(),
             makePayload(event)
         );

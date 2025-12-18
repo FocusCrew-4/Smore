@@ -2,6 +2,8 @@ package com.smore.auction.application.usecase.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smore.auction.application.exception.AppErrorCode;
+import com.smore.auction.application.exception.AppException;
 import com.smore.auction.application.result.AuctionBidCalculateResult;
 import com.smore.auction.application.usecase.AuctionBidCalculator;
 import com.smore.auction.infrastructure.redis.RedisKeyFactory;
@@ -10,7 +12,9 @@ import java.math.RoundingMode;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
@@ -31,8 +35,13 @@ public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
     public AuctionBidCalculateResult calculateBid(BigDecimal bidPrice, Integer quantity, String auctionId, String userId) {
         // --- 입력 스케일 고정 및 저장
         bidPrice = bidPrice.setScale(2, RoundingMode.HALF_UP);
-        var metaData
-            = new RedisBidData(userId, quantity, bidPrice, LocalDateTime.now(clock));
+        var metaData =
+            new RedisBidData(userId, quantity, bidPrice, LocalDateTime.now(clock));
+
+        String stockValue = redis.opsForHash()
+                .get(key.auctionOpen(auctionId), "stock").toString();
+        Objects.requireNonNull(stockValue, "auction open stock is null");
+        Long stock = Long.valueOf(stockValue);
 
         String stringMetaData;
         try {
@@ -41,30 +50,71 @@ public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
             throw new RuntimeException(e);
         }
 
-        long scaled = bidPrice
+        long scaledBid = bidPrice
             .movePointRight(2)
             .longValueExact();
 
-        redis.opsForZSet()
-            .add(key.auctionBids(auctionId), stringMetaData, scaled);
-
-        // 4. Top10 조회
-        Set<TypedTuple<String>> top10 =
+        Long bidCount =
             redis.opsForZSet()
-                .reverseRangeWithScores(key.auctionBids(auctionId), 0, 9);
+                .zCard(key.auctionBids(auctionId));
 
-        if (top10 == null || top10.isEmpty()) {
+        Object value =
+            redis.opsForHash()
+                .get(key.auctionOpen(auctionId), "minPrice");
+
+        if (value == null) {
+            throw new IllegalStateException("minPrice not found");
+        }
+
+        BigDecimal minPrice =
+            new BigDecimal(value.toString());
+
+        if (bidPrice.compareTo(minPrice) < 0) {
+            throw new AppException(AppErrorCode.BID_PRICE_BELOW_MINIMUM);
+        }
+
+        if (bidCount >= stock) {
+            // 컷오프 존재
+            Set<TypedTuple<String>> cutoff =
+                redis.opsForZSet()
+                    .reverseRangeWithScores(
+                        key.auctionBids(auctionId),
+                        stock - 1,
+                        stock - 1
+                    );
+
+            TypedTuple<String> last =
+                cutoff.iterator().next();
+
+            long minQualifyingScaled =
+                BigDecimal.valueOf(last.getScore())
+                    .setScale(0, RoundingMode.HALF_UP)
+                    .longValueExact();
+
+            if (scaledBid <= minQualifyingScaled) {
+                throw new AppException(AppErrorCode.BID_PRICE_BELOW_MINIMUM);
+            }
+        }
+
+        redis.opsForZSet()
+            .add(key.auctionBids(auctionId), stringMetaData, scaledBid);
+
+        Set<TypedTuple<String>> candidate =
+            redis.opsForZSet()
+                .reverseRangeWithScores(key.auctionBids(auctionId), 0, stock - 1);
+
+        if (candidate == null || candidate.isEmpty()) {
             return new AuctionBidCalculateResult(BigDecimal.ZERO, BigDecimal.ZERO, bidPrice, null);
         }
 
         // 5. 1위 추출
-        Iterator<TypedTuple<String>> it = top10.iterator();
+        Iterator<TypedTuple<String>> it = candidate.iterator();
         TypedTuple<String> first = it.next();
         BigDecimal highestBid = restorePrice(first.getScore());
 
-        // 6. 10위(또는 마지막 요소) 추출
+        // 6. 마지막 요소 추출
         TypedTuple<String> last = null;
-        for (TypedTuple<String> t : top10) {
+        for (TypedTuple<String> t : candidate) {
             last = t;
         }
 

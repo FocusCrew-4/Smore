@@ -17,6 +17,19 @@
     networks:
       - msa-network
 
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    restart: always
+    ports:
+      - "5540:5540"
+    volumes:
+      - ./docker/db/redis/redisinsight-data:/data
+    depends_on:
+      - redis-stack
+    networks:
+      - msa-network
   mongodb:
     image: mongo:8.0
     container_name: mongodb
@@ -374,3 +387,5 @@ volumes:
 networks:
   msa-network:
     driver: bridge
+
+

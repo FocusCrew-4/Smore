@@ -3,7 +3,8 @@ package com.smore.order.domain.status;
 public enum EventType {
     ORDER_CREATED("주문 생성 완료"),
     ORDER_COMPLETED("주문 완료"),
-    ORDER_FAILED("주문 실패"),
+    BID_ORDER_FAILED("경쟁 주문 실패"),
+    AUCTION_ORDER_FAILED("경매 주문 실패"),
     REFUND_REQUEST("환불 요청"),
     REFUND_SUCCESS("환불 성공"),
     REFUND_FAIL("환불 실패"),
