@@ -21,6 +21,8 @@ topic:
     v1: product.auctionEnded.v1
   winner-confirm:
     v1: auction.winnerConfirm.v1
+  auction-failed:
+    v1: order.auctionfailed.v1
 
 stomp:
   relay:

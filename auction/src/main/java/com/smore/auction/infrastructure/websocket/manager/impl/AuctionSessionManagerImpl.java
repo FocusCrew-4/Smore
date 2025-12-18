@@ -2,7 +2,6 @@ package com.smore.auction.infrastructure.websocket.manager.impl;
 
 import com.smore.auction.infrastructure.redis.RedisKeyFactory;
 import com.smore.auction.infrastructure.websocket.manager.AuctionSessionManager;
-import java.time.Duration;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

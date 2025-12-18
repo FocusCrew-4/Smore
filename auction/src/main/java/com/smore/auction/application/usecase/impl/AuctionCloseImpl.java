@@ -89,8 +89,6 @@ public class AuctionCloseImpl implements AuctionClose {
 
                         boolean isWinner = rank <= auction.getStock();
 
-                        // TODO: quantity 에 따라 등수 배정되는 알고리즘 필요, 현재는 quantity 상관없이 Stock == 낙찰자 수
-
                         if (isWinner) {
                             return AuctionBidderRank.createWinner(
                                 auction.getId(),

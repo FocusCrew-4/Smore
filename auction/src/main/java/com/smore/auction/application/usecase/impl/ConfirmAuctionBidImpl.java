@@ -1,12 +1,16 @@
 package com.smore.auction.application.usecase.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.auction.application.command.BidConfirmCommand;
+import com.smore.auction.application.port.out.AuctionOutboxPort;
 import com.smore.auction.application.usecase.ConfirmAuctionBid;
 import com.smore.auction.application.sql.AuctionSqlRepository;
 import com.smore.auction.domain.events.AuctionWinnerConfirmV1;
 import com.smore.auction.domain.model.Auction;
 import com.smore.auction.domain.model.AuctionBidderRank;
+import com.smore.auction.infrastructure.kafka.AuctionKafkaTopicProperties;
+import com.smore.auction.infrastructure.outbox.AuctionOutbox;
 import jakarta.transaction.Transactional;
 import java.time.Clock;
 import java.util.UUID;
@@ -23,7 +27,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ConfirmAuctionBidImpl implements ConfirmAuctionBid {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final AuctionKafkaTopicProperties topic;
+    private final AuctionOutboxPort auctionOutboxPort;
     private final AuctionSqlRepository repository;
     private final ObjectMapper objectMapper;
     private final Clock clock;
@@ -51,14 +56,19 @@ public class ConfirmAuctionBidImpl implements ConfirmAuctionBid {
                 clock
             );
 
-        var future = kafkaTemplate.send(
-            "auction.winnerConfirm.v1",
-            command.requesterId().toString(),
-            objectMapper.writeValueAsString(event)
-        );
+        try {
+            String strEvent = objectMapper.writeValueAsString(event);
+            var outboxData = new AuctionOutbox(
+                topic.getWinnerConfirm().get("v1"),
+                command.requesterId(),
+                strEvent,
+                clock
+            );
+            auctionOutboxPort.saveEvent(outboxData);
+        } catch (JsonProcessingException e) {
+            log.error("Json 파싱오류 ConfirmAuctionBidImpl 에서 발생: {}", e.getMessage());
+        }
 
         repository.saveBidder(auctionBidderRank);
-
-        future.get();
     }
 }

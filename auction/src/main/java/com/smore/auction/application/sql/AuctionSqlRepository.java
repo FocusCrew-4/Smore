@@ -18,4 +18,8 @@ public interface AuctionSqlRepository {
 
     // TODO: 추후 DDD 에 맞는지 재검토 필요 - 이유: Stock 값에 영향받아서 개인이 바뀌면 곤란함
     void saveBidder(AuctionBidderRank auctionBidderRank);
+
+    AuctionBidderRank findWinnerByAuctionIdAndBidder_Id(UUID auctionId, Long winnerMemberId);
+
+    AuctionBidderRank findTop1ByStandByAndAuctionId(UUID auctionId);
 }

@@ -64,6 +64,7 @@ topic:
     refund-success: order.refund-success.v1
     refund-fail: order.refund-fail.v1
     failed: order.failed.v1
+    auction-failed: order.auctionfailed.v1
 
   bid:
     order:
@@ -72,7 +73,7 @@ topic:
 
   auction:
     order:
-      request: acution.winnerconfirm.v1
+      request: auction.winnerConfirm.v1
 
   payment:
     completed: payment.approved.v1
@@ -84,6 +85,7 @@ consumer:
   group:
     payment: payment-consumer-group
     bid: bid-consumer-group
+    auction: auction-consumer-group
 
 retry:
   count:

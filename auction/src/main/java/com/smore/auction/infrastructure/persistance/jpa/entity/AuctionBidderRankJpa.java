@@ -43,7 +43,6 @@ public class AuctionBidderRankJpa {
         @AttributeOverride(name = "quantity", column = @Column(name = "bidder_quantity"))
     })
     private BidderEmbeddable bidder;
-    private Long allocatedQyt;
     @Enumerated(EnumType.STRING)
     private BidderStatus status;
     private Long rank;

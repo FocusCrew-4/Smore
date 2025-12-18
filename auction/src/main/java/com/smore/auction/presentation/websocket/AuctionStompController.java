@@ -35,12 +35,16 @@ public class AuctionStompController {
         log.info("Received a bid request for {}", auctionBidRequestDto);
         AuctionBidResponseDto res
             = mapper.toAuctionBidResponseDto(
-                auctionBidCalculator.calculateBid(auctionBidRequestDto.bidPrice(), auctionBidRequestDto.quantity(),
-                    String.valueOf(auctionId), principal.getName())
+                auctionBidCalculator.calculateBid(
+                    auctionBidRequestDto.bidPrice(),
+                    auctionBidRequestDto.quantity(),
+                    String.valueOf(auctionId),
+                    principal.getName()
+                )
             );
         simpMessagingTemplate.convertAndSend(
             "/topic/auction/" + auctionId,
-            "1위 입찰가" + res.highestBid() + ", 10위 입찰가"
+            "1위 입찰가" + res.highestBid() + ", 최소 입찰가"
                 + res.minQualifyingBid()
         );
     }
