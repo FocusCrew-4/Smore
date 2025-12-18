@@ -34,7 +34,7 @@ public class AuctionHandshakeInterceptor implements HandshakeInterceptor {
             throw new Exception("X-USER-ROLE header is missing");
         }
         if (!optionalRole.equalsIgnoreCase("consumer")) {
-            throw new Exception("Only customer roles are supported");
+            throw new Exception("Only consumer roles are supported");
         }
         attributes.put("userId", Long.valueOf(optionalUserId));
         attributes.put("role", optionalRole);
