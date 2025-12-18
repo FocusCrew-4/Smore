@@ -28,7 +28,6 @@ import com.smore.bidcompetition.infrastructure.persistence.event.outbound.BidPro
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.InventoryConfirmationTimeOutEvent;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.WinnerCreatedEvent;
 import com.smore.bidcompetition.presentation.dto.BidResponse;
-import io.micrometer.tracing.Tracer;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -54,7 +53,6 @@ public class BidCompetitionService {
     private final WinnerRepository winnerRepository;
     private final OutboxRepository outboxRepository;
     private final BidInventoryLogRepository bidInventoryLogRepository;
-    private final Tracer tracer;
     private final ObjectMapper objectMapper;
     private final Clock clock;
 
@@ -138,7 +136,6 @@ public class BidCompetitionService {
             );
         }
 
-        log.info("expiredAt : {}", expireAt);
 
         UUID allocationKey = UUID.randomUUID();
         Winner newWinner = Winner.create(
@@ -191,6 +188,7 @@ public class BidCompetitionService {
 
         bidInventoryLogRepository.saveAndFlush(log);
 
+
         Outbox outbox = Outbox.create(
             AggregateType.BID,
             bid.getId(),
@@ -198,15 +196,6 @@ public class BidCompetitionService {
             UUID.randomUUID(),
             makePayload(event)
         );
-
-        if (tracer.currentSpan() != null) {
-            outbox.attachTracing(
-                tracer.currentSpan().context().traceId(),
-                tracer.currentSpan().context().spanId()
-            );
-        }
-
-
 
         // Winner가 등록된 후, 등록되었음을 알리는 이벤트 발행
         outboxRepository.save(outbox);
@@ -251,13 +240,6 @@ public class BidCompetitionService {
                 makePayload(event)
             );
 
-            if (tracer.currentSpan() != null) {
-                outbox.attachTracing(
-                    tracer.currentSpan().context().traceId(),
-                    tracer.currentSpan().context().spanId()
-                );
-            }
-
             outboxRepository.save(outbox);
 
             return ServiceResult.FAIL;
@@ -285,13 +267,6 @@ public class BidCompetitionService {
                 UUID.randomUUID(),
                 makePayload(event)
             );
-
-            if (tracer.currentSpan() != null) {
-                outbox.attachTracing(
-                    tracer.currentSpan().context().traceId(),
-                    tracer.currentSpan().context().spanId()
-                );
-            }
 
             outboxRepository.save(outbox);
 
@@ -403,13 +378,6 @@ public class BidCompetitionService {
                 UUID.randomUUID(),
                 makePayload(event)
             );
-
-            if (tracer.currentSpan() != null) {
-                outbox.attachTracing(
-                    tracer.currentSpan().context().traceId(),
-                    tracer.currentSpan().context().spanId()
-                );
-            }
 
             outboxRepository.save(outbox);
             return;

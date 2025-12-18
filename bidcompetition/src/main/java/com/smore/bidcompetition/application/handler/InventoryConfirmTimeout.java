@@ -2,9 +2,6 @@ package com.smore.bidcompetition.application.handler;
 
 import com.smore.bidcompetition.domain.model.Outbox;
 import com.smore.bidcompetition.domain.status.OutboxResult;
-import io.micrometer.tracing.Span;
-import io.micrometer.tracing.Tracer;
-import io.micrometer.tracing.propagation.Propagator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 
@@ -14,12 +11,8 @@ public class InventoryConfirmTimeout implements OutboxHandler {
     private final String topic;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final Outbox outbox;
-    private final Tracer tracer;
-    private final Propagator propagator;
 
-    public InventoryConfirmTimeout(Tracer tracer, Propagator propagator, String topic, KafkaTemplate<String, String> kafkaTemplate, Outbox outbox) {
-        this.propagator = propagator;
-        this.tracer = tracer;
+    public InventoryConfirmTimeout(String topic, KafkaTemplate<String, String> kafkaTemplate, Outbox outbox) {
         this.topic = topic;
         this.kafkaTemplate = kafkaTemplate;
         this.outbox = outbox;
@@ -30,45 +23,21 @@ public class InventoryConfirmTimeout implements OutboxHandler {
         log.info("InventoryConfirmTimeout 이벤트 발행 - 도메인 : {}, 이벤트 : {}, bidId : {}, ",
             outbox.getAggregateType(), outbox.getEventType(), outbox.getAggregateId());
 
-        Span newSpan = restoreAndStartSpan();
+        try {
+            kafkaTemplate.send(topic, outbox.getPayload())
+                .get();
 
-        try (Tracer.SpanInScope ws = tracer.withSpan(newSpan)) {
-            try {
-                kafkaTemplate.send(topic, outbox.getPayload())
-                    .get();
+            log.info("InventoryConfirmTimeout 이벤트 발행 성공 - 도메인 : {}, 이벤트 : {}, bidId : {}, ",
+                outbox.getAggregateType(), outbox.getEventType(), outbox.getAggregateId());
 
-                log.info("InventoryConfirmTimeout 이벤트 발행 성공 - 도메인 : {}, 이벤트 : {}, bidId : {}, ",
-                    outbox.getAggregateType(), outbox.getEventType(), outbox.getAggregateId());
+            return OutboxResult.SUCCESS;
+        } catch (Exception e) {
 
-                return OutboxResult.SUCCESS;
-            } catch (Exception e) {
-                newSpan.error(e);
+            log.error("InventoryConfirmTimeout 이벤트 발행 실패 - 도메인 : {}, 이벤트 : {}, bidId : {}, ",
+                outbox.getAggregateType(), outbox.getEventType(), outbox.getAggregateId());
 
-                log.error("InventoryConfirmTimeout 이벤트 발행 실패 - 도메인 : {}, 이벤트 : {}, bidId : {}, ",
-                    outbox.getAggregateType(), outbox.getEventType(), outbox.getAggregateId(), e);
-
-                return OutboxResult.FAIL;
-            }
-        } finally {
-            newSpan.end();
+            return OutboxResult.FAIL;
         }
-    }
-
-    private Span restoreAndStartSpan() {
-        Span.Builder spanBuilder = propagator.extract(outbox, (carrier, key) -> {
-            if ("X-B3-TraceId".equalsIgnoreCase(key)) {
-                return carrier.getTraceId();
-            }
-            if ("X-B3-SpanId".equalsIgnoreCase(key)) {
-                return carrier.getSpanId();
-            }
-            return null;
-        });
-
-        Span newSpan = spanBuilder
-            .name("kafka-send")
-            .start();
-        return newSpan;
     }
 
 }

@@ -40,7 +40,6 @@ import com.smore.order.presentation.dto.IsOrderCreatedResponse;
 import com.smore.order.presentation.dto.ModifyOrderResponse;
 import com.smore.order.presentation.dto.OrderInfo;
 import com.smore.order.presentation.dto.RefundResponse;
-import io.micrometer.tracing.Tracer;
 import jakarta.transaction.Transactional;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -63,7 +62,6 @@ public class OrderService {
     private final OutboxRepository outboxRepository;
     private final RefundRepository refundRepository;
     private final ObjectMapper objectMapper;
-    private final Tracer tracer;
     private final Clock clock;
 
     private static final Set<String> ALLOWED_SORTS = Set.of(
@@ -117,13 +115,6 @@ public class OrderService {
             makePayload(event)
         );
 
-        if (tracer.currentSpan() != null) {
-            outbox.attachTracing(
-                tracer.currentSpan().context().traceId(),
-                tracer.currentSpan().context().spanId()
-            );
-        }
-
         outboxRepository.save(outbox);
     }
 
@@ -166,13 +157,6 @@ public class OrderService {
             UUID.randomUUID(),
             makePayload(event)
         );
-
-        if (tracer.currentSpan() != null) {
-            outbox.attachTracing(
-                tracer.currentSpan().context().traceId(),
-                tracer.currentSpan().context().spanId()
-            );
-        }
 
         outboxRepository.save(outbox);
 
@@ -266,13 +250,6 @@ public class OrderService {
             makePayload(event)
         );
 
-        if (tracer.currentSpan() != null) {
-            outbox.attachTracing(
-                tracer.currentSpan().context().traceId(),
-                tracer.currentSpan().context().spanId()
-            );
-        }
-
         outboxRepository.save(outbox);
 
         Order refresh = orderRepository.findById(command.getOrderId());
@@ -360,13 +337,6 @@ public class OrderService {
                 makePayload(event)
             );
 
-            if (tracer.currentSpan() != null) {
-                outbox.attachTracing(
-                    tracer.currentSpan().context().traceId(),
-                    tracer.currentSpan().context().spanId()
-                );
-            }
-
             outboxRepository.save(outbox);
         }
     }
@@ -432,13 +402,6 @@ public class OrderService {
             UUID.randomUUID(),
             makePayload(event)
         );
-
-        if (tracer.currentSpan() != null) {
-            outbox.attachTracing(
-                tracer.currentSpan().context().traceId(),
-                tracer.currentSpan().context().spanId()
-            );
-        }
 
         outboxRepository.save(outbox);
     }
@@ -618,13 +581,6 @@ public class OrderService {
             UUID.randomUUID(),
             makePayload(event)
         );
-
-        if (tracer.currentSpan() != null) {
-            outbox.attachTracing(
-                tracer.currentSpan().context().traceId(),
-                tracer.currentSpan().context().spanId()
-            );
-        }
 
         outboxRepository.save(outbox);
 

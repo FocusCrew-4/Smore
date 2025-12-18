@@ -58,14 +58,6 @@ dependencies {
 
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    // zipkin
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
-    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
-
-    // DB 쿼리 추적 및 Zipkin 시각화 (SQL 실행 시간, 쿼리 내용 확인용)
-    implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot:1.0.3'
 }
 
 dependencyManagement {
