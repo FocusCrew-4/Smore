@@ -11,5 +11,7 @@ public interface TemporaryPaymentPort {
 
     void save(TemporaryPayment temp);
 
+    void update(TemporaryPayment temp);
+
     boolean existsByOrderId(UUID orderId);
 }

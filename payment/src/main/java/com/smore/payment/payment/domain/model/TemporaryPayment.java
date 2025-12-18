@@ -23,6 +23,7 @@ public class TemporaryPayment {
     private UUID categoryId;
     private String auctionType;
     private LocalDateTime expiredAt;
+    private PgResponseResult pgResponseResult;
 
     public static TemporaryPayment create(
             UUID idempotencyKey,
@@ -42,7 +43,8 @@ public class TemporaryPayment {
                 sellerId,
                 categoryId,
                 auctionType,
-                expiredAt
+                expiredAt,
+                null
         );
     }
 
@@ -61,5 +63,9 @@ public class TemporaryPayment {
         if (LocalDateTime.now().isAfter(expiredAt)) {
             throw new IllegalStateException("결제 승인 시간이 만료되었습니다.");
         }
+    }
+
+    public boolean hasPgApprovalResult() {
+        return pgResponseResult != null;
     }
 }

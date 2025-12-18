@@ -23,8 +23,14 @@ public class TemporaryPaymentAdapter implements TemporaryPaymentPort {
     public Optional<TemporaryPayment> findByOrderId(UUID orderId) {
         log.info("레디스 찾기 시작: {}", orderId);
 
-        TemporaryPayment temp = temporaryPaymentRedisTemplate.opsForValue()
-                .get(orderId.toString());
+        String tempKey = tempKey(orderId);
+        String approvedKey = approvedKey(orderId);
+
+        TemporaryPayment temp = temporaryPaymentRedisTemplate.opsForValue().get(tempKey);
+
+        if (temp == null) {
+            temp = temporaryPaymentRedisTemplate.opsForValue().get(approvedKey);
+        }
 
         log.info("레디스 결과: {}", temp);
 
@@ -33,7 +39,8 @@ public class TemporaryPaymentAdapter implements TemporaryPaymentPort {
 
     @Override
     public void deleteByOrderId(UUID orderId) {
-        temporaryPaymentRedisTemplate.delete(orderId.toString());
+        temporaryPaymentRedisTemplate.delete(tempKey(orderId));
+        temporaryPaymentRedisTemplate.delete(approvedKey(orderId));
     }
 
     @Override
@@ -43,12 +50,45 @@ public class TemporaryPaymentAdapter implements TemporaryPaymentPort {
         if (ttl.isNegative() || ttl.isZero()) {
             throw new IllegalArgumentException("만료 시간이 현재 시간보다 과거입니다.");
         }
+        temporaryPaymentRedisTemplate.opsForValue()
+                .set(tempKey(temp.getOrderId()), temp, ttl);
+    }
 
-        temporaryPaymentRedisTemplate.opsForValue().set(temp.getOrderId().toString(), temp, ttl);
+    @Override
+    public void update(TemporaryPayment temp) {
+
+        String oldKey = tempKey(temp.getOrderId());
+        String newKey = approvedKey(temp.getOrderId());
+
+        Boolean exists = temporaryPaymentRedisTemplate.hasKey(oldKey);
+        if (!exists) {
+            throw new IllegalStateException(
+                    "TemporaryPayment가 Redis에 존재하지 않습니다. orderId=" + temp.getOrderId()
+            );
+        }
+
+        temporaryPaymentRedisTemplate.rename(oldKey, newKey);
+
+        temporaryPaymentRedisTemplate.opsForValue().set(newKey, temp);
+
+        log.info(
+                "TemporaryPayment 승인 상태로 승격. key={}, pgApprovedAt={}",
+                newKey,
+                temp.getPgResponseResult() != null ? temp.getPgResponseResult().approvedAt() : null
+        );
     }
 
     @Override
     public boolean existsByOrderId(UUID orderId) {
-        return temporaryPaymentRedisTemplate.hasKey(orderId.toString());
+        return temporaryPaymentRedisTemplate.hasKey(tempKey(orderId)) ||
+                temporaryPaymentRedisTemplate.hasKey(approvedKey(orderId));
+    }
+
+    private String tempKey(UUID orderId) {
+        return "payment:temp:" + orderId;
+    }
+
+    private String approvedKey(UUID orderId) {
+        return "payment:pg:approved:" + orderId;
     }
 }

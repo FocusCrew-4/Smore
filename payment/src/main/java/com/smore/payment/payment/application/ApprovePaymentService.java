@@ -38,39 +38,20 @@ public class ApprovePaymentService implements ApprovePaymentUseCase {
         temp.validateApproval(command.amount());
 
         paymentRepository.findByIdempotencyKey(temp.getIdempotencyKey())
-                .ifPresent(p -> { throw new IllegalStateException("이미 승인"); });
+                .ifPresent(p -> {
+                    throw new IllegalStateException("이미 승인");
+                });
 
-        PgResponseResult pgResult;
 
-        try {
+        PgResponseResult pgResult = findOrRequestPgApproval(command, temp);
 
-            paymentAuditLogService.logPgApprovalRequested(command, temp);
-
-            pgResult = pgClient.approve(
-                    command.paymentKey(),
-                    command.pgOrderId(),
-                    command.amount()
+        if (!pgResult.pgStatus().equals("DONE")) {
+            return ApprovePaymentResult.failed(
+                    command.orderId(),
+                    command.amount(),
+                    pgResult.failureCode(),
+                    pgResult.failureMessage()
             );
-
-            if (!pgResult.pgStatus().equals("DONE")) {
-                paymentAuditLogService.logPgApprovalFailed(
-                        temp,
-                        pgResult.failureMessage()
-                );
-
-                return ApprovePaymentResult.failed(
-                        command.orderId(),
-                        command.amount(),
-                        pgResult.failureCode(),
-                        pgResult.failureMessage()
-                );
-            }
-
-            paymentAuditLogService.logPgApprovalSucceeded(temp, pgResult);
-
-        } catch (RuntimeException e) {
-            paymentAuditLogService.logPgApprovalFailed(temp, e.getMessage());
-            throw e;
         }
 
         try {
@@ -91,6 +72,44 @@ public class ApprovePaymentService implements ApprovePaymentUseCase {
         }
     }
 
+
+    private PgResponseResult findOrRequestPgApproval(ApprovePaymentCommand command, TemporaryPayment temp) {
+
+        if (temp.hasPgApprovalResult()) {
+            return temp.getPgResponseResult();
+        }
+
+        try {
+
+            paymentAuditLogService.logPgApprovalRequested(command, temp);
+
+            PgResponseResult pgResult = pgClient.approve(
+                    command.paymentKey(),
+                    command.pgOrderId(),
+                    command.amount()
+            );
+
+            if (!pgResult.pgStatus().equals("DONE")) {
+                paymentAuditLogService.logPgApprovalFailed(
+                        temp,
+                        pgResult.failureMessage()
+                );
+
+                return pgResult;
+            }
+
+            temp.setPgResponseResult(pgResult);
+            temporaryPaymentPort.update(temp);
+
+            paymentAuditLogService.logPgApprovalSucceeded(temp, pgResult);
+
+            return pgResult;
+
+        } catch (RuntimeException e) {
+            paymentAuditLogService.logPgApprovalFailed(temp, e.getMessage());
+            throw e;
+        }
+    }
 
 }
 
