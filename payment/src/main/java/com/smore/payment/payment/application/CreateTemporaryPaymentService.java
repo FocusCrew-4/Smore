@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CreateTemporaryPaymentService {
 
     private final TemporaryPaymentPort temporaryPaymentPort;
+    private final PaymentAuditLogService paymentAuditLogService;
 
     @Transactional
     public void create(PaymentRequestedEvent paymentRequestedEvent) {
@@ -32,5 +33,6 @@ public class CreateTemporaryPaymentService {
         );
 
         temporaryPaymentPort.save(temp);
+        paymentAuditLogService.logTemporaryPaymentCreated(paymentRequestedEvent);
     }
 }

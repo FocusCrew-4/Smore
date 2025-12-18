@@ -257,8 +257,9 @@ public class Payment {
     public UUID getCategoryId() { return categoryId; }
     public String getAuctionType() { return auctionType; }
 
-    public void updateRefund(String reason, BigDecimal refundAmount, LocalDateTime refundedAt, String cancelTransactionKey, BigDecimal refundableAmount) {
+    public void updateRefund(String reason, BigDecimal refundAmount, LocalDateTime refundedAt, String cancelTransactionKey, BigDecimal refundableAmount, String status) {
         this.refund = new PaymentRefund(reason, refundAmount, refundedAt, cancelTransactionKey, refundableAmount);
+        this.status = PaymentStatus.of(status);
     }
 
     public PaymentApprovedEvent createApprovedEvent() {
