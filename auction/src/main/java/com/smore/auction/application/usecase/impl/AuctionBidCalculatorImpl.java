@@ -29,7 +29,10 @@ public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
     private final ObjectMapper objectMapper;
     private final Clock clock;
 
-    // TODO: 한 경매에 관해서 입찰한 내역이 중복으로 계속 들어가는 상황 발생 -> 이렇게 해서 다중수량을 구매하게 가능 quantity 필드는 삭제
+    // TODO(완료): 한 경매에 관해서 입찰한 내역이 중복으로 계속 들어가는 상황 발생 -> 이렇게 해서 다중수량을 구매하게 가능 quantity 필드는 삭제
+    // TODO: 유저 메타데이터 따로 두고 zset 에는 userId 에 관련된 score 만 저장 이후 다중수량 구매는 db 에 quantity 1개씩 펼쳐서 중복레코드 생성해서 각 1개별 별도 구매단위로 처리
+    // ex) 수량3개 구매시 zset 에는 userid : 300000 저장해서 계산 userId 메타에는 수량정보 기록 -> 경매 종료후 quantity : 1 로 해서 db 레코드 3개를 만들어 기본순위 랭크 rank, rank + 1, rank + 2 처리하여 별도 주문으로 처리
+    // 위의 방식대로하면 WINNER 재선정 코드에도 변화가 없을 것으로 예상됨
     // hset -> auctionId -> auction meta 로 기본시작 경매금 및 minStep 등 관리
     @Override
     public AuctionBidCalculateResult calculateBid(BigDecimal bidPrice, Integer quantity, String auctionId, String userId) {
@@ -117,9 +120,10 @@ public class AuctionBidCalculatorImpl implements AuctionBidCalculator {
         for (TypedTuple<String> t : candidate) {
             last = t;
         }
-
-        BigDecimal minQualifyingBid =
-            restorePrice(last.getScore());
+        BigDecimal minQualifyingBid = restorePrice(last.getScore());
+        if (bidCount < stock) {
+            minQualifyingBid = minPrice;
+        }
 
         // 7. 반환
         return new AuctionBidCalculateResult(

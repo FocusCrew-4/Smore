@@ -274,6 +274,9 @@
       AMQ_PASSWORD: artemis
       AMQ_MIN_MEMORY: 256M
       AMQ_MAX_MEMORY: 512M
+      AMQ_ACCEPTORS: >
+        tcp://0.0.0.0:61616?protocols=CORE,AMQP,OPENWIRE;
+        tcp://0.0.0.0:61613?protocols=STOMP
     ports:
       - "61616:61616"  # Core/AMQP
       - "61613:61613"  # STOMP
