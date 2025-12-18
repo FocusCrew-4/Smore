@@ -1,5 +1,7 @@
 package com.smore.order.application.factory;
 
+import static com.smore.order.domain.status.EventType.*;
+
 import com.smore.order.application.command.CompletedOrderHandler;
 import com.smore.order.application.command.CreatedOrderHandler;
 import com.smore.order.application.command.FailedOrderHandler;
