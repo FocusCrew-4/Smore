@@ -4,6 +4,10 @@ spring:
   application:
     name: auction-service
 
+  data:
+    mongodb:
+      auto-index-creation: true
+
 management:
   endpoints:
     web:
