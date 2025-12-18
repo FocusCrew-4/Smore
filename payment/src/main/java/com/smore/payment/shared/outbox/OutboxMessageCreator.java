@@ -36,6 +36,9 @@ public class OutboxMessageCreator {
     @Value("${topic.order.refund-fail}")
     private String orderRefundFailTopic;
 
+    @Value("${topic.order.refund-dlt}")
+    private String orderRefundDltTopic;
+
     @Value("${topic.seller.success}")
     private String sellerSuccessTopic;
 
@@ -143,6 +146,19 @@ public class OutboxMessageCreator {
                 event.getClass().getSimpleName(),
                 UUID.randomUUID(),
                 sellerDltTopic,
+                jsonUtil.jsonToString(event),
+                3,
+                OutboxStatus.FAILED
+        );
+    }
+
+    public OutboxMessage refundDlt(PaymentRefundFailedEvent event) {
+        return new OutboxMessage(
+                "REFUND_FAILED",
+                event.orderId(),
+                event.getClass().getSimpleName(),
+                UUID.randomUUID(),
+                orderRefundDltTopic,
                 jsonUtil.jsonToString(event),
                 3,
                 OutboxStatus.FAILED

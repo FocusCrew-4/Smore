@@ -52,6 +52,20 @@ public class ApprovePaymentService implements ApprovePaymentUseCase {
                     command.amount()
             );
 
+            if (!pgResult.pgStatus().equals("DONE")) {
+                paymentAuditLogService.logPgApprovalFailed(
+                        temp,
+                        pgResult.failureMessage()
+                );
+
+                return ApprovePaymentResult.failed(
+                        command.orderId(),
+                        command.amount(),
+                        pgResult.failureCode(),
+                        pgResult.failureMessage()
+                );
+            }
+
             paymentAuditLogService.logPgApprovalSucceeded(temp, pgResult);
 
         } catch (RuntimeException e) {
@@ -63,13 +77,14 @@ public class ApprovePaymentService implements ApprovePaymentUseCase {
             Payment payment = paymentFinalizeService.finalizePayment(temp, pgResult);
             paymentAuditLogService.logPaymentApprovalSucceeded(payment);
 
-            return new ApprovePaymentResult(
+            return ApprovePaymentResult.success(
                     payment.getId(),
                     payment.getOrderId(),
                     payment.getAmount(),
                     payment.getApprovedAt(),
-                    payment.getStatus().name()
+                    payment.getStatus().getDesc()
             );
+
         } catch (RuntimeException e) {
             paymentAuditLogService.logPaymentApprovalFailed(temp, e.getMessage());
             throw e;

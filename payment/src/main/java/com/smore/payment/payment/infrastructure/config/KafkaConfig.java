@@ -32,6 +32,9 @@ public class KafkaConfig {
     @Value("${topic.order.refund-fail}")
     private String orderRefundFailTopic;
 
+    @Value("${topic.order.refund-dlt}")
+    private String orderRefundDltTopic;
+
     @Value("${topic.seller.success}")
     private String sellerSuccessTopic;
 
@@ -83,6 +86,14 @@ public class KafkaConfig {
     @Bean
     public NewTopic paymentRefundFailTopic() {
         return TopicBuilder.name(orderRefundFailTopic)
+                .partitions(3)
+                .replicas(3)
+                .build();
+    }
+
+    @Bean
+    public NewTopic paymentRefundDltTopic() {
+        return TopicBuilder.name(orderRefundDltTopic)
                 .partitions(3)
                 .replicas(3)
                 .build();
