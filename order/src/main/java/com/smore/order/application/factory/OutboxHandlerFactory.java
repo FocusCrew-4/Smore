@@ -1,5 +1,6 @@
 package com.smore.order.application.factory;
 
+import com.smore.order.application.command.AuctionOrderFailedHandler;
 import com.smore.order.application.command.CompletedOrderHandler;
 import com.smore.order.application.command.CreatedOrderHandler;
 import com.smore.order.application.command.FailedOrderHandler;
@@ -38,6 +39,9 @@ public class OutboxHandlerFactory {
     @Value("${topic.order.failed}")
     private String orderFailedTopic;
 
+    @Value("${topic.order.auction-failed}")
+    private String auctionOrderFailedTopic;
+
     public OutboxHandler from(Outbox outbox) {
         return switch (outbox.getEventType()) {
             case ORDER_CREATED -> new CreatedOrderHandler(orderCreatedTopic, kafkaTemplate, outbox);
@@ -45,7 +49,8 @@ public class OutboxHandlerFactory {
             case REFUND_REQUEST -> new RefundRequestHandler(refundRequestTopic, kafkaTemplate, outbox);
             case REFUND_SUCCESS -> new RefundSuccessHandler(refundSuccessTopic, kafkaTemplate, outbox);
             case REFUND_FAIL -> new RefundFailedHandler(refundFailTopic, kafkaTemplate, outbox);
-            case ORDER_FAILED -> new FailedOrderHandler(orderFailedTopic, kafkaTemplate, outbox);
+            case BID_ORDER_FAILED -> new FailedOrderHandler(orderFailedTopic, kafkaTemplate, outbox);
+            case AUCTION_ORDER_FAILED -> new AuctionOrderFailedHandler(auctionOrderFailedTopic, kafkaTemplate, outbox);
             default -> throw new IllegalArgumentException(
                 "지원되지 않은 이벤트입니다." + outbox.getEventType()
             );
