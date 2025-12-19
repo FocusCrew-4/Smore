@@ -23,10 +23,9 @@ jobs:
           java-version: '21'
 
       - name: Build member JAR
-        working-directory: member
         run: |
           chmod +x ./gradlew
-          ./gradlew clean bootJar -x test
+          ./gradlew :member:clean :member:bootJar -x test
 
       # 3) AWS 자격증명 설정 (Secrets에 등록 필요)
       - name: Configure AWS credentials
