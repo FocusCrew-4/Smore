@@ -1,6 +1,5 @@
 ﻿name: Build and Push to ECR
 
-# main 브랜치에 push 될 때 실행
 on:
   push:
     branches:
