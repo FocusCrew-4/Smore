@@ -1,3 +1,23 @@
+CREATE TABLE IF NOT EXISTS p_product (
+                                         id UUID PRIMARY KEY,
+                                         seller_id BIGINT NOT NULL,
+                                         category_id UUID NOT NULL,
+                                         name VARCHAR(255) NOT NULL,
+                                         description TEXT,
+                                         price NUMERIC(10,2) NOT NULL,
+                                         stock INT NOT NULL,
+                                         sale_type VARCHAR(20) NOT NULL,
+                                         threshold_for_auction INT,
+                                         status VARCHAR(20) NOT NULL,
+                                         created_at TIMESTAMP NOT NULL,
+                                         updated_at TIMESTAMP NOT NULL,
+                                         deleted_at TIMESTAMP,
+                                         deleted_by BIGINT,
+                                         start_at TIMESTAMP,
+                                         end_at TIMESTAMP,
+                                         bidding_duration INT
+);
+
 CREATE TABLE IF NOT EXISTS p_product_stock_log
 (
     id           UUID PRIMARY KEY,
@@ -52,7 +72,7 @@ INSERT INTO p_product (id,
                        bidding_duration)
 VALUES ('f4b53413-a635-4d15-b31f-d678ac533e38',
         1, -- sellerId
-        '11111111-1111-1111-1111-111111111111', -- categoryId (원하면 실제 값 넣어줘)
+        '11111111-1111-1111-1111-111111111111', -- categoryId
         'Sample Product',
         'This is a sample description.',
         10000.00,
