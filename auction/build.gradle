@@ -67,6 +67,11 @@ dependencies {
     // 런타임 드라이버
     runtimeOnly 'org.postgresql:postgresql'
 
+    // 모니터링
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+
     // 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
