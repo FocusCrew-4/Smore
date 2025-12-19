@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-@Table(name = "categories")
+@Table(name = "p_categories")
 public class Category {
 
     @Id
