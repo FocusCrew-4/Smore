@@ -308,6 +308,16 @@
     networks:
       - msa-network
 
+  product-service:
+    container_name: product-service
+    build: ./product/.
+    ports:
+      - "8800:8800"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - msa-network
+
   category-service:
     container_name: category-service
     build: ./category/.
