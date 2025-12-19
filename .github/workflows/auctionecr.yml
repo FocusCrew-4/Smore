@@ -1,4 +1,4 @@
-﻿name: Build and Push to ECR
+name: Build and Push to ECR
 
 on:
   push:
@@ -21,10 +21,10 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Build member JAR
+      - name: Build auction JAR
         run: |
           chmod +x ./gradlew
-          ./gradlew :member:clean :member:bootJar -x test
+          ./gradlew :auction:clean :auction:bootJar -x test
 
       # 3) AWS 자격증명 설정 (Secrets에 등록 필요)
       - name: Configure AWS credentials
@@ -41,10 +41,10 @@ jobs:
 
       # 5) Docker 이미지 빌드 및 ECR Push
       - name: Build, Tag, and Push Docker Image
-        working-directory: member
+        working-directory: auction
         env:
           ECR_REGISTRY: 351516300616.dkr.ecr.ap-northeast-2.amazonaws.com
-          ECR_REPOSITORY: keepgoing/member
+          ECR_REPOSITORY: keepgoing/auction
           IMAGE_TAG: latest
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
