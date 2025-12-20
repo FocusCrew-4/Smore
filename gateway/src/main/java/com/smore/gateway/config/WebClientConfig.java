@@ -10,6 +10,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientConfig {
 
     @Bean
+    public WebClient.Builder plainWebClientBuilder() {
+        return WebClient.builder();
+    }
+
+    @Bean
     @LoadBalanced  // Eureka 서비스명 기바능로 호출 가능하게 함
     public WebClient.Builder loadBalancedWebClientBuilder() {
         return WebClient.builder();

@@ -2,6 +2,7 @@ package com.smore.gateway.infra;
 
 import com.smore.gateway.usecase.JwtValidation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,7 +16,11 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class JwtValidationImpl implements JwtValidation {
 
-    private final WebClient.Builder webClient;
+    @Qualifier("plainWebClientBuilder")
+    private final WebClient.Builder plainWebClient;
+
+    @Qualifier("loadBalancedWebClientBuilder")
+    private final WebClient.Builder loadBalancedWebClient;
     private final JwtDecoder jwtDecoder;
 
     @Value("${member.service.base-url}")
@@ -29,7 +34,7 @@ public class JwtValidationImpl implements JwtValidation {
     @Override
     public Mono<Boolean> validateClaim(String token) {
 
-        Mono<Boolean> memberResponse = webClient.build()
+        Mono<Boolean> memberResponse = selectWebClientBuilder().build()
             // HTTP 메서드 종류 지정
             .method(HttpMethod.GET)
             // 요청을 보낼 uri 설정
@@ -41,5 +46,11 @@ public class JwtValidationImpl implements JwtValidation {
             .bodyToMono(Boolean.class);
 
         return memberResponse;
+    }
+    private WebClient.Builder selectWebClientBuilder() {
+        if (memberBaseUrl != null && memberBaseUrl.startsWith("lb://")) {
+            return loadBalancedWebClient;
+        }
+        return plainWebClient;
     }
 }
