@@ -1,4 +1,4 @@
-# auction - application-prod.yml
+# member - application-prod.yml
 spring:
   config:
     activate:
@@ -14,14 +14,14 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-  data:
-    mongodb:
-      uri: ${MONGO_END_POINT}
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      password: ""
-      database: 0
+#  data:
+#    mongodb:
+#      uri:
+#    redis:
+#      host:
+#      port:
+#      password: ""
+#      database: 0
 
   jpa:
     hibernate:
@@ -51,6 +51,3 @@ eureka:
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 30  # 리스 갱신 간격
     lease-expiration-duration-in-seconds: 90  # 리스 만료 기간
-
-artemis:
-  host: 10.0.1.248
