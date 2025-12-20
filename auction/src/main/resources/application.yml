@@ -9,6 +9,9 @@ spring:
   data:
     mongodb:
       auto-index-creation: true
+  kafka:
+    template:
+      observation-enabled: true
 
   kafka:
     consumer:
