@@ -1,7 +1,11 @@
-server:
+﻿server:
   port: 17700
 
 spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration
   application:
     name: gateway-server
   cloud:
