@@ -274,6 +274,7 @@
       AMQ_PASSWORD: artemis
       AMQ_MIN_MEMORY: 256M
       AMQ_MAX_MEMORY: 512M
+      AMQ_WEB_BIND_ADDRESS: 0.0.0.0
       AMQ_ACCEPTORS: >
         tcp://0.0.0.0:61616?protocols=CORE,AMQP,OPENWIRE;
         tcp://0.0.0.0:61613?protocols=STOMP

@@ -1,4 +1,4 @@
-# auction - application-prod.yml
+# member - application-prod.yml
 spring:
   config:
     activate:
@@ -7,18 +7,18 @@ spring:
     config:
       enabled: false
   datasource:
-    url: jdbc:postgresql://${RDS_END_POINT}/auction
+    url: jdbc:postgresql://${RDS_END_POINT}/member
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-  data:
-    mongodb:
-      uri: ${MONGO_END_POINT}
-    redis:
-      url: rediss://${REDIS_ENDPOINT}
-      timeout: 3s
-      ssl:
-        enabled: true
+#  data:
+#    mongodb:
+#      uri:
+#    redis:
+#      host:
+#      port:
+#      password: ""
+#      database: 0
 
   jpa:
     hibernate:
@@ -42,6 +42,3 @@ spring:
 eureka:
   client:
     enabled: false
-
-artemis:
-  host: 10.0.1.248

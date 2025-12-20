@@ -63,6 +63,25 @@ VALUES (
 );
 
 -- Reset sequence after manual inserts to avoid PK collisions
+
+-- Seed consumers for k6 load test (500 members)
+INSERT INTO p_member (id, role, email, password, nickname, auction_cancel_count, status, created_at, updated_at, deleted_at, deleted_by)
+SELECT
+    100000 + g,
+    'CONSUMER',
+    concat('consumer', lpad(g::text, 4, '0'), '@example.com'),
+    'hashed-consumer-password',
+    concat('consumer_', lpad(g::text, 4, '0')),
+    0,
+    'ACTIVE',
+    NOW(),
+    NOW(),
+    NULL,
+    NULL
+FROM generate_series(1, 500) g
+ON CONFLICT DO NOTHING;
+
+
 SELECT setval(
     pg_get_serial_sequence('p_member', 'id'),
     (SELECT COALESCE(MAX(id), 0) + 1 FROM p_member),

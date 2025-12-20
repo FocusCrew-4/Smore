@@ -26,6 +26,8 @@ spring:
       port: 6379
       password: ""
       database: 0
+      ssl:
+        enabled: false
 
   jpa:
     hibernate:
@@ -42,43 +44,11 @@ spring:
     init:
       mode: always
       data-locations: classpath:data.sql
-  Kafka:
+
+  kafka:
     # 로컬에서 Docker로 띄운 브로커 외부 포트에 맞춰 설정 (docker-compose의 EXTERNAL 매핑)
     bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
 
-    consumer:
-      group-id: auction-service-group
-      # offset 커밋 기록이 삭제되었거나, 브로커에서 보관중인 로그범위에서 오프셋이 유효하지 않은 경우
-      # 어디서부터 메시지를 읽기 시작할지 정해주는 설정
-      auto-offset-reset: earliest
-      enable-auto-commit: false
-      properties:
-        isolation.level: read_committed # 트랜잭션 메시지 읽기 안전성
-      # key 는 String 으로 역직렬화
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      # value 는 Json java 객체로 역직렬화 하겠다
-      # properties 추가 설정이나 ConsumerFactory 에서 추가 설정 필요
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
-    listener:
-      # 필수: @KafkaListener 에서 Acknowledgment 사용 가능
-      # MANUAL 수동 커밋 모드
-      ack-mode: MANUAL
-      # 컨슈머 스레드 개수 (옵션)
-      concurrency: 3
-
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      # 브로커의 리더 + 모든 ISR 에 쓰기 성공 후 ACK
-      acks: all
-      retries: 3
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui
-    operations-sorter: method
-    tags-sorter: alpha
 eureka:
   client:
     register-with-eureka: true
