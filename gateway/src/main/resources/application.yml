@@ -65,3 +65,7 @@ spring:
 eureka:
   instance:
     hostname: gateway-server
+
+member:
+  service:
+    base-url: lb://member-service
