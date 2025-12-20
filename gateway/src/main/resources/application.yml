@@ -69,3 +69,16 @@ eureka:
 member:
   service:
     base-url: lb://member-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  metrics:
+    tags:
+      application: member-service
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
