@@ -3,13 +3,6 @@ spring:
   config:
     activate:
       on-profile: prod
-    import: "optional:configserver:"
-
-  cloud:
-    config:
-      discovery:
-        enabled: true
-        service-id: config-server
   datasource:
     url: jdbc:postgresql://${RDS_END_POINT}/p_member
     username: ${DB_USERNAME}
