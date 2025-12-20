@@ -11,7 +11,7 @@ spring:
         enabled: true
         service-id: config-server
   datasource:
-    url: jdbc:postgresql://${RDS_END_POINT}/p_auction
+    url: jdbc:postgresql://${RDS_END_POINT}/p_member
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
