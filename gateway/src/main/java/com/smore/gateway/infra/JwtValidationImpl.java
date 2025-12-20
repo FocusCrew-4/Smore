@@ -1,7 +1,6 @@
 package com.smore.gateway.infra;
 
 import com.smore.gateway.usecase.JwtValidation;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -13,18 +12,26 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Component
-@RequiredArgsConstructor
 public class JwtValidationImpl implements JwtValidation {
 
-    @Qualifier("plainWebClientBuilder")
     private final WebClient.Builder plainWebClient;
 
-    @Qualifier("loadBalancedWebClientBuilder")
     private final WebClient.Builder loadBalancedWebClient;
     private final JwtDecoder jwtDecoder;
 
     @Value("${member.service.base-url}")
     private String memberBaseUrl;
+
+    // TODO: 퀄리파이어 관련 공부
+    public JwtValidationImpl(
+        @Qualifier("plainWebClientBuilder") WebClient.Builder plainWebClient,
+        @Qualifier("loadBalancedWebClientBuilder") WebClient.Builder loadBalancedWebClient,
+        JwtDecoder jwtDecoder
+    ) {
+        this.plainWebClient = plainWebClient;
+        this.loadBalancedWebClient = loadBalancedWebClient;
+        this.jwtDecoder = jwtDecoder;
+    }
 
     @Override
     public Jwt validateJwt(String bearerJwt) {
