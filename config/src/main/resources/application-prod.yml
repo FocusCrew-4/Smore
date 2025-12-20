@@ -1,3 +1,4 @@
+# config - application-prod.yml
 spring:
   config:
     activate:
@@ -8,7 +9,8 @@ eureka:
     service-url:
       defaultZone: http://keepgoing-alb-1744092232.ap-northeast-2.elb.amazonaws.com/eureka/
   instance:
-    hostname: config-server
-    prefer-ip-address: true
+    hostname: keepgoing-alb-1744092232.ap-northeast-2.elb.amazonaws.com
     lease-renewal-interval-in-seconds: 30  # 리스 갱신 간격
     lease-expiration-duration-in-seconds: 90  # 리스 만료 기간
+    prefer-ip-address: false
+    non-secure-port: 80
