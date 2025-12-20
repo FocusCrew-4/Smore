@@ -87,6 +87,9 @@ dependencies {
 
     // 공통 모듈
     implementation project(":common")
+
+    // MSK 설치
+    implementation 'software.amazon.msk:aws-msk-iam-auth:2.2.0'
 }
 
 dependencyManagement {

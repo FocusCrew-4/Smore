@@ -1,0 +1,68 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+              route-id-prefix: gateway_
+          routes:
+            - id: member-service
+              uri: http://member-service.keepgoing-local:9900
+              predicates:
+                - Path=/api/v*/members/**,/api/v*/internal/members/**,/api/v*/sellers/**
+
+            - id: auction-service
+              uri: http://auction-service.keepgoing-local:6600
+              predicates:
+                - Path=/api/v*/auctions/**
+
+            # TODO: 어떻게 동작하는건지 정리하기
+            - id: auction-ws
+              uri: ws://auction-service.keepgoing-local:6600
+              predicates:
+                - Path=/ws-auction/**
+              filters:
+                - RewritePath=/ws-auction/(?<segment>.*),/ws-auction/${segment}
+
+            - id: product-service
+              uri: http://product-service.keepgoing-local:6600
+              predicates:
+                - Path=/api/v*/products/**
+
+            - id: payment-service
+              uri: http://payment-service.keepgoing-local:4400
+              predicates:
+                - Path=/api/v*/payments/**
+
+            - id: fee-policy-service
+              uri: lb://fee-policy-service
+              predicates:
+                - Path=/api/v*/fee-policies/**
+
+            - id: cancel-policy-service
+              uri: lb://cancel-policy-service
+              predicates:
+                - Path=/api/v*/cancel-policies/**
+
+            - id: order-service
+              uri: http://order-service.keepgoing-local:5500
+              predicates:
+                - Path=/api/v*/external/orders/**, /api/v*/admin/orders/**
+
+            - id: bid-service
+              uri: http://bid-service.keepgoing-local:7700
+              predicates:
+                - Path=/api/v*/external/bid-competitions/**
+eureka:
+  client:
+    enabled: false
+
+member:
+  service:
+    base-url: http://member-service.keepgoing-local:9900
