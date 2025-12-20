@@ -3,6 +3,9 @@ spring:
   config:
     activate:
       on-profile: prod
+  cloud:
+    config:
+      enabled: false
   datasource:
     url: jdbc:postgresql://${RDS_END_POINT}/p_auction
     username: ${DB_USERNAME}
