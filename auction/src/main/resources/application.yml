@@ -1,4 +1,6 @@
 # auction - application.yml
+server:
+  port: 6600
 
 spring:
   application:
