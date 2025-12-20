@@ -31,12 +31,12 @@ spring:
                 - RewritePath=/ws-auction/(?<segment>.*),/ws-auction/${segment}
 
             - id: product-service
-              uri: lb://product-service
+              uri: http://product-service.keepgoing-local:6600
               predicates:
                 - Path=/api/v*/products/**
 
             - id: payment-service
-              uri: lb://payment-service
+              uri: http://payment-service.keepgoing-local:4400
               predicates:
                 - Path=/api/v*/payments/**
 
@@ -51,12 +51,12 @@ spring:
                 - Path=/api/v*/cancel-policies/**
 
             - id: order-service
-              uri: lb://order-service
+              uri: http://order-service.keepgoing-local:5500
               predicates:
                 - Path=/api/v*/external/orders/**, /api/v*/admin/orders/**
 
             - id: bid-service
-              uri: lb://bid-service
+              uri: http://bid-service.keepgoing-local:7700
               predicates:
                 - Path=/api/v*/external/bid-competitions/**
 eureka:
