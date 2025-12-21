@@ -1,15 +1,21 @@
 FROM amazoncorretto:21
-
 WORKDIR /app
+
 COPY certs/global-bundle.pem /app/global-bundle.pem
 
-RUN keytool -importkeystore \
-  -srckeystore /app/global-bundle.pem \
-  -srcstoretype PEM \
-  -destkeystore /app/docdb-truststore.p12 \
-  -deststoretype PKCS12 \
-  -storepass changeit \
-  -noprompt
+# PEM 분해
+RUN awk '/BEGIN CERTIFICATE/{i++}{print > "/tmp/cert"i".pem"}' /app/global-bundle.pem
+
+# 개별 import
+RUN for f in /tmp/cert*.pem; do \
+    keytool -importcert \
+      -alias "$(basename $f)" \
+      -file "$f" \
+      -keystore /app/docdb-truststore.p12 \
+      -storetype PKCS12 \
+      -storepass changeit \
+      -noprompt; \
+  done
 
 ENV JAVA_TOOL_OPTIONS="\
 -Djavax.net.ssl.trustStore=/app/docdb-truststore.p12 \
