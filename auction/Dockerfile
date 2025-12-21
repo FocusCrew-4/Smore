@@ -12,7 +12,7 @@ RUN keytool -importcert \
     -storepass changeit \
     -noprompt
 
-# 3. JVM에 trustStore 지정
+# 3. JVM에 trustStore 지정.
 ENV JAVA_TOOL_OPTIONS="-Djavax.net.ssl.trustStore=/app/docdb-truststore.jks -Djavax.net.ssl.trustStorePassword=changeit"
 
 COPY build/libs/*.jar auction.jar
