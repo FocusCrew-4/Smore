@@ -3,7 +3,7 @@ FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
-COPY crets/global-bundle.pem /app/global-bundle.pem
+COPY certs/global-bundle.pem /app/global-bundle.pem
 
 RUN keytool -importcert \
     -file /app/global-bundle.pem \
