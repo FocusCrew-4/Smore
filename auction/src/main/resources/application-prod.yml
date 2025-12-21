@@ -43,5 +43,6 @@ eureka:
   client:
     enabled: false
 
-artemis:
-  host: 10.0.1.248
+stomp:
+  relay:
+    host: 10.0.1.2
