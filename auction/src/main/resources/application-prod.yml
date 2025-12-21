@@ -15,10 +15,13 @@ spring:
     mongodb:
       uri: ${MONGO_END_POINT}
     redis:
-      url: rediss://${REDIS_ENDPOINT}
       timeout: 3s
       ssl:
         enabled: true
+      cluster:
+        nodes:
+          - ${REDIS_ENDPOINT}
+        max-redirects: 5
 
   jpa:
     hibernate:
