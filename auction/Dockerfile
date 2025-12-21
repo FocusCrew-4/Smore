@@ -1,25 +1,15 @@
-FROM eclipse-temurin:21-jdk
+FROM amazoncorretto:21
 
 WORKDIR /app
-
 COPY certs/global-bundle.pem /app/global-bundle.pem
 
-# PEM을 인증서 단위로 분리
-RUN awk '
-  /BEGIN CERTIFICATE/ {i++}
-  {print > "/tmp/cert" i ".pem"}
-' /app/global-bundle.pem
-
-# 각 인증서를 truststore에 개별 import
-RUN for f in /tmp/cert*.pem; do \
-    keytool -importcert \
-      -alias "$(basename $f)" \
-      -file "$f" \
-      -keystore /app/docdb-truststore.p12 \
-      -storetype PKCS12 \
-      -storepass changeit \
-      -noprompt; \
-  done
+RUN keytool -importkeystore \
+  -srckeystore /app/global-bundle.pem \
+  -srcstoretype PEM \
+  -destkeystore /app/docdb-truststore.p12 \
+  -deststoretype PKCS12 \
+  -storepass changeit \
+  -noprompt
 
 ENV JAVA_TOOL_OPTIONS="\
 -Djavax.net.ssl.trustStore=/app/docdb-truststore.p12 \
