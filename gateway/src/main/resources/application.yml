@@ -1,7 +1,11 @@
-server:
+﻿server:
   port: 17700
 
 spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration
   application:
     name: gateway-server
   cloud:
@@ -69,3 +73,16 @@ eureka:
 member:
   service:
     base-url: lb://member-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  metrics:
+    tags:
+      application: member-service
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
