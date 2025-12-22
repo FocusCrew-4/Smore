@@ -15,10 +15,13 @@ spring:
     mongodb:
       uri: ${MONGO_END_POINT}
     redis:
-      url: rediss://${REDIS_ENDPOINT}
       timeout: 3s
       ssl:
         enabled: true
+      cluster:
+        nodes:
+          - ${REDIS_ENDPOINT}
+        max-redirects: 5
 
   jpa:
     hibernate:
@@ -37,11 +40,17 @@ spring:
   kafka:
     # 로컬에서 Docker로 띄운 브로커 외부 포트에 맞춰 설정 (docker-compose의 EXTERNAL 매핑)
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    properties:
+      security.protocol: SASL_SSL
+      sasl.mechanism: AWS_MSK_IAM
+      sasl.jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
+      sasl.client.callback.handler.class: software.amazon.msk.auth.iam.IAMClientCallbackHandler
 
 
 eureka:
   client:
     enabled: false
 
-artemis:
-  host: 10.0.1.248
+stomp:
+  relay:
+    host: 10.0.1.248

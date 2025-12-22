@@ -11,6 +11,8 @@ spring:
       auto-index-creation: true
 
   kafka:
+    template:
+      observation-enabled: true
     consumer:
       group-id: auction-service-group
       # offset 커밋 기록이 삭제되었거나, 브로커에서 보관중인 로그범위에서 오프셋이 유효하지 않은 경우

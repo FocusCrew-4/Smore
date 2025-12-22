@@ -35,4 +35,12 @@ public class AuctionKafkaTopicConfig {
             .build();
     }
 
+    @Bean
+    public NewTopic testMark() {
+        return TopicBuilder.name("TEST_MARK")
+            .partitions(2)
+            .replicas(3)
+            .build();
+    }
+
 }
