@@ -607,12 +607,19 @@ public class BidCompetitionService {
             }
         }
 
-        stockRedisService.rollback(
+
+        long restored = stockRedisService.refundRestore(
             winner.getBidId(),
-            winner.getAllocationKey().toString(),
-            winner.getIdempotencyKey().toString(),
+            command.getRefundId(),
             delta
         );
+        if (restored == 0) {
+            log.info("이미 처리된 환불 복구입니다. bidId={}, refundId={}", winner.getBidId(),
+                command.getRefundId());
+        } else if (restored < 0) {
+            log.error("환불 복구 실패(redis) bidId={}, refundId={}, result={}", winner.getBidId(),
+                command.getRefundId(), restored);
+        }
     }
 
     // TODO: 나중에 클래스로 분리할 예정
