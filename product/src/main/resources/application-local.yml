@@ -1,0 +1,27 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  elasticsearch:
+    uris: http://localhost:9200
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/product
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
+
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:18800/eureka/

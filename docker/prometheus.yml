@@ -1,0 +1,40 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "member-service"
+    metrics_path: "/actuator/prometheus"
+    dns_sd_configs:
+      - names: [ "member-service" ]
+        type: "A"
+        port: 9900
+        refresh_interval: 5s
+
+  - job_name: "order-service"
+    metrics_path: "/actuator/prometheus"
+    dns_sd_configs:
+      - names: [ "order-service" ]
+        type: "A"
+        port: 5500
+        refresh_interval: 5s
+
+  - job_name: "auction-service"
+    metrics_path: "/actuator/prometheus"
+    dns_sd_configs:
+      - names: [ "auction-service" ]
+        type: "A"
+        port: 6600
+        refresh_interval: 5s
+
+  - job_name: "bid-service"
+    metrics_path: "/actuator/prometheus"
+    dns_sd_configs:
+      - names: [ "bid-service" ]
+        type: "A"
+        port: 7700
+        refresh_interval: 5s
+
+  - job_name: "local-apps"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: [ "host.docker.internal:9900", "host.docker.internal:6600", "host.docker.internal:5500", "host.docker.internal:7700" ]

@@ -1,15 +1,17 @@
 package com.smore.auction.presentation.websocket;
 
-import com.smore.auction.application.service.usecase.AuctionBidCalculator;
+import com.smore.auction.application.usecase.AuctionBidCalculator;
 import com.smore.auction.presentation.websocket.dto.request.AuctionBidRequestDto;
 import com.smore.auction.presentation.websocket.dto.response.AuctionBidResponseDto;
 import com.smore.auction.presentation.websocket.mapper.AuctionWebSocketMapper;
+import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -27,18 +29,22 @@ public class AuctionStompController {
     public void handleBid(
         @DestinationVariable UUID auctionId,
         Principal principal,
-        AuctionBidRequestDto auctionBidRequestDto
+        @Payload @Valid AuctionBidRequestDto auctionBidRequestDto
     ) {
         log.info("Received a bid request for {}", auctionId);
         log.info("Received a bid request for {}", auctionBidRequestDto);
         AuctionBidResponseDto res
             = mapper.toAuctionBidResponseDto(
-                auctionBidCalculator.calculateBid(auctionBidRequestDto.bidPrice(), auctionBidRequestDto.quantity(),
-                    String.valueOf(auctionId), principal.getName())
+                auctionBidCalculator.calculateBid(
+                    auctionBidRequestDto.bidPrice(),
+                    auctionBidRequestDto.quantity(),
+                    String.valueOf(auctionId),
+                    principal.getName()
+                )
             );
         simpMessagingTemplate.convertAndSend(
-            "/sub/auction/" + auctionId,
-            "1위 입찰가" + res.highestBid() + ", 10위 입찰가"
+            "/topic/auction/" + auctionId,
+            "1위 입찰가" + res.highestBid() + ", 최소 입찰가"
                 + res.minQualifyingBid()
         );
     }

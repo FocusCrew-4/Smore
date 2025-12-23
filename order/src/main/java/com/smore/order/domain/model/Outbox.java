@@ -30,6 +30,10 @@ public class Outbox {
 
     private EventStatus eventStatus;
 
+    private String traceId;
+
+    private String spanId;
+
     public static Outbox create(
         AggregateType aggregateType,
         UUID aggregateId,
@@ -62,7 +66,9 @@ public class Outbox {
         UUID idempotencyKey,
         String payload,
         Integer retryCount,
-        EventStatus eventStatus
+        EventStatus eventStatus,
+        String traceId,
+        String spanId
     ) {
 
         return Outbox.builder()
@@ -74,7 +80,14 @@ public class Outbox {
             .payload(payload)
             .retryCount(retryCount)
             .eventStatus(eventStatus)
+            .traceId(traceId)
+            .spanId(spanId)
             .build();
+    }
+
+    public void attachTracing(String traceId, String spanId) {
+        this.traceId = traceId;
+        this.spanId = spanId;
     }
 
     public boolean isExceededRetry(Integer maxRetryCount) {

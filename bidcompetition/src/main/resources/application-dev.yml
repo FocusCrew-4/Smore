@@ -3,10 +3,24 @@ spring:
     activate:
       on-profile: dev
 
+  sql:
+    init:
+      mode: always
+
   datasource:
     url: jdbc:postgresql://postgresql-server:5432/bid
     username: root
     password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+    defer-datasource-initialization: true
 
   kafka:
     bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
@@ -22,3 +36,15 @@ eureka:
     prefer-ip-address: true  # IP 주소 사용 선호
     lease-renewal-interval-in-seconds: 30  # 리스 갱신 간격
     lease-expiration-duration-in-seconds: 90  # 리스 만료 기간
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans

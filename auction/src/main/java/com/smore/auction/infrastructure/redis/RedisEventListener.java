@@ -1,6 +1,6 @@
 package com.smore.auction.infrastructure.redis;
 
-import com.smore.auction.application.service.usecase.AuctionClose;
+import com.smore.auction.application.usecase.AuctionClose;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

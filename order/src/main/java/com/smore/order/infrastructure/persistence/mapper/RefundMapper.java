@@ -24,6 +24,7 @@ public final class RefundMapper {
             refund.getIdempotencyKey(),
             refund.getReason(),
             refund.getStatus(),
+            refund.getRefundTriggerType(),
             refund.getRequestedAt()
         );
     }
@@ -45,6 +46,7 @@ public final class RefundMapper {
             entity.getReason(),
             entity.getRefundFailReason(),
             entity.getStatus(),
+            entity.getRefundTriggerType(),
             entity.getRequestedAt(),
             entity.getCompletedAt()
         );

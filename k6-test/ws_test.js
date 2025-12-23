@@ -1,0 +1,291 @@
+import http from 'k6/http';
+import ws from 'k6/ws';
+import { check } from 'k6';
+
+const VUS = __ENV.VUS ? parseInt(__ENV.VUS, 10) : 500;
+const DURATION = __ENV.DURATION || '30s';
+
+export const options = {
+  vus: VUS,
+  duration: DURATION,
+};
+
+const WS_BASE = __ENV.WS_BASE || 'ws://host.docker.internal:6600';
+const HTTP_BASE = __ENV.HTTP_BASE || WS_BASE.replace(/^ws/i, 'http');
+const AUCTION_ID = __ENV.AUCTION_ID || '11111111-1111-1111-1111-111111111111';
+const DEBUG = __ENV.DEBUG === '1';
+const SEND_DELAY_MS = __ENV.SEND_DELAY_MS ? parseInt(__ENV.SEND_DELAY_MS, 10) : 0;
+const SEND_EVERY_MS = __ENV.SEND_EVERY_MS ? parseInt(__ENV.SEND_EVERY_MS, 10) : 1000;
+const SESSION_MS = __ENV.SESSION_MS ? parseInt(__ENV.SESSION_MS, 10) : 10000;
+const BID_PRICE_BASE = __ENV.BID_PRICE_BASE ? parseFloat(__ENV.BID_PRICE_BASE) : 1000;
+const BID_PRICE_STEP = __ENV.BID_PRICE_STEP ? parseFloat(__ENV.BID_PRICE_STEP) : 0.01;
+
+function buildQuery(params) {
+  const parts = [];
+  Object.keys(params).forEach((key) => {
+    const value = params[key];
+    if (value === undefined || value === null || value === '') {
+      return;
+    }
+    parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+  });
+  return parts.join('&');
+}
+
+function loadTokens() {
+  const rawFromFile = __ENV.TOKENS_FILE ? open(__ENV.TOKENS_FILE) : '';
+  const rawFromEnv = __ENV.TOKENS || '';
+  const raw = [rawFromFile, rawFromEnv].filter((v) => v).join(',');
+  if (!raw) {
+    return [];
+  }
+  return raw
+    .split(/[\r\n,]+/)
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0);
+}
+
+const TOKENS_LIST = loadTokens();
+
+function pickToken() {
+  if (TOKENS_LIST.length > 0) {
+    return TOKENS_LIST[(__VU - 1) % TOKENS_LIST.length];
+  }
+  if (__ENV.TOKEN) {
+    return __ENV.TOKEN;
+  }
+  return null;
+}
+
+function randomString(length) {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let out = '';
+  for (let i = 0; i < length; i += 1) {
+    out += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return out;
+}
+
+function pseudoUuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+function nextBidPrice(bidState) {
+  const bidIndex = bidState.baseIndex + bidState.seq;
+  bidState.seq += 1;
+  const candidate = BID_PRICE_BASE + (bidIndex * BID_PRICE_STEP);
+  const minBased = bidState.minBid !== null
+    ? bidState.minBid + BID_PRICE_STEP
+    : null;
+  const price = minBased !== null ? Math.max(candidate, minBased) : candidate;
+  return Number(price.toFixed(2));
+}
+
+function sendBid(socket, bidState) {
+  const bidPrice = nextBidPrice(bidState);
+  const payload = JSON.stringify({
+    bidPrice,
+    quantity: 1,
+    idempotencyKey: pseudoUuid(),
+  });
+
+  sockjsSend(
+    socket,
+    stompFrame(
+      'SEND',
+      {
+        destination: `/pub/auction/${AUCTION_ID}/bid`,
+        'content-type': 'application/json',
+        'content-length': payload.length,
+      },
+      payload
+    )
+  );
+}
+
+function stompFrame(command, headers, body) {
+  let frame = `${command}\n`;
+  Object.keys(headers || {}).forEach((key) => {
+    frame += `${key}:${headers[key]}\n`;
+  });
+  frame += '\n';
+  if (body) {
+    frame += body;
+  }
+  return `${frame}\x00`;
+}
+
+function sockjsSend(socket, payload) {
+  // WebSocket transport expects a raw JSON array of messages.
+  socket.send(JSON.stringify([payload]));
+}
+
+function sockjsMessages(data) {
+  if (!data) {
+    return [];
+  }
+  try {
+    if (data[0] === 'a') {
+      return JSON.parse(data.slice(1));
+    }
+    if (data[0] === '[') {
+      return JSON.parse(data);
+    }
+  } catch (e) {
+    return [];
+  }
+  return [];
+}
+
+function stompBody(frame) {
+  const marker = '\n\n';
+  const idx = frame.indexOf(marker);
+  if (idx === -1) {
+    return '';
+  }
+  return frame.slice(idx + marker.length).replace(/\x00$/, '');
+}
+
+function updateMinBidFromFrame(frame, bidState) {
+  if (!frame.startsWith('MESSAGE')) {
+    return;
+  }
+  const body = stompBody(frame);
+  const match = body.match(/최소 입찰가([0-9]+(?:\.[0-9]+)?)/);
+  if (!match) {
+    return;
+  }
+  const parsed = parseFloat(match[1]);
+  if (!Number.isNaN(parsed)) {
+    bidState.minBid = parsed;
+  }
+}
+
+function buildSockjsUrls(token) {
+  const serverId = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+  const sessionId = randomString(8);
+  const infoQuery = buildQuery({ token, t: Date.now() });
+  const wsQuery = buildQuery({ token });
+  const infoUrl = `${HTTP_BASE}/ws-auction/info${infoQuery ? `?${infoQuery}` : ''}`;
+  const wsUrl = `${WS_BASE}/ws-auction/${serverId}/${sessionId}/websocket${
+    wsQuery ? `?${wsQuery}` : ''
+  }`;
+  return { infoUrl, wsUrl };
+}
+
+export default function () {
+  const token = pickToken();
+  const useToken = token && token.length > 0;
+  const userId = __ENV.USER_ID_BASE
+    ? String(parseInt(__ENV.USER_ID_BASE, 10) + __VU - 1)
+    : String(__VU);
+
+  const { infoUrl, wsUrl } = buildSockjsUrls(token);
+  const infoRes = http.get(infoUrl);
+  if (DEBUG && __ITER === 0) {
+    console.log(`sockjs info status=${infoRes.status}`);
+  }
+
+  const res = ws.connect(
+    wsUrl,
+    {
+      headers: useToken
+        ? {}
+        : {
+            'X-USER-ID': userId,
+            'X-USER-ROLE': 'consumer',
+          },
+    },
+    (socket) => {
+      let biddingStarted = false;
+      const bidState = {
+        baseIndex: (__ITER * VUS) + (__VU - 1) + 1,
+        seq: 0,
+        minBid: null,
+      };
+
+      if (SESSION_MS > 0) {
+        socket.setTimeout(() => {
+          socket.close();
+        }, SESSION_MS);
+      }
+
+      socket.on('message', (data) => {
+        if (data === 'o') {
+          sockjsSend(
+            socket,
+            stompFrame('CONNECT', {
+              'accept-version': '1.2',
+              'heart-beat': '10000,10000',
+            })
+          );
+          return;
+        }
+
+        if (data === 'h') {
+          return;
+        }
+
+        if (data && data[0] === 'c') {
+          socket.close();
+          return;
+        }
+
+        const frames = sockjsMessages(data);
+        frames.forEach((frame) => {
+          updateMinBidFromFrame(frame, bidState);
+          if (frame.startsWith('CONNECTED') && !biddingStarted) {
+            biddingStarted = true;
+
+            sockjsSend(
+              socket,
+              stompFrame('SUBSCRIBE', {
+                id: `sub-${userId}`,
+                destination: `/topic/auction/${AUCTION_ID}`,
+              })
+            );
+
+            const startBidding = () => {
+              sendBid(socket, bidState);
+              if (SEND_EVERY_MS > 0) {
+                socket.setInterval(() => {
+                  sendBid(socket, bidState);
+                }, SEND_EVERY_MS);
+              }
+            };
+
+            if (SEND_DELAY_MS > 0) {
+              socket.setTimeout(startBidding, SEND_DELAY_MS);
+            } else {
+              startBidding();
+            }
+          }
+        });
+      });
+
+      socket.on('error', (e) => {
+        console.error(`ws error: ${e.error()}`);
+      });
+
+      if (SESSION_MS <= 0) {
+        socket.setTimeout(() => {
+          socket.close();
+        }, 5000);
+      }
+    }
+  );
+
+  if (DEBUG && __ITER === 0) {
+    console.log(
+      `ws.connect status=${res && res.status} error=${res && res.error} code=${res && res.error_code}`
+    );
+  }
+
+  check(res, {
+    'status is 101': (r) => r && r.status === 101,
+  });
+}

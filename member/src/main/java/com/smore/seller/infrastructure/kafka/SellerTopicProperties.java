@@ -13,5 +13,7 @@ import org.springframework.stereotype.Component;
 public class SellerTopicProperties {
 
     private Map<String, String> sellerRegister;
+    private Map<String, String> sellerSettlement;
+    private Map<String, String> sellerDeadLetter;
 
 }

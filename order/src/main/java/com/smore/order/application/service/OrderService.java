@@ -9,6 +9,7 @@ import com.smore.order.application.dto.FailedOrderCommand;
 import com.smore.order.application.dto.FailedRefundCommand;
 import com.smore.order.application.dto.ModifyOrderCommand;
 import com.smore.order.application.dto.RefundCommand;
+import com.smore.order.application.event.outbound.AuctionOrderFailedEvent;
 import com.smore.order.application.event.outbound.OrderFailedEvent;
 import com.smore.order.application.exception.OrderIdMisMatchException;
 import com.smore.order.application.exception.RefundReservationConflictException;
@@ -39,6 +40,7 @@ import com.smore.order.presentation.dto.IsOrderCreatedResponse;
 import com.smore.order.presentation.dto.ModifyOrderResponse;
 import com.smore.order.presentation.dto.OrderInfo;
 import com.smore.order.presentation.dto.RefundResponse;
+import io.micrometer.tracing.Tracer;
 import jakarta.transaction.Transactional;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -61,6 +63,7 @@ public class OrderService {
     private final OutboxRepository outboxRepository;
     private final RefundRepository refundRepository;
     private final ObjectMapper objectMapper;
+    private final Tracer tracer;
     private final Clock clock;
 
     private static final Set<String> ALLOWED_SORTS = Set.of(
@@ -114,6 +117,13 @@ public class OrderService {
             makePayload(event)
         );
 
+        if (tracer.currentSpan() != null) {
+            outbox.attachTracing(
+                tracer.currentSpan().context().traceId(),
+                tracer.currentSpan().context().spanId()
+            );
+        }
+
         outboxRepository.save(outbox);
     }
 
@@ -137,11 +147,15 @@ public class OrderService {
             throw new CompleteOrderFailException(OrderErrorCode.COMPLETE_ORDER_CONFLICT);
         }
 
+        if (order.isAuction()) {
+            return ServiceResult.SUCCESS;
+        }
+
         OrderCompletedEvent event = OrderCompletedEvent.of(
             order.getId(),
             order.getUserId(),
             OrderStatus.COMPLETED,
-            UUID.randomUUID(),
+            order.getIdempotencyKey(),
             command.getApprovedAt()
         );
 
@@ -152,6 +166,13 @@ public class OrderService {
             UUID.randomUUID(),
             makePayload(event)
         );
+
+        if (tracer.currentSpan() != null) {
+            outbox.attachTracing(
+                tracer.currentSpan().context().traceId(),
+                tracer.currentSpan().context().spanId()
+            );
+        }
 
         outboxRepository.save(outbox);
 
@@ -220,6 +241,7 @@ public class OrderService {
             command.getRefundQuantity(),
             command.getIdempotencyKey(),
             command.getReason(),
+            command.getType(),
             LocalDateTime.now(clock)
         );
 
@@ -243,6 +265,13 @@ public class OrderService {
             UUID.randomUUID(),
             makePayload(event)
         );
+
+        if (tracer.currentSpan() != null) {
+            outbox.attachTracing(
+                tracer.currentSpan().context().traceId(),
+                tracer.currentSpan().context().spanId()
+            );
+        }
 
         outboxRepository.save(outbox);
 
@@ -311,23 +340,35 @@ public class OrderService {
             );
         }
 
-        OrderRefundSucceededEvent event = OrderRefundSucceededEvent.of(
-            refund.getOrderId(),
-            order.getUserId(),
-            order.getIdempotencyKey(),
-            command.getRefundAmount(),
-            LocalDateTime.now(clock)
-        );
+        if (refund.isUserRequest()) {
+            OrderRefundSucceededEvent event = OrderRefundSucceededEvent.of(
+                refund.getOrderId(),
+                refund.getId(),
+                order.getUserId(),
+                refund.getRefundQuantity(),
+                order.getIdempotencyKey(),
+                command.getRefundAmount(),
+                status,
+                LocalDateTime.now(clock)
+            );
 
-        Outbox outbox = Outbox.create(
-            AggregateType.ORDER,
-            command.getOrderId(),
-            EventType.REFUND_SUCCESS,
-            UUID.randomUUID(),
-            makePayload(event)
-        );
+            Outbox outbox = Outbox.create(
+                AggregateType.ORDER,
+                command.getOrderId(),
+                EventType.REFUND_SUCCESS,
+                UUID.randomUUID(),
+                makePayload(event)
+            );
 
-        outboxRepository.save(outbox);
+            if (tracer.currentSpan() != null) {
+                outbox.attachTracing(
+                    tracer.currentSpan().context().traceId(),
+                    tracer.currentSpan().context().spanId()
+                );
+            }
+
+            outboxRepository.save(outbox);
+        }
     }
 
     @Transactional
@@ -391,6 +432,13 @@ public class OrderService {
             UUID.randomUUID(),
             makePayload(event)
         );
+
+        if (tracer.currentSpan() != null) {
+            outbox.attachTracing(
+                tracer.currentSpan().context().traceId(),
+                tracer.currentSpan().context().spanId()
+            );
+        }
 
         outboxRepository.save(outbox);
     }
@@ -523,6 +571,7 @@ public class OrderService {
         return pageable;
     }
 
+    @Transactional
     public void failOrder(FailedOrderCommand command) {
 
         Order order = orderRepository.findById(command.getOrderId());
@@ -542,7 +591,7 @@ public class OrderService {
             throw new UpdateOrderFailException(OrderErrorCode.UPDATE_ORDER_FAIL_CONFLICT);
         }
 
-        OrderFailedEvent event = OrderFailedEvent.of(
+        OrderEvent event = OrderFailedEvent.of(
             order.getIdempotencyKey(),
             order.getProduct().productId(),
             order.getUserId(),
@@ -550,13 +599,32 @@ public class OrderService {
             LocalDateTime.now(clock)
         );
 
+        EventType eventType = EventType.BID_ORDER_FAILED;
+
+        if (order.isAuction()) {
+            event = AuctionOrderFailedEvent.of(
+                order.getProduct().productId(),
+                order.getUserId(),
+                order.getIdempotencyKey()
+            );
+
+            eventType = EventType.AUCTION_ORDER_FAILED;
+        }
+
         Outbox outbox = Outbox.create(
             AggregateType.ORDER,
             order.getId(),
-            EventType.ORDER_FAILED,
+            eventType,
             UUID.randomUUID(),
             makePayload(event)
         );
+
+        if (tracer.currentSpan() != null) {
+            outbox.attachTracing(
+                tracer.currentSpan().context().traceId(),
+                tracer.currentSpan().context().spanId()
+            );
+        }
 
         outboxRepository.save(outbox);
 

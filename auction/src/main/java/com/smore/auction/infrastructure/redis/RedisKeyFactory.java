@@ -8,6 +8,10 @@ public class RedisKeyFactory {
     private static final String PREFIX_WS_AUCTION = "ws:auction:";
     private static final String PREFIX_WS_SESSION = "ws:session:";
 
+    /*
+    Redis 네이밍 룰 [namespace]:[entity]:[identifier]:[property]
+     */
+
     /**
      * ws:auction:501 = {sessionA, sessionB, sessionC}
      * @param auctionId String

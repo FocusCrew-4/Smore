@@ -31,6 +31,32 @@ spring:
 
     listener:
       ack-mode: manual
+      observation-enabled: true
+
+    template:
+      observation-enabled: true
+
+jdbc:
+  datasource-proxy:
+    enabled: true
+    include-parameter-values: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+  endpoint:
+    health:
+      show-details: always
+
+  tracing:
+    enabled: true
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 topic:
   order:
@@ -40,14 +66,16 @@ topic:
     refund-success: order.refund-success.v1
     refund-fail: order.refund-fail.v1
     failed: order.failed.v1
+    auction-failed: order.auctionfailed.v1
 
   bid:
     order:
       request: bid.winnerconfirm.v1
+      inventory-confirm-timeout: bid.inventoryconfirmtimeout.v1
 
   auction:
     order:
-      request: acution.winnerconfirm.v1
+      request: auction.winnerConfirm.v1
 
   payment:
     completed: payment.approved.v1
@@ -59,6 +87,7 @@ consumer:
   group:
     payment: payment-consumer-group
     bid: bid-consumer-group
+    auction: auction-consumer-group
 
 retry:
   count:

@@ -19,6 +19,7 @@ public class BidCompetition {
     private UUID categoryId;
     private Long sellerId;
     private BigDecimal productPrice;
+    private Integer totalQuantity;
     private Integer stock;
     private BidStatus bidStatus;
     private UUID idempotencyKey;
@@ -34,6 +35,7 @@ public class BidCompetition {
         UUID categoryId,
         Long sellerId,
         BigDecimal productPrice,
+        Integer totalQuantity,
         Integer stock,
         UUID idempotencyKey,
         LocalDateTime startedAt,
@@ -45,6 +47,8 @@ public class BidCompetition {
         if (sellerId == null) throw new IllegalArgumentException("판매자 식별자는 필수값입니다.");
         if (productPrice == null) throw new IllegalArgumentException("상품 가격은 필수값입니다.");
         if (productPrice.compareTo(BigDecimal.ZERO) < 1) throw new IllegalArgumentException("상품 가격은 1원 이상이어야 합니다.");
+        if (totalQuantity == null) throw new IllegalArgumentException("총 판매 수량은 필수값입니다.");
+        if (totalQuantity < 1) throw new IllegalArgumentException("총 판매 수량은 1개 이상이어야 합니다.");
         if (stock == null) throw new IllegalArgumentException("재고는 필수값입니다.");
         if (stock < 1) throw new IllegalArgumentException("재고는 1개 이상이어야 합니다.");
         if (idempotencyKey == null) throw new IllegalArgumentException("idempotencyKey는 필수값입니다.");
@@ -56,6 +60,7 @@ public class BidCompetition {
             .categoryId(categoryId)
             .sellerId(sellerId)
             .productPrice(productPrice)
+            .totalQuantity(totalQuantity)
             .bidStatus(BidStatus.SCHEDULED)
             .idempotencyKey(idempotencyKey)
             .stock(stock)
@@ -70,6 +75,7 @@ public class BidCompetition {
         UUID categoryId,
         Long sellerId,
         BigDecimal productPrice,
+        Integer totalQuantity,
         Integer stock,
         BidStatus bidStatus,
         UUID idempotencyKey,
@@ -87,6 +93,7 @@ public class BidCompetition {
             .categoryId(categoryId)
             .sellerId(sellerId)
             .productPrice(productPrice)
+            .totalQuantity(totalQuantity)
             .stock(stock)
             .bidStatus(bidStatus)
             .idempotencyKey(idempotencyKey)
@@ -105,5 +112,9 @@ public class BidCompetition {
 
     public boolean isNotActive() {
         return this.bidStatus != BidStatus.ACTIVE;
+    }
+
+    public boolean isEnd() {
+        return this.bidStatus == BidStatus.END;
     }
 }

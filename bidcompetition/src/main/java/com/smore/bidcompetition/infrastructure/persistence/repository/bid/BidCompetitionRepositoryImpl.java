@@ -7,6 +7,7 @@ import com.smore.bidcompetition.infrastructure.persistence.entity.BidCompetition
 import com.smore.bidcompetition.infrastructure.persistence.exception.NotFoundBidException;
 import com.smore.bidcompetition.infrastructure.persistence.mapper.BidMapper;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,31 @@ public class BidCompetitionRepositoryImpl implements BidCompetitionRepository {
     }
 
     @Override
+    public List<UUID> findBidsToActivate(LocalDateTime now) {
+        return bidCompetitionJpaRepository.findBidsToActivate(now);
+    }
+
+    @Override
+    public List<UUID> findBidsToClose(LocalDateTime now) {
+        return bidCompetitionJpaRepository.findBidsToClose(now);
+    }
+
+    @Override
+    public List<UUID> findBidsToEnd(LocalDateTime now, long closeGraceSeconds) {
+        return bidCompetitionJpaRepository.findBidsToEnd(now, closeGraceSeconds);
+    }
+
+    @Override
+    public List<BidCompetition> findBidListToEnd(LocalDateTime now, long closeGraceSeconds) {
+
+        List<BidCompetitionEntity> entityList = bidCompetitionJpaRepository.findBidListToEnd(now, closeGraceSeconds);
+
+        return entityList.stream()
+            .map(BidMapper::toDomain)
+            .toList();
+    }
+
+    @Override
     public BidCompetition findByIdForUpdate(UUID bidId) {
 
         BidCompetitionEntity entity = bidCompetitionJpaRepository.findByIdForUpdate(bidId);
@@ -61,12 +87,32 @@ public class BidCompetitionRepositoryImpl implements BidCompetitionRepository {
     }
 
     @Override
-    public int decreaseStock(UUID bidId, Integer quantity, LocalDateTime now) {
-        return bidCompetitionJpaRepository.decreaseStock(bidId, quantity, now);
+    public int decreaseStock(UUID bidId, Integer quantity, LocalDateTime acceptedAt) {
+        return bidCompetitionJpaRepository.decreaseStock(bidId, quantity, acceptedAt);
     }
 
     @Override
     public int increaseStock(UUID bidId, Integer quantity) {
         return bidCompetitionJpaRepository.increaseStock(bidId, quantity);
+    }
+
+    @Override
+    public int bulkActivateByStartAt(List<UUID> ids, LocalDateTime now) {
+        return bidCompetitionJpaRepository.bulkActivateByStartAt(ids, now);
+    }
+
+    @Override
+    public int bulkCloseByEndAt(List<UUID> ids, LocalDateTime now) {
+        return bidCompetitionJpaRepository.bulkCloseByEndAt(ids, now);
+    }
+
+    @Override
+    public int bulkFinalizeByValidAt(List<UUID> ids, LocalDateTime now, long closeGraceSeconds) {
+        return bidCompetitionJpaRepository.bulkFinalizeByValidAt(ids, now, closeGraceSeconds);
+    }
+
+    @Override
+    public int finalizeByValidAt(UUID bidId, LocalDateTime now, long closeGraceSeconds) {
+        return bidCompetitionJpaRepository.finalizeByValidAt(bidId, now, closeGraceSeconds);
     }
 }

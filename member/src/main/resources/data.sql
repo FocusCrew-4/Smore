@@ -2,13 +2,15 @@
 INSERT INTO p_member (id, role, email, password, nickname, auction_cancel_count, status, created_at, updated_at, deleted_at, deleted_by)
 VALUES
     (1, 'ADMIN', 'admin@example.com', '$2a$10$sFHAFHXkl0ohQkv3uCuOAOmsfZgI/Aca4FH6hnkKP6jj1Fqw1Prg2', 'admin', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
+    (2, 'SELLER', 'seller@seller.com', '$2b$12$Hs3mLffihQf6SQi40osFGetwp1j6o.dIApD5T4IQOB2m3Ezj8Cmf.', 'seller', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL),
     (4, 'CONSUMER', 'consumer_changed_from_seller4@example.com', 'hashed-consumer-password', 'consumer_from4', 0, 'ACTIVE', NOW(), NOW(), NULL, NULL)
 ON CONFLICT DO NOTHING;
 
 -- Seed sellers by status (linked to seller members above)
-INSERT INTO p_seller (id, member_id, account_num, status, created_at, updated_at, deleted_at, deleted_by)
+INSERT INTO p_seller (id, member_id, account_num, status, amount, created_at, updated_at, deleted_at, deleted_by)
 VALUES
-    ('00000000-0000-0000-0000-000000000001', 4, '111-11-111111', 'PENDING', NOW(), NOW(), NULL, NULL)
+    ('00000000-0000-0000-0000-000000000001', 4, '111-11-111111', 'PENDING', 0, NOW(), NOW(), NULL, NULL),
+    ('00000000-0000-0000-0000-000000000002', 2, '222-22-222222', 'ACTIVE', 3000.00, NOW(), NOW(), NULL, NULL)
 ON CONFLICT DO NOTHING;
 
 -- Seed: seller outbox pending 230 rows
@@ -61,6 +63,25 @@ VALUES (
 );
 
 -- Reset sequence after manual inserts to avoid PK collisions
+
+-- Seed consumers for k6 load test (500 members)
+INSERT INTO p_member (id, role, email, password, nickname, auction_cancel_count, status, created_at, updated_at, deleted_at, deleted_by)
+SELECT
+    100000 + g,
+    'CONSUMER',
+    concat('consumer', lpad(g::text, 4, '0'), '@example.com'),
+    'hashed-consumer-password',
+    concat('consumer_', lpad(g::text, 4, '0')),
+    0,
+    'ACTIVE',
+    NOW(),
+    NOW(),
+    NULL,
+    NULL
+FROM generate_series(1, 500) g
+ON CONFLICT DO NOTHING;
+
+
 SELECT setval(
     pg_get_serial_sequence('p_member', 'id'),
     (SELECT COALESCE(MAX(id), 0) + 1 FROM p_member),

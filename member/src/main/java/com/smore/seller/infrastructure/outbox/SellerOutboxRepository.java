@@ -20,7 +20,6 @@ public interface SellerOutboxRepository extends CrudRepository<SellerOutbox, Lon
         Pageable pageable
     );
 
-    // TODO: 추후 쿼리dsl 로 이관 필요
     @Modifying
     @Query("UPDATE SellerOutbox o SET o.status = 'SENT', o.processedAt = :processedAt, o.errorMessage = null WHERE o.id = :id")
     void markSent(Long id, LocalDateTime processedAt);

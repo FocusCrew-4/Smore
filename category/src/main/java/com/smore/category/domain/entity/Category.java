@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-@Table(name = "categories")
+@Table(name = "p_categories")
 public class Category {
 
     @Id
@@ -52,9 +52,9 @@ public class Category {
     }
 
     private LocalDateTime deletedAt;
-    private UUID deletedBy;
+    private Long deletedBy;
 
-    public void softDelete(UUID requesterId) {
+    public void softDelete(Long requesterId) {
         this.deletedAt = LocalDateTime.now(Clock.systemUTC());
         this.deletedBy = requesterId;
     }

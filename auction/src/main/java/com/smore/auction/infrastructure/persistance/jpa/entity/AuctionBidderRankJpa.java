@@ -34,9 +34,7 @@ public class AuctionBidderRankJpa {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "auction_id")
-    private AuctionJpa auction;
+    private UUID auctionId;
 
     @Embedded
     @AttributeOverrides({
@@ -54,7 +52,7 @@ public class AuctionBidderRankJpa {
     private LocalDateTime deletedAt;
     private Long deletedBy;
 
-    public void belongToAuction(AuctionJpa auction) {
-        this.auction = auction;
+    public void belongToAuction(UUID auctionId) {
+        this.auctionId = auctionId;
     }
 }

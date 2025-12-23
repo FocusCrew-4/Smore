@@ -22,14 +22,7 @@ public class AuctionPubManagerImpl implements AuctionPubManager {
 
     @Override
     public void validateSend(String sessionId, String auctionId) throws IllegalAccessException {
-        log.info("validate Send 진입\n\n\n");
-        log.info(sessionId);
-        log.info(auctionId);
-        log.info(key.auctionSessions(auctionId));
-        log.info(String.valueOf(redis.opsForSet()
-            .members(key.auctionSessions(auctionId))));
-        log.info(String.valueOf(redis.opsForSet()
-            .isMember(key.auctionSessions(auctionId), sessionId)));
+        log.info("preSend 진입");
         Boolean exists = redis.opsForSet()
             .isMember(key.auctionSessions(auctionId), sessionId);
 

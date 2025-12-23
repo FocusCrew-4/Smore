@@ -2,24 +2,21 @@ server:
   port: 3300
 
 spring:
+  application:
+    name: category-service
 
   cloud:
     config:
       enabled: false
+    discovery:
+      enabled: true
 
-  application:
-    name: category-service
-
-  datasource:
-      url: jdbc:postgresql://localhost:5432/category-db
-      username: root
-      password: root
-      driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-    show-sql: true
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: category-service
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90

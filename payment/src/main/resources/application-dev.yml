@@ -18,6 +18,10 @@ spring:
         initial-interval: 1000
         multiplier: 1.5
 
+  sql:
+    init:
+      mode: always
+
   datasource:
     url: jdbc:postgresql://postgresql:5432/payment
     username: root
@@ -86,7 +90,6 @@ topic:
     failed: payment.failed.v1
     refund: payment.refund.v1
     refund-fail: payment.refund-fail.v1
-    refund-dlt: payment.refund-dlt.v1
   seller:
     approved: payment.settlement.v1
     success: payment.settlement-success.v1

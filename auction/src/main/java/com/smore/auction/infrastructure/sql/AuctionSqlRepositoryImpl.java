@@ -2,11 +2,11 @@ package com.smore.auction.infrastructure.sql;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.auction.application.sql.AuctionSqlRepository;
+import com.smore.auction.domain.enums.BidderStatus;
 import com.smore.auction.domain.model.Auction;
 import com.smore.auction.domain.model.AuctionBidderRank;
 import com.smore.auction.infrastructure.persistance.jpa.AuctionBidderRankJpaRepository;
 import com.smore.auction.infrastructure.persistance.jpa.AuctionJpaRepository;
-import com.smore.auction.infrastructure.persistance.jpa.entity.AuctionBidderRankJpa;
 import com.smore.auction.infrastructure.persistance.jpa.entity.AuctionJpa;
 import com.smore.auction.infrastructure.persistance.jpa.mapper.AuctionBidderRankJpaMapper;
 import com.smore.auction.infrastructure.persistance.jpa.mapper.AuctionJpaMapper;
@@ -71,7 +71,7 @@ public class AuctionSqlRepositoryImpl implements AuctionSqlRepository {
     @Override
     public AuctionBidderRank findBidByAuctionIdAndBidderId(String auctionId, Long userId) {
         AuctionBidderRank auctionBidderRank
-            = bidderRankJpaRepository.findByAuction_IdAndBidder_Id(UUID.fromString(auctionId), userId)
+            = bidderRankJpaRepository.findByAuctionIdAndBidder_Id(UUID.fromString(auctionId), userId)
             .map(bidderRankJpaMapper::toDomain)
             .orElse(null);
         return auctionBidderRank;
@@ -80,5 +80,20 @@ public class AuctionSqlRepositoryImpl implements AuctionSqlRepository {
     @Override
     public void saveBidder(AuctionBidderRank auctionBidderRank) {
         bidderRankJpaRepository.save(bidderRankJpaMapper.toEntity(auctionBidderRank));
+    }
+
+    @Override
+    public AuctionBidderRank findWinnerByAuctionIdAndBidder_Id(UUID auctionId,
+        Long winnerMemberId) {
+        return bidderRankJpaRepository.findByStatusAndAuctionIdAndBidder_Id(BidderStatus.WINNER, auctionId, winnerMemberId)
+            .map(bidderRankJpaMapper::toDomain)
+            .orElse(null);
+    }
+
+    @Override
+    public AuctionBidderRank findTop1ByStandByAndAuctionId(UUID auctionId) {
+        return bidderRankJpaRepository.findTop1ByStatusAndAuctionIdOrderByRankAsc(BidderStatus.STANDBY, auctionId)
+            .map(bidderRankJpaMapper::toDomain)
+            .orElse(null);
     }
 }

@@ -55,6 +55,12 @@ public class OutboxEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
 
+    @Column(name = "trace_id", length = 64)
+    private String traceId;
+
+    @Column(name = "span_id", length = 64)
+    private String spanId;
+
     public static OutboxEntity create(
         AggregateType aggregateType,
         UUID aggregateId,
@@ -62,7 +68,9 @@ public class OutboxEntity extends BaseEntity {
         UUID idempotencyKey,
         String payload,
         Integer retryCount,
-        EventStatus eventStatus
+        EventStatus eventStatus,
+        String traceId,
+        String spanId
     ) {
 
         if (aggregateType == null) throw new IllegalArgumentException("aggregateType은 필수값입니다.");
@@ -78,6 +86,8 @@ public class OutboxEntity extends BaseEntity {
             .payload(payload)
             .retryCount(retryCount)
             .eventStatus(eventStatus)
+            .traceId(traceId)
+            .spanId(spanId)
             .build();
     }
 

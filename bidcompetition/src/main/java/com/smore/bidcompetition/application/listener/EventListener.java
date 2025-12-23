@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smore.bidcompetition.application.dto.BidCreateCommand;
 import com.smore.bidcompetition.application.dto.OrderCompletedCommand;
 import com.smore.bidcompetition.application.dto.OrderFailedCommand;
+import com.smore.bidcompetition.application.dto.RefundSucceededCommand;
 import com.smore.bidcompetition.application.dto.ServiceResult;
 import com.smore.bidcompetition.application.service.BidCompetitionService;
 import com.smore.bidcompetition.infrastructure.persistence.event.inbound.OrderCompletedEvent;
 import com.smore.bidcompetition.infrastructure.persistence.event.inbound.OrderFailedEvent;
 import com.smore.bidcompetition.infrastructure.persistence.event.inbound.ProductCreatedEvent;
+import com.smore.bidcompetition.infrastructure.persistence.event.inbound.RefundSucceedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -71,13 +73,7 @@ public class EventListener {
                 event.getPaidAt()
             );
 
-            ServiceResult result = service.orderCompleted(command);
-
-            if (result.isFailed()) {
-                // TODO: 만료 스케줄러는 WINNER의 상태를 EXPIRED로 변경하고 재고를 복구하는 기능을 수행, 즉 보상 트랜잭션 트리거가 아님
-                // TODO: 재고 확정 실패 이벤트 발행 -> 주문 (재고 확보 실패) -> 결제 취소 -> 결제 취소 완료 -> 주문 (주문 실패)
-                // TODO: Winner를 찾지 못해 NotFoundWinnerException이 터질 경우 재시도 루프를 막기 위한 처리 전략 수립
-            }
+            service.orderCompleted(command);
 
             ack.acknowledge();
         } catch (Exception e) {
@@ -109,5 +105,36 @@ public class EventListener {
         } catch (Exception e) {
             log.error("orderFailed 처리 실패 : {}", message, e);
         }
+    }
+
+    @KafkaListener(
+        topics = "${topic.order.refund-success}",
+        groupId = "${consumer.group.order}",
+        concurrency = "3"
+    )
+    public void refundSucceedEvent(String message, Acknowledgment ack) {
+        try {
+
+            RefundSucceedEvent event = objectMapper.readValue(message,
+                RefundSucceedEvent.class);
+
+            RefundSucceededCommand command = RefundSucceededCommand.of(
+                event.getOrderId(),
+                event.getRefundId(),
+                event.getUserId(),
+                event.getQuantity(),
+                event.getAllocationKey(),
+                event.getRefundAmount(),
+                event.getStatus(),
+                event.getPublishedAt()
+            );
+
+            service.refundSuccess(command);
+
+            ack.acknowledge();
+        } catch (Exception e) {
+            log.error("refundSucceedEvent 처리 실패 : {}", message, e);
+        }
+
     }
 }

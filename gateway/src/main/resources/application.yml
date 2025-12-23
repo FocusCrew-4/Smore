@@ -1,7 +1,11 @@
-server:
+﻿server:
   port: 17700
 
 spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration
   application:
     name: gateway-server
   cloud:
@@ -55,13 +59,30 @@ spring:
             - id: order-service
               uri: lb://order-service
               predicates:
-                - Path=/api/v*/orders/**, /api/v*/admin/orders/**
+                - Path=/api/v*/external/orders/**, /api/v*/admin/orders/**
 
-            - id: bid-competition-service
-              uri: lb://bid-competition-service
+            - id: bid-service
+              uri: lb://bid-service
               predicates:
-                - Path=/api/v*/bid-competitions/**
+                - Path=/api/v*/external/bid-competitions/**
 
 eureka:
   instance:
     hostname: gateway-server
+
+member:
+  service:
+    base-url: lb://member-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  metrics:
+    tags:
+      application: member-service
+  endpoint:
+    health:
+      show-details: always
+      show-components: always

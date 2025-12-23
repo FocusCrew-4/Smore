@@ -1,4 +1,4 @@
-services:
+﻿services:
 
   redis-stack:
     image: redis/redis-stack:latest
@@ -17,6 +17,28 @@ services:
     networks:
       - msa-network
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: smore-es
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    restart: always
+    ports:
+      - "5540:5540"
+    volumes:
+      - ./docker/db/redis/redisinsight-data:/data
+    depends_on:
+      - redis-stack
+    networks:
+      - msa-network
   mongodb:
     image: mongo:8.0
     container_name: mongodb
@@ -251,6 +273,27 @@ services:
     networks:
       - msa-network
 
+# TODO: STOMP 연계 어떻게 되는건지 정리 필요
+  artemis:
+    image: apache/activemq-artemis:2.44.0
+    container_name: artemis
+    restart: always
+    environment:
+      AMQ_USER: artemis
+      AMQ_PASSWORD: artemis
+      AMQ_MIN_MEMORY: 256M
+      AMQ_MAX_MEMORY: 512M
+      AMQ_WEB_BIND_ADDRESS: 0.0.0.0
+      AMQ_ACCEPTORS: "tcp://0.0.0.0:61616?protocols=CORE,AMQP,OPENWIRE&useEpoll=false,tcp://0.0.0.0:61613?protocols=STOMP&useEpoll=false"
+
+    ports:
+      - "61616:61616"  # Core/AMQP
+      - "61613:61613"  # STOMP
+      - "8161:8161"    # Web console
+    volumes:
+      - artemis-data:/var/lib/artemis/data
+    networks:
+      - msa-network
 
 
   member-service:
@@ -269,6 +312,16 @@ services:
     ports:
       - "6600:6600"
       - "5005:5005"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - msa-network
+
+  product-service:
+    container_name: product-service
+    build: ./product/.
+    ports:
+      - "8800:8800"
     environment:
       SPRING_PROFILES_ACTIVE: dev
     networks:
@@ -295,14 +348,66 @@ services:
     networks:
       - msa-network
 
+  bid-service:
+    container_name: bid-service
+    build: ./bidcompetition/.
+    ports:
+      - "7700:7700"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - msa-network
+
+  order-service:
+    container_name: order-service
+    build: ./order/.
+    ports:
+      - "5500:5500"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    networks:
+      - msa-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - msa-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana-data:/var/lib/grafana
+      
+    networks:
+      - msa-network
 
 volumes:
+  grafana-data:
   kafka-1-data:
   kafka-2-data:
   kafka-3-data:
   mongo-data:
     driver: local
+  artemis-data:
+    driver: local
 
 networks:
   msa-network:
     driver: bridge
+
+

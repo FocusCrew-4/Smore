@@ -24,6 +24,12 @@ public class KafkaConfig {
     @Value("${topic.order.refund-fail}")
     private String refundFailedOrderTopic;
 
+    @Value("${topic.order.failed}")
+    private String orderFailedTopic;
+
+    @Value("${topic.order.auction-failed}")
+    private String auctionOrderFailedTopic;
+
     @Bean
     public NewTopic orderCreatedTopic() {
         return TopicBuilder.name(createdOrderTopic)
@@ -59,6 +65,22 @@ public class KafkaConfig {
     @Bean
     public NewTopic orderRefundFailedTopic() {
         return TopicBuilder.name(refundFailedOrderTopic)
+            .partitions(3)
+            .replicas(3)
+            .build();
+    }
+
+    @Bean
+    public NewTopic orderFailedTopic() {
+        return TopicBuilder.name(orderFailedTopic)
+            .partitions(3)
+            .replicas(3)
+            .build();
+    }
+
+    @Bean
+    public NewTopic auctionOrderFailedTopic() {
+        return TopicBuilder.name(auctionOrderFailedTopic)
             .partitions(3)
             .replicas(3)
             .build();

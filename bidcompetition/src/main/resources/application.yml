@@ -31,6 +31,32 @@ spring:
 
     listener:
       ack-mode: manual
+      observation-enabled: true
+
+    template:
+      observation-enabled: true
+
+jdbc:
+  datasource-proxy:
+    enabled: true
+    include-parameter-values: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+  endpoint:
+    health:
+      show-details: always
+
+  tracing:
+    enabled: true
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 topic:
   order:
@@ -42,6 +68,9 @@ topic:
   bid:
     winner-confirm: bid.winnerconfirm.v1
     finished: bid.limitedSaleFinished.v1
+    product-inventory-adjusted: bid.productinventoryadjusted.v1
+    product-sale-finished: bid.limitedSaleFinished.v1
+    inventory-confirm-timeout: bid.inventoryconfirmtimeout.v1
 
   product:
     created: product.limitedSalePendingStart.v1
@@ -61,3 +90,4 @@ app:
   allocation:
     valid-duration: 180
     propagation-buffer-time: 60
+    close-grace-seconds : 600

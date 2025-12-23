@@ -49,6 +49,9 @@ public class BidCompetitionEntity extends BaseEntity {
     @Column(name = "product_price", nullable = false)
     private BigDecimal productPrice;
 
+    @Column(name = "total_quantity", nullable = false)
+    private Integer totalQuantity;
+
     @Column(name = "stock", nullable = false)
     private Integer stock;
 
@@ -70,6 +73,7 @@ public class BidCompetitionEntity extends BaseEntity {
         UUID categoryId,
         Long sellerId,
         BigDecimal productPrice,
+        Integer totalQuantity,
         Integer stock,
         BidStatus bidStatus,
         UUID idempotencyKey,
@@ -81,6 +85,8 @@ public class BidCompetitionEntity extends BaseEntity {
         if (sellerId == null) throw new IllegalArgumentException("판매자 식별자는 필수값입니다.");
         if (productPrice == null) throw new IllegalArgumentException("상품 가격은 필수값입니다.");
         if (productPrice.compareTo(BigDecimal.ZERO) < 1) throw new IllegalArgumentException("상품 가격은 1원 이상이어야 합니다.");
+        if (totalQuantity == null) throw new IllegalArgumentException("총 판매 수량은 필수값입니다.");
+        if (totalQuantity < 1) throw new IllegalArgumentException("총 판매 수량은 1개 이상이어야 합니다.");
         if (stock == null) throw new IllegalArgumentException("재고는 필수값입니다.");
         if (stock < 1) throw new IllegalArgumentException("재고는 1개 이상이어야 합니다.");
         if (idempotencyKey == null) throw new IllegalArgumentException("idempotencyKey는 필수값입니다.");
@@ -93,6 +99,7 @@ public class BidCompetitionEntity extends BaseEntity {
             .categoryId(categoryId)
             .sellerId(sellerId)
             .productPrice(productPrice)
+            .totalQuantity(totalQuantity)
             .stock(stock)
             .bidStatus(bidStatus)
             .idempotencyKey(idempotencyKey)
