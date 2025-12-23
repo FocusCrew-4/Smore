@@ -10,6 +10,7 @@ import com.smore.bidcompetition.domain.model.BidInventoryLog;
 import com.smore.bidcompetition.domain.model.Winner;
 import com.smore.bidcompetition.domain.status.InventoryChangeType;
 import com.smore.bidcompetition.infrastructure.error.BidErrorCode;
+import com.smore.bidcompetition.infrastructure.redis.StockRedisService;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +38,7 @@ public class BidProcessor {
 
     private final BidCompetitionRepository bidCompetitionRepository;
     private final BidInventoryLogRepository bidInventoryLogRepository;
+    private final StockRedisService stockRedisService;
     private final WinnerRepository winnerRepository;
     private final BidEndFinalizer bidEndFinalizer;
     private final Clock clock;
@@ -174,6 +176,13 @@ public class BidProcessor {
                 winner.getId(), winner.getBidId());
             throw new BidConflictException(BidErrorCode.BID_CONFLICT);
         }
+
+        stockRedisService.rollback(
+            winner.getBidId(),
+            winner.getAllocationKey().toString(),
+            winner.getIdempotencyKey().toString(),
+            winner.getQuantity()
+        );
     }
 
 }
