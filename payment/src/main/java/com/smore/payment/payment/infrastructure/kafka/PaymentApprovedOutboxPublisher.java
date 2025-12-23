@@ -20,7 +20,6 @@ public class PaymentApprovedOutboxPublisher {
     private final MessageBrokerPublisher messageBrokerPublisher;
 
     @Scheduled(fixedDelay = 5000)
-    @Transactional
     public void publish() {
         log.info("이벤트 발행 시작");
         List<OutboxEntity> pendingMessages = outboxJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
@@ -29,10 +28,9 @@ public class PaymentApprovedOutboxPublisher {
     }
 
     @Scheduled(fixedDelay = 30000)
-    @Transactional
     public void retry() {
         log.info("이벤트 재전송 시작");
-        List<OutboxEntity> pendingMessages = outboxJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.FAILED);
+        List<OutboxEntity> pendingMessages = outboxJpaRepository.findTop50ByStatusAndRetryCountGreaterThanOrderByCreatedAtAsc(OutboxStatus.FAILED, 0);
         log.info("재전송 아웃박스 찾아오기 {}", pendingMessages.size());
         send(pendingMessages);
     }
@@ -51,8 +49,10 @@ public class PaymentApprovedOutboxPublisher {
 
             } catch (Exception e) {
 
-                if (message.getRetryCount() <= 1) {
+                if (message.getRetryCount() < 1) {
                     message.markAsFailed();
+                    message.resetRetryCount();
+                    log.warn("out box 재전송 실패 : {}", message.getId());
                 } else {
                     message.decreaseRetryCount();
                 }
