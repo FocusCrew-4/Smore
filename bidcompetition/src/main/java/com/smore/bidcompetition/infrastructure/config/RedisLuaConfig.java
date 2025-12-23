@@ -38,4 +38,12 @@ public class RedisLuaConfig {
         script.setResultType(Long.class);
         return script;
     }
+
+    @Bean
+    public DefaultRedisScript<Long> refundRestoreScript() {
+        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
+        script.setLocation(new ClassPathResource("redis/lua/refund_restore.lua"));
+        script.setResultType(Long.class);
+        return script;
+    }
 }

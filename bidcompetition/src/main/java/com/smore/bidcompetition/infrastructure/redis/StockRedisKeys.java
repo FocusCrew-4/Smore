@@ -9,6 +9,7 @@ public class StockRedisKeys {
     private static final String STOCK_PREFIX = "stock";
     private static final String WINNER_PREFIX = "winner";
     private static final String IDEM_PREFIX = "idem";
+    private static final String REFUND_PREFIX = "refund";
 
 
     public String stockKey(UUID bidId) {
@@ -26,5 +27,11 @@ public class StockRedisKeys {
         if (bidId == null) throw new IllegalArgumentException("bidId는 필수값입니다.");
         if (idempotencyKey == null) throw new IllegalArgumentException("idempotencyKey는 필수값입니다.");
         return IDEM_PREFIX + ":{" + bidId + "}:" + idempotencyKey;
+    }
+
+    public String refundKey(UUID bidId, UUID refundId) {
+        if (bidId == null) throw new IllegalArgumentException("bidId는 필수값입니다.");
+        if (refundId == null) throw new IllegalArgumentException("refundId는 필수값입니다.");
+        return REFUND_PREFIX + ":{" + bidId + "}:" + refundId;
     }
 }

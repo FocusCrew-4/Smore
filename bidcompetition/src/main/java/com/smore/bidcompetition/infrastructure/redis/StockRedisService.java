@@ -14,6 +14,7 @@ public class StockRedisService {
     private final StringRedisTemplate redis;
     private final DefaultRedisScript<Long> reserveStockScript;
     private final DefaultRedisScript<Long> rollbackRestoreScript;
+    private final DefaultRedisScript<Long> refundRestoreScript;
     private final DefaultRedisScript<Long> confirmCleanupScript;
     private final DefaultRedisScript<Long> setStockScript;
     private final StockRedisKeys keys;
@@ -40,6 +41,17 @@ public class StockRedisService {
                 keys.stockKey(bidId),
                 keys.winnerKey(bidId, allocationKey),
                 keys.idemKey(bidId, idemKey)
+            ),
+            args.rollbackArgs(quantity)
+        );
+    }
+
+    public long refundRestore(UUID bidId, UUID refundId, int quantity) {
+        return redis.execute(
+            refundRestoreScript,
+            List.of(
+                keys.stockKey(bidId),
+                keys.refundKey(bidId, refundId)
             ),
             args.rollbackArgs(quantity)
         );
