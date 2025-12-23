@@ -24,6 +24,12 @@ spring:
   kafka:
     bootstrap-servers: localhost:19092,localhost:29092,localhost:39092
 
+  data:
+    redis:
+      host: redis-bid
+      port: 6379
+      timeout: 2s
+
 eureka:
   client:
     service-url:
