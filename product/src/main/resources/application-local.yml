@@ -3,6 +3,9 @@ spring:
     activate:
       on-profile: local
 
+  elasticsearch:
+    uris: http://localhost:9200
+
   datasource:
     url: jdbc:postgresql://localhost:5432/product
     username: root

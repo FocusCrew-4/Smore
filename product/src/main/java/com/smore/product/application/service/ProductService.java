@@ -1,6 +1,5 @@
 package com.smore.product.application.service;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.smore.product.domain.entity.ProductStatus;
 import com.smore.product.domain.event.AuctionPendingStartEvent;
 import com.smore.product.domain.event.AuctionStartedEvent;
@@ -11,6 +10,8 @@ import com.smore.product.domain.sale.repository.ProductSaleRepository;
 import com.smore.product.domain.stock.dto.StockLogResponse;
 import com.smore.product.domain.stock.repository.StockLogRepository;
 import com.smore.product.infrastructure.consumer.dto.BidLimitedSaleFinishedEvent;
+import com.smore.product.infrastructure.search.document.ProductDocument;
+import com.smore.product.infrastructure.search.repository.ProductSearchRepository;
 import com.smore.product.presentation.dto.request.CreateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductRequest;
 import com.smore.product.presentation.dto.request.UpdateProductStatusRequest;
@@ -19,26 +20,15 @@ import com.smore.product.domain.entity.Product;
 import com.smore.product.domain.entity.SaleType;
 import com.smore.product.domain.repository.ProductRepository;
 import jakarta.persistence.EntityManager;
-import java.time.Clock;
-import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 
@@ -47,6 +37,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
+    private final ProductSearchRepository productSearchRepository;
     private final ProductSaleRepository productSaleRepository;
     private final StockLogRepository stockLogRepository;
     private final ProductEventPublisher eventPublisher;
@@ -94,6 +85,9 @@ public class ProductService {
 
         eventPublisher.publishLimitedSalePendingStart(event);
 
+        // ES 색인
+        productSearchRepository.save(ProductDocument.from(saved));
+
         return new ProductResponse(product);
     }
 
@@ -139,6 +133,11 @@ public class ProductService {
         if (req.getSaleType() != null) product.changeSaleType(req.getSaleType());
         if (req.getThresholdForAuction() != null) product.changeThreshold(req.getThresholdForAuction());
 
+        // ES 재색인
+        productSearchRepository.save(
+                ProductDocument.from(product)
+        );
+
         return new ProductResponse(product);
     }
 
@@ -150,6 +149,11 @@ public class ProductService {
 
         ProductStatus oldStatus = product.getStatus();
         product.changeStatus(req.getStatus());
+
+        // ES 재색인
+        productSearchRepository.save(
+                ProductDocument.from(product)
+        );
 
         //상태가 ON_SALE로 바뀌는 순간 이벤트 발행
         if (oldStatus != ProductStatus.ON_SALE && req.getStatus() == ProductStatus.ON_SALE) {
@@ -202,6 +206,9 @@ public class ProductService {
         }
 
         product.softDelete(requesterId);
+
+        // ES 문서 제거
+        productSearchRepository.deleteById(productId.toString());
     }
 
     public List<ProductSaleResponse> getProductSales(UUID productId) {
