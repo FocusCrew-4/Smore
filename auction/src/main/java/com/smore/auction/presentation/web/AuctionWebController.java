@@ -33,7 +33,7 @@ public class AuctionWebController {
         @RequestHeader("X-User-Role") String role,
         @PathVariable String auctionId
     ) {
-        if (!role.equals("ADMIN") && !role.equals("CUSTOMER")) {
+        if (!role.equals("ADMIN") && !role.equals("CONSUMER")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error("C401", "권한이 없습니다"));
         }
@@ -53,7 +53,7 @@ public class AuctionWebController {
         @RequestHeader("X-User-Role") String role,
         @PathVariable String auctionId
     ) {
-        if (!role.equals("ADMIN") && !role.equals("CUSTOMER")) {
+        if (!role.equals("ADMIN") && !role.equals("CONSUMER")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error("C401", "권한이 없습니다"));
         }
@@ -72,7 +72,7 @@ public class AuctionWebController {
         @RequestHeader("X-User-Role") String role,
         @PathVariable String auctionId
     ) {
-        if (!role.equals("ADMIN") && !role.equals("CUSTOMER")) {
+        if (!role.equals("ADMIN") && !role.equals("CONSUMER")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error("C401", "권한이 없습니다"));
         }
