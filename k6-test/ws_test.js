@@ -20,6 +20,10 @@ const STEP_SCENARIO_STAGES = [
   { vus: 100 },
   { vus: 150 },
   { vus: 200 },
+  { vus: 250 },
+  { vus: 300 },
+  { vus: 350 },
+  { vus: 400 },
 ];
 
 function buildStepScenarios() {
@@ -50,11 +54,17 @@ const WS_BASE = __ENV.WS_BASE || 'ws://host.docker.internal:6600';
 const HTTP_BASE = __ENV.HTTP_BASE || WS_BASE.replace(/^ws/i, 'http');
 const AUCTION_ID = __ENV.AUCTION_ID || '11111111-1111-1111-1111-111111111111';
 const DEBUG = __ENV.DEBUG === '1';
+const LOG_WS_ERRORS = __ENV.LOG_WS_ERRORS === '1';
+const LOG_INFO_SLOW_MS = __ENV.LOG_INFO_SLOW_MS
+  ? parseInt(__ENV.LOG_INFO_SLOW_MS, 10)
+  : 0;
 const SEND_DELAY_MS = __ENV.SEND_DELAY_MS ? parseInt(__ENV.SEND_DELAY_MS, 10) : 0;
 const SEND_EVERY_MS = __ENV.SEND_EVERY_MS ? parseInt(__ENV.SEND_EVERY_MS, 10) : 1000;
 const SESSION_MS = __ENV.SESSION_MS ? parseInt(__ENV.SESSION_MS, 10) : 10000;
 const BID_PRICE_BASE = __ENV.BID_PRICE_BASE ? parseFloat(__ENV.BID_PRICE_BASE) : 1000;
 const BID_PRICE_STEP = __ENV.BID_PRICE_STEP ? parseFloat(__ENV.BID_PRICE_STEP) : 0.01;
+const BID_PRICE_START = __ENV.BID_PRICE_START ? parseFloat(__ENV.BID_PRICE_START) : null;
+const BID_PRICE_MODE = (__ENV.BID_PRICE_MODE || '').toLowerCase();
 const VU_COUNT = __ENV.SCENARIO_VUS ? parseInt(__ENV.SCENARIO_VUS, 10) : VUS;
 
 function buildQuery(params) {
@@ -112,9 +122,18 @@ function pseudoUuid() {
 }
 
 function nextBidPrice(bidState) {
-  const bidIndex = bidState.baseIndex + bidState.seq;
+  const seq = bidState.seq;
   bidState.seq += 1;
-  const candidate = BID_PRICE_BASE + (bidIndex * BID_PRICE_STEP);
+  const base = BID_PRICE_START !== null ? BID_PRICE_START : BID_PRICE_BASE;
+  let candidate;
+  if (BID_PRICE_MODE === 'global-seq') {
+    const globalIndex = (seq * VU_COUNT) + (__VU - 1);
+    candidate = base + (globalIndex * BID_PRICE_STEP);
+  } else if (BID_PRICE_START !== null) {
+    candidate = base + (seq * BID_PRICE_STEP);
+  } else {
+    candidate = BID_PRICE_BASE + ((bidState.baseIndex + seq) * BID_PRICE_STEP);
+  }
   const minBased = bidState.minBid !== null
     ? bidState.minBid + BID_PRICE_STEP
     : null;
@@ -243,6 +262,16 @@ export default function () {
   if (DEBUG && __ITER === 0) {
     console.log(`sockjs info status=${infoRes.status}`);
   }
+  if (
+    LOG_INFO_SLOW_MS > 0
+    && infoRes
+    && infoRes.timings
+    && infoRes.timings.duration > LOG_INFO_SLOW_MS
+  ) {
+    console.warn(
+      `slow info: status=${infoRes.status} duration_ms=${infoRes.timings.duration}`
+    );
+  }
 
   const res = ws.connect(
     wsUrl,
@@ -344,6 +373,11 @@ export default function () {
   if (DEBUG && __ITER === 0) {
     console.log(
       `ws.connect status=${res && res.status} error=${res && res.error} code=${res && res.error_code}`
+    );
+  }
+  if (LOG_WS_ERRORS && res && res.status !== 101) {
+    console.warn(
+      `ws.connect failed status=${res.status} error=${res.error} code=${res.error_code}`
     );
   }
 
