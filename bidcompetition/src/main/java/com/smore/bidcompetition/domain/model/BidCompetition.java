@@ -106,12 +106,12 @@ public class BidCompetition {
             .build();
     }
 
-    public boolean isExpired(LocalDateTime now) {
+    public boolean isEnd(LocalDateTime now) {
         return this.endAt.isBefore(now);
     }
 
-    public boolean isNotActive() {
-        return this.bidStatus != BidStatus.ACTIVE;
+    public boolean isNotAvailable() {
+        return this.bidStatus != BidStatus.ACTIVE && this.bidStatus != BidStatus.CLOSED;
     }
 
     public boolean isEnd() {
