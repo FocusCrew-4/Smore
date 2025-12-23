@@ -1,15 +1,17 @@
 package com.smore.payment.payment.application;
 
+import com.smore.payment.payment.application.facade.FeePolicyFacade;
+import com.smore.payment.payment.application.facade.dto.FeePolicyResult;
 import com.smore.payment.payment.application.port.in.ApprovePaymentCommand;
 import com.smore.payment.payment.application.port.in.ApprovePaymentResult;
 import com.smore.payment.payment.application.port.in.ApprovePaymentUseCase;
-import com.smore.payment.payment.application.port.out.ApiInboxPort;
-import com.smore.payment.payment.application.port.out.PaymentRepository;
-import com.smore.payment.payment.application.port.out.PgClient;
-import com.smore.payment.payment.application.port.out.TemporaryPaymentPort;
+import com.smore.payment.payment.application.port.out.*;
+import com.smore.payment.payment.domain.event.SettlementCalculatedEvent;
 import com.smore.payment.payment.domain.model.Payment;
 import com.smore.payment.payment.domain.model.PgResponseResult;
 import com.smore.payment.payment.domain.model.TemporaryPayment;
+import com.smore.payment.payment.domain.service.SettlementAmountCalculator;
+import com.smore.payment.shared.outbox.OutboxMessageCreator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -24,12 +26,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ApprovePaymentService implements ApprovePaymentUseCase {
 
+    private final ApiInboxPort apiInboxPort;
     private final TemporaryPaymentPort temporaryPaymentPort;
     private final PaymentRepository paymentRepository;
-    private final PgClient pgClient;
-    private final PaymentFinalizeService paymentFinalizeService;
+
     private final PaymentAuditLogService paymentAuditLogService;
-    private final ApiInboxPort apiInboxPort;
+
+    private final PaymentFinalizeCreate paymentFinalizeCreate;
+
+    private final PgClient pgClient;
 
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -89,7 +94,7 @@ public class ApprovePaymentService implements ApprovePaymentUseCase {
 
         try {
             // 결제 내역 저장 및 수수료 정책 조회하여 정산금 계산 후 이벤트 발행
-            Payment payment = paymentFinalizeService.finalizePayment(temp, pgResult);
+            Payment payment = paymentFinalizeCreate.finalizePayment(temp, pgResult);
 
             // 결제 승인 완료 감사 로그 작성
             paymentAuditLogService.logPaymentApprovalSucceeded(payment);

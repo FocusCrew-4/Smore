@@ -77,7 +77,7 @@ public class OutboxMessageCreator {
     public OutboxMessage settlementCalculated(SettlementCalculatedEvent event) {
         return new OutboxMessage(
                 "SETTLEMENT",
-                UUID.randomUUID(),
+                event.idempotencyKey(),
                 event.getClass().getSimpleName(),
                 event.idempotencyKey(),
                 sellerApprovedTopic,
@@ -116,7 +116,7 @@ public class OutboxMessageCreator {
     public OutboxMessage settlementCompleted(SettlementSuccessEvent event) {
         return new OutboxMessage(
                 "SETTLEMENT_SUCCESS",
-                UUID.randomUUID(),
+                event.idempotencyKey(),
                 event.getClass().getSimpleName(),
                 UUID.randomUUID(),
                 sellerSuccessTopic,
@@ -129,7 +129,7 @@ public class OutboxMessageCreator {
     public OutboxMessage settlementFailed(SettlementFailedEvent event) {
         return new OutboxMessage(
                 "SETTLEMENT_FAILED",
-                UUID.randomUUID(),
+                event.idempotencyKey(),
                 event.getClass().getSimpleName(),
                 UUID.randomUUID(),
                 sellerFailedTopic,
@@ -142,7 +142,7 @@ public class OutboxMessageCreator {
     public OutboxMessage settlementDlt(SettlementFailedEvent event) {
         return new OutboxMessage(
                 "SETTLEMENT_FAILED",
-                UUID.randomUUID(),
+                event.idempotencyKey(),
                 event.getClass().getSimpleName(),
                 UUID.randomUUID(),
                 sellerDltTopic,

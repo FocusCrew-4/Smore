@@ -21,7 +21,7 @@ public class WebClientConfig {
     @Bean
     public WebClient tossApproveWebClient() {
         String encoded = Base64.getEncoder()
-                .encodeToString(("test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6:")
+                .encodeToString((pgSecretKey)
                         .getBytes(StandardCharsets.UTF_8));
 
         return WebClient.builder()
@@ -35,7 +35,7 @@ public class WebClientConfig {
     public WebClient tossFailWebClient() {
 
         String encoded = Base64.getEncoder()
-                .encodeToString(("test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6:")
+                .encodeToString((pgSecretKey)
                         .getBytes(StandardCharsets.UTF_8));
 
         return WebClient.builder()

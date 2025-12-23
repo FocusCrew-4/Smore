@@ -4,6 +4,7 @@ import com.smore.payment.payment.application.facade.FeePolicyFacade;
 import com.smore.payment.payment.application.facade.dto.FeePolicyResult;
 import com.smore.payment.payment.application.port.out.OutboxPort;
 import com.smore.payment.payment.application.port.out.PaymentRepository;
+import com.smore.payment.payment.application.port.out.SellerSettlementLedgerRepository;
 import com.smore.payment.payment.application.port.out.TemporaryPaymentPort;
 import com.smore.payment.payment.domain.event.SettlementCalculatedEvent;
 import com.smore.payment.payment.domain.model.Payment;
@@ -17,14 +18,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class PaymentFinalizeService {
+public class PaymentFinalizeCreate {
 
-    private final FeePolicyFacade feePolicyFacade;
-    private final OutboxMessageCreator outboxMessageCreator;
-    private final SettlementAmountCalculator settlementAmountCalculator;
-    private final OutboxPort outboxPort;
     private final PaymentRepository paymentRepository;
+    private final FeePolicyFacade feePolicyFacade;
+    private final SellerSettlementLedgerRepository sellerSettlementLedgerRepository;
     private final TemporaryPaymentPort temporaryPaymentPort;
+
+    private final SettlementAmountCalculator settlementAmountCalculator;
+
+    private final OutboxPort outboxPort;
+    private final OutboxMessageCreator outboxMessageCreator;
 
     @Transactional
     public Payment finalizePayment(
@@ -55,6 +59,14 @@ public class PaymentFinalizeService {
                         settlementAmountCalculator.calculate(payment.getAmount(), policy)
                 );
 
+        sellerSettlementLedgerRepository.saveLedger(
+                payment.getSellerId(),
+                "EARN",
+                settlementEvent.settlementAmount(),
+                payment.getId(),
+                payment.getIdempotencyKey()
+        );
+
         outboxPort.save(outboxMessageCreator.paymentApproved(payment.createApprovedEvent()));
         outboxPort.save(outboxMessageCreator.settlementCalculated(settlementEvent));
 
@@ -62,4 +74,5 @@ public class PaymentFinalizeService {
 
         return payment;
     }
+
 }

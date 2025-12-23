@@ -2,7 +2,6 @@ package com.smore.payment.payment.infrastructure.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smore.payment.payment.application.PaymentSettlementService;
 import com.smore.payment.payment.application.event.inbound.PaymentSettlementRequestEvent;
 import com.smore.payment.payment.application.port.in.SettlePaymentUseCase;
 import com.smore.payment.payment.infrastructure.kafka.dto.SettlementRequestEvent;

@@ -2,6 +2,7 @@ package com.smore.payment.payment.application;
 
 import com.smore.payment.payment.application.event.inbound.PaymentRefundEvent;
 import com.smore.payment.payment.application.event.outbound.PaymentRefundFailedEvent;
+import com.smore.payment.payment.application.event.outbound.PaymentRefundSucceededEvent;
 import com.smore.payment.payment.application.facade.CancelPolicyFacade;
 import com.smore.payment.payment.application.facade.RefundPolicyFacade;
 import com.smore.payment.payment.application.facade.dto.CancelPolicyResult;
@@ -11,9 +12,12 @@ import com.smore.payment.payment.application.port.out.OutboxPort;
 import com.smore.payment.payment.application.port.out.PaymentRepository;
 import com.smore.payment.payment.application.port.out.PgClient;
 import com.smore.payment.payment.domain.model.Payment;
+import com.smore.payment.payment.domain.model.PaymentStatus;
 import com.smore.payment.payment.domain.model.PgResponseResult;
 import com.smore.payment.payment.domain.service.RefundCalculator;
 import com.smore.payment.payment.domain.service.RefundDecision;
+import com.smore.payment.payment.infrastructure.persistence.inbox.RefundInbox;
+import com.smore.payment.payment.infrastructure.persistence.inbox.RefundInboxRepository;
 import com.smore.payment.shared.outbox.OutboxMessage;
 import com.smore.payment.shared.outbox.OutboxMessageCreator;
 import lombok.RequiredArgsConstructor;
@@ -27,15 +31,11 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class PaymentRefundService implements RefundPaymentUseCase {
 
-    private final PaymentRepository paymentRepository;
-    private final CancelPolicyFacade cancelPolicyFacade;
-    private final RefundPolicyFacade refundPolicyFacade;
     private final PgClient pgClient;
-    private final OutboxMessageCreator outboxCreator;
-    private final OutboxPort outboxPort;
-    private final RefundCalculator refundCalculator;
+
     private final PaymentAuditLogService paymentAuditLogService;
-    private final RefundFinalizeService refundFinalizeService;
+
+    private final PaymentFinalizeRefund paymentFinalizeRefund;
 
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -43,91 +43,52 @@ public class PaymentRefundService implements RefundPaymentUseCase {
 
         paymentAuditLogService.logRefundRequested(event);
 
-        Payment payment = paymentRepository.findById(event.paymentId())
-                .orElseThrow(() -> new IllegalArgumentException("결제 정보를 찾을 수 없습니다. paymentId=" + event.paymentId()));
-
-        CancelPolicyResult cancelResult = cancelPolicyFacade.findApplicablePolicy(
-                payment.getSellerId(),
-                payment.getCategoryId(),
-                payment.getAuctionType()
-        );
-
-        RefundPolicyResult refundResult = refundPolicyFacade.findApplicablePolicy(
-                payment.getSellerId(),
-                payment.getCategoryId(),
-                payment.getAuctionType()
-        );
-
-
-        RefundDecision refundDecision = refundCalculator.decide(payment, event, cancelResult, refundResult);
-        if (!refundDecision.refundable()) {
-            paymentAuditLogService.logRefundFailed(payment, event, refundDecision.failureReason());
-
-            OutboxMessage failedMsg = outboxCreator.paymentRefundFailed(
-                    PaymentRefundFailedEvent.of(event.orderId(), event.refundId(), event.refundAmount(), refundDecision.failureReason())
-            );
-            outboxPort.save(failedMsg);
+        PaymentFinalizeRefund.PolicyResult policy = paymentFinalizeRefund.policyPhaseTx(event);
+        if (!policy.refundable()) {
             return;
         }
 
-        final BigDecimal refundAmount = refundDecision.refundAmount();
+        paymentFinalizeRefund.markPgRequestedTx(event);
 
         PgResponseResult pgRefundResult;
 
         try {
-
-            paymentAuditLogService.logPgRefundRequested(payment, event, refundAmount);
+            paymentAuditLogService.logPgRefundRequested(policy.payment(), event, policy.refundAmount());
 
             pgRefundResult = pgClient.refund(
-                    payment.getPaymentKey(),
-                    refundAmount,
+                    policy.payment().getPaymentKey(),
+                    policy.refundAmount(),
                     event.refundReason()
             );
 
-            if (!pgRefundResult.pgStatus().equals("CANCELED")) {
-                paymentAuditLogService.logPgRefundFailed(payment, event, pgRefundResult.failureMessage());
-
-                OutboxMessage failedMsg = outboxCreator.paymentRefundFailed(
-                        PaymentRefundFailedEvent.of(event.orderId(), event.refundId(), refundDecision.refundAmount(), pgRefundResult.failureMessage())
-                );
-                outboxPort.save(failedMsg);
-            }
-
-            paymentAuditLogService.logPgRefundSucceeded(payment, event, pgRefundResult);
-
         } catch (RuntimeException e) {
+            paymentAuditLogService.logPgRefundFailed(policy.payment(), event, e.getMessage());
 
-            paymentAuditLogService.logPgRefundFailed(payment, event, e.getMessage());
+            paymentFinalizeRefund.failSystemTx(event, "PG 환불 요청 실패(시스템 오류): " + e.getMessage(), true);
 
-            outboxPort.save(
-                    outboxCreator.refundDlt(
-                            PaymentRefundFailedEvent.of(
-                                    event.orderId(),
-                                    event.refundId(),
-                                    event.refundAmount(),
-                                    "환불 처리 중 시스템 오류 발생: " + e.getMessage()
-                            )
-                    )
-            );
             throw e;
         }
 
+        if (!pgRefundResult.pgStatus().equals("CANCELED")) {
+            paymentAuditLogService.logPgRefundFailed(policy.payment(), event, pgRefundResult.failureMessage());
+
+            paymentFinalizeRefund.failSystemTx(event, "PG 환불 상태 오류: " + pgRefundResult.failureMessage(), false);
+            return;
+        }
+
+        paymentAuditLogService.logPgRefundSucceeded(policy.payment(), event, pgRefundResult);
+
         try {
-            refundFinalizeService.finalizeRefund(pgRefundResult, event);
-            paymentAuditLogService.logRefundSucceeded(payment, event);
+            paymentFinalizeRefund.finalizeRefund(pgRefundResult, event);
+
+            paymentAuditLogService.logRefundSucceeded(policy.payment(), event);
         } catch (RuntimeException e) {
-            paymentAuditLogService.logRefundFailed(payment, event, e.getMessage());
-            outboxPort.save(
-                    outboxCreator.refundDlt(
-                            PaymentRefundFailedEvent.of(
-                                    event.orderId(),
-                                    event.refundId(),
-                                    event.refundAmount(),
-                                    "환불 처리 중 시스템 오류 발생: " + e.getMessage()
-                            )
-                    )
-            );
+            paymentAuditLogService.logRefundFailed(policy.payment(), event, e.getMessage());
+
+            paymentFinalizeRefund.failSystemTx(event, "finalize 실패: " + e.getMessage(), true);
             throw e;
         }
     }
+
+
 }
