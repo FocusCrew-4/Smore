@@ -34,9 +34,9 @@ public class WinnerRepositoryImpl implements WinnerRepository {
     }
 
     @Override
-    public Winner findByIdempotencyKey(UUID idempotencyKey) {
+    public Winner findByIdempotencyKey(UUID bidId, UUID idempotencyKey) {
 
-        WinnerEntity entity = winnerJpaRepository.findByIdempotencyKey(idempotencyKey);
+        WinnerEntity entity = winnerJpaRepository.findByIdempotencyKey(bidId, idempotencyKey);
 
         if (entity == null) return null;
 
