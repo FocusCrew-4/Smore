@@ -1,0 +1,64 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  sql:
+    init:
+      mode: always
+
+  datasource:
+    url: jdbc:postgresql://${RDS_END_POINT}/d_order
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    properties:
+      security.protocol: SASL_SSL
+      sasl.mechanism: AWS_MSK_IAM
+      sasl.jaas.config: software.amazon.msk.auth.iam.IAMLoginModule required;
+      sasl.client.callback.handler.class: software.amazon.msk.auth.iam.IAMClientCallbackHandler
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 10
+      properties:
+        enable.idempotence: true
+
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: order-service-consumer-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+
+    listener:
+      ack-mode: manual
+      observation-enabled: true
+
+eureka:
+  client:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  tracing:
+    sampling:
+      probability: 1.0

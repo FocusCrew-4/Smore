@@ -72,6 +72,9 @@ dependencies {
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // MSK 설치
+    implementation 'software.amazon.msk:aws-msk-iam-auth:2.2.0'
 }
 
 dependencyManagement {
