@@ -34,7 +34,11 @@ public class PaymentRefundEventConsumer {
 
     private static final Integer MAX_RETRY = 3;
 
-    @KafkaListener(topics = "order.refund.v1")
+    @KafkaListener(
+            topics = "order.refund.v1",
+            groupId = "consumer.refund.group",
+            concurrency = "3"
+    )
     public void handle(String message, Acknowledgment ack) throws JsonProcessingException {
         PaymentRefundRequestEvent event = objectMapper.readValue(message, PaymentRefundRequestEvent.class);
 

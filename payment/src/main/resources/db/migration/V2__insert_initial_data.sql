@@ -12,17 +12,17 @@ INSERT INTO fee_policies (
     created_at,
     updated_at
 ) VALUES
-      (
-          '1b5e6f7a-8b9c-4dad-9e0f-1a2b3c4d5e6f',
-          'MERCHANT',
-          '2002',
-          'RATE',
-          0.02,
-          500.0,
-          true,
-          now(),
-          now()
-      );
+    (
+        gen_random_uuid(),
+        'MERCHANT',
+        '2002',
+        'RATE',
+        0.02,
+        500.0,
+        true,
+        now(),
+        now()
+    );
 
 -- Cancel policies
 INSERT INTO cancel_policies (
@@ -39,7 +39,7 @@ INSERT INTO cancel_policies (
     updated_at
 ) VALUES
       (
-          '5f0a1b2c-3d4e-5f6a-9b7c-8d9e0f1a2b3k',
+          gen_random_uuid(),
           'MERCHANT',
           '2002',
           1800000000000,   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
@@ -52,7 +52,7 @@ INSERT INTO cancel_policies (
           now()
       ),
       (
-          '3d8e9f0a-1b2c-4d3e-9f4a-5b6c7d8e9f0a',
+          gen_random_uuid(),
           'AUCTION_TYPE',
           'BID',
           1800000000000,   -- 30 minutes = 1800초 = 1,800,000,000,000 ns
@@ -65,7 +65,7 @@ INSERT INTO cancel_policies (
           now()
       ),
       (
-          '3d8e9f0a-1b2c-4d3e-9f4a-5b6c7d8e9f0b',
+          gen_random_uuid(),
           'AUCTION_TYPE',
           'AUCTION',
           10000000000,   -- 1 minutes = 1800초 = 1,800,000,000,000 ns
@@ -93,7 +93,7 @@ INSERT INTO refund_policies (
     updated_at
 ) VALUES
       (
-          '5f0a1b2c-3d4e-5f6a-9b7c-8d9e0f1a2b3a',
+          gen_random_uuid(),
           'MERCHANT',
           '2002',
           259200000000000,   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
@@ -106,7 +106,7 @@ INSERT INTO refund_policies (
           now()
       ),
       (
-          '5f0a1b2c-3d4e-5f6a-9b7c-8d9e0f1a2b3c',
+          gen_random_uuid(),
           'AUCTION_TYPE',
           'BID',
           259200000000000,   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
@@ -119,7 +119,7 @@ INSERT INTO refund_policies (
           now()
       ),
       (
-          '5f0a1b2c-3d4e-5f6a-9b7c-8d9e0f1a2b3d',
+          gen_random_uuid(),
           'AUCTION_TYPE',
           'AUCTION',
           259200000000000,   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns

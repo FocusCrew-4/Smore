@@ -19,7 +19,11 @@ public class PaymentSettlementEventConsumer {
     private final SettlePaymentUseCase paymentSettlementService;
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "seller.settlement.v1")
+    @KafkaListener(
+            topics = "seller.settlement.v1",
+            groupId = "consumer.settlement.group",
+            concurrency = "3"
+    )
     public void handle(String message, Acknowledgment ack) throws JsonProcessingException {
         SettlementRequestEvent event = objectMapper.readValue(message, SettlementRequestEvent.class);
 
