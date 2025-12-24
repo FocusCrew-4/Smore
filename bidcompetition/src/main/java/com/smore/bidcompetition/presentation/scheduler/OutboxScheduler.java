@@ -24,10 +24,10 @@ public class OutboxScheduler {
         EventStatus.PENDING
     );
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 1000)
     public void outboxTasks() {
         int page = 0;
-        int pageSize = 100;
+        int pageSize = 50;
 
         while (true) {
             Page<Long> taskIds = outboxRepository.findPendingIds(

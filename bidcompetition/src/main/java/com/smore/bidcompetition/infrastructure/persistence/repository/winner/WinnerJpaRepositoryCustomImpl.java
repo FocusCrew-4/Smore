@@ -25,12 +25,13 @@ public class WinnerJpaRepositoryCustomImpl implements WinnerJpaRepositoryCustom{
     private final EntityManager em;
 
     @Override
-    public WinnerEntity findByIdempotencyKey(UUID idempotencyKey) {
+    public WinnerEntity findByIdempotencyKey(UUID bidId, UUID idempotencyKey) {
 
         return queryFactory
             .select(winnerEntity)
             .from(winnerEntity)
             .where(
+                winnerEntity.bidId.eq(bidId),
                 winnerEntity.idempotencyKey.eq(idempotencyKey)
             )
             .fetchOne();

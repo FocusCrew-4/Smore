@@ -24,7 +24,7 @@ public class KafkaConfig {
     @Bean
     public NewTopic bidWinnerConfirmTopic() {
         return TopicBuilder.name(bidWinnerConfirm)
-            .partitions(3)
+            .partitions(5)
             .replicas(3)
             .build();
     }

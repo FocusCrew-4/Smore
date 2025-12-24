@@ -25,6 +25,12 @@ spring:
   kafka:
     bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
 
+  data:
+    redis:
+      host: redis-stack
+      port: 6379
+      timeout: 10s
+
 eureka:
   client:
     service-url:
@@ -44,7 +50,7 @@ management:
         include: health,info,prometheus
   tracing:
     sampling:
-      probability: 1.0
+      probability: 0.1
   zipkin:
     tracing:
       endpoint: http://zipkin:9411/api/v2/spans

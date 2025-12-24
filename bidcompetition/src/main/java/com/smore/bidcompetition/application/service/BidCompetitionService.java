@@ -27,8 +27,11 @@ import com.smore.bidcompetition.infrastructure.persistence.event.outbound.BidEve
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.BidProductInventoryAdjustedEvent;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.InventoryConfirmationTimeOutEvent;
 import com.smore.bidcompetition.infrastructure.persistence.event.outbound.WinnerCreatedEvent;
+import com.smore.bidcompetition.infrastructure.redis.StockRedisService;
 import com.smore.bidcompetition.presentation.dto.BidResponse;
+import io.lettuce.core.RedisCommandTimeoutException;
 import io.micrometer.tracing.Tracer;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -36,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BidCompetitionService {
 
+    private final RedisTemplate<Object, Object> redisTemplate;
     @Value("${app.allocation.valid-duration}")
     private long validDurationSeconds;
 
@@ -54,6 +59,7 @@ public class BidCompetitionService {
     private final WinnerRepository winnerRepository;
     private final OutboxRepository outboxRepository;
     private final BidInventoryLogRepository bidInventoryLogRepository;
+    private final StockRedisService stockRedisService;
     private final Tracer tracer;
     private final ObjectMapper objectMapper;
     private final Clock clock;
@@ -81,143 +87,250 @@ public class BidCompetitionService {
             command.getEndAt()
         );
 
-        bidCompetitionRepository.save(newBid);
+        BidCompetition saved = bidCompetitionRepository.save(newBid);
+
+        try {
+            long setResult = stockRedisService.setStock(saved.getId(), saved.getTotalQuantity());
+
+            if (setResult == -1L) {
+                log.error("재고 초기화 실패: bidId={}, stock={}", saved.getId(), saved.getTotalQuantity());
+            } else if (setResult == 0L) {
+                log.info("이미 재고 키가 존재합니다. bidId={}", saved.getId());
+            } else {
+                log.info("재고 초기화 완료: bidId={}, stock={}", saved.getId(), setResult);
+            }
+        } catch (Exception e) {
+            log.error("재고 초기화 중 예외 발생. bidId={}", saved.getId(), e);
+        }
     }
 
     @Transactional
     public BidResponse competition(CompetitionCommand command) {
 
         LocalDateTime now = LocalDateTime.now(clock);
-
-        Winner winner = winnerRepository.findByIdempotencyKey(command.getIdempotencyKey());
-
-        if (winner != null) {
-            log.info("이미 처리된 작업입니다. userId : {}, bidId : {} idempotencyKey : {}",
-                command.getUserId(), command.getBidId(), command.getIdempotencyKey());
-            return BidResponse.success(
-                winner.getBidId(),
-                winner.getProductId(),
-                winner.getQuantity(),
-                winner.getAllocationKey(),
-                winner.getExpireAt()
-            );
-        }
-
-        // 비관락
-        BidCompetition bid = bidCompetitionRepository.findByIdForUpdate(command.getBidId());
-
         LocalDateTime expireAt = now.plusSeconds(validDurationSeconds);
+        UUID allocationKey = UUID.nameUUIDFromBytes(
+            ("ALLOC:" + command.getBidId() + ":" + command.getIdempotencyKey()).getBytes(StandardCharsets.UTF_8)
+        );
 
-        // 경쟁 상태 점검
-        if (bid.isNotActive() || bid.isExpired(now)) {
-            log.info("판매 경쟁이 종료되었습니다.");
+        long keyTtl = validDurationSeconds + bufferTimeSeconds + 120L;
+
+        try {
+            long reserveResult = stockRedisService.reserve(
+                command.getBidId(),
+                allocationKey.toString(),
+                command.getIdempotencyKey().toString(),
+                command.getUserId().toString(),
+                command.getQuantity(),
+                keyTtl
+            );
+
+            // 처리중이거나 이미 처리된 작업
+            if (reserveResult == -2L) {
+
+                Winner winner = winnerRepository.findByIdempotencyKey(command.getBidId(), command.getIdempotencyKey());
+
+                if (winner != null) {
+                    return BidResponse.success(
+                        winner.getBidId(),
+                        winner.getQuantity(),
+                        winner.getAllocationKey(),
+                        winner.getExpireAt()
+                    );
+                }
+
+                return BidResponse.processing(
+                    command.getBidId(),
+                    command.getQuantity(),
+                    allocationKey,
+                    "처리중/중복 요청"
+                );
+            }
+
+            if (reserveResult != 1L) {
+                return BidResponse.fail(
+                    command.getBidId(),
+                    command.getQuantity(),
+                    "재고 부족 또는 확보 실패"
+                );
+            }
+        } catch (RedisCommandTimeoutException e) {
+            return BidResponse.processing(
+                command.getBidId(),
+                command.getQuantity(),
+                allocationKey,
+                "일시적 네트워크 오류. 재시도해주세요."
+            );
+        } catch (Exception e) {
+            log.error("reserve 단계 예외", e);
+
+            stockRedisService.rollback(
+                command.getBidId(),
+                allocationKey.toString(),
+                command.getIdempotencyKey().toString(),
+                command.getQuantity()
+            );
+
             return BidResponse.fail(
                 command.getBidId(),
-                bid.getProductId(),
                 command.getQuantity(),
-                "판매 경쟁이 종료되어 주문을 받을 수 없습니다."
+                "예기치 못한 예외 발생"
             );
         }
 
-        // 재고 확인 및 확보
-        int updated = bidCompetitionRepository.decreaseStock(
-            command.getBidId(),
-            command.getQuantity(),
-            now
-        );
+        try {
+            Winner winner = winnerRepository.findByIdempotencyKey(command.getBidId(), command.getIdempotencyKey());
 
-        // 재고 확보 실패
-        if (updated == 0) {
-            log.info("재고 확보에 실패했습니다 userId : {}, bidId : {}, quantity : {}",
-                command.getUserId(), command.getBidId(), command.getQuantity());
-            return BidResponse.fail(
+            if (winner != null) {
+                log.info("이미 처리된 작업입니다. userId : {}, bidId : {} idempotencyKey : {}",
+                    command.getUserId(), command.getBidId(), command.getIdempotencyKey());
+
+                stockRedisService.rollback(
+                    command.getBidId(),
+                    allocationKey.toString(),
+                    command.getIdempotencyKey().toString(),
+                    command.getQuantity()
+                );
+
+                return BidResponse.success(
+                    winner.getBidId(),
+                    winner.getQuantity(),
+                    winner.getAllocationKey(),
+                    winner.getExpireAt()
+                );
+            }
+
+            // 비관락
+            BidCompetition bid = bidCompetitionRepository.findByIdForUpdate(command.getBidId());
+
+            // 경쟁 상태 점검
+            if (bid.isNotAvailable() || bid.isEnd(now)) {
+                log.info("판매 경쟁이 종료되었습니다.");
+
+                stockRedisService.rollback(
+                    command.getBidId(),
+                    allocationKey.toString(),
+                    command.getIdempotencyKey().toString(),
+                    command.getQuantity()
+                );
+
+                return BidResponse.fail(
+                    command.getBidId(),
+                    command.getQuantity(),
+                    "판매 경쟁이 종료되어 주문을 받을 수 없습니다."
+                );
+            }
+
+            // 재고 확인 및 확보
+            int updated = bidCompetitionRepository.decreaseStock(
                 command.getBidId(),
+                command.getQuantity(),
+                now
+            );
+
+            // 재고 확보 실패
+            if (updated == 0) {
+                log.info("재고 확보에 실패했습니다 userId : {}, bidId : {}, quantity : {}",
+                    command.getUserId(), command.getBidId(), command.getQuantity());
+
+                stockRedisService.rollback(
+                    command.getBidId(),
+                    allocationKey.toString(),
+                    command.getIdempotencyKey().toString(),
+                    command.getQuantity()
+                );
+
+                return BidResponse.fail(
+                    command.getBidId(),
+                    command.getQuantity(),
+                    "재고 확보에 실패했습니다."
+                );
+            }
+
+            Winner newWinner = Winner.create(
+                command.getUserId(),
+                bid.getId(),
                 bid.getProductId(),
                 command.getQuantity(),
-                "재고 확보에 실패했습니다."
+                allocationKey,
+                command.getIdempotencyKey(),
+                now,
+                expireAt
             );
-        }
 
-        log.info("expiredAt : {}", expireAt);
+            // Winner 등록
+            Winner savedWinner = winnerRepository.save(newWinner);
 
-        UUID allocationKey = UUID.randomUUID();
-        Winner newWinner = Winner.create(
-            command.getUserId(),
-            bid.getId(),
-            bid.getProductId(),
-            command.getQuantity(),
-            allocationKey,
-            command.getIdempotencyKey(),
-            now,
-            expireAt
-        );
-
-        // Winner 등록
-        Winner savedWinner = winnerRepository.save(newWinner);
-
-        WinnerCreatedEvent event = WinnerCreatedEvent.of(
-            command.getUserId(),
-            bid.getProductId(),
-            bid.getProductPrice().intValue(), // FIXME: 나중에 수정해야 함
-            command.getQuantity(),
-            bid.getCategoryId(),
-            bid.getSellerId(),
-            allocationKey,
-            expireAt,
-            command.getStreet(),
-            command.getCity(),
-            command.getZipcode()
-        );
-
-        String idempotencyKey = InventoryChangeType.RESERVE.idempotencyKey(
-            String.valueOf(allocationKey)
-        );
-
-        Integer delta = command.getQuantity();
-
-        Integer stockBefore = bid.getStock();
-        Integer stockAfter = stockBefore - delta;
-
-        BidInventoryLog log = BidInventoryLog.create(
-            bid.getId(),
-            savedWinner.getId(),
-            InventoryChangeType.RESERVE,
-            stockBefore,
-            stockAfter,
-            delta,
-            idempotencyKey,
-            now
-        );
-
-        bidInventoryLogRepository.saveAndFlush(log);
-
-        Outbox outbox = Outbox.create(
-            AggregateType.BID,
-            bid.getId(),
-            EventType.BID_WINNER_SELECTED,
-            UUID.randomUUID(),
-            makePayload(event)
-        );
-
-        if (tracer.currentSpan() != null) {
-            outbox.attachTracing(
-                tracer.currentSpan().context().traceId(),
-                tracer.currentSpan().context().spanId()
+            WinnerCreatedEvent event = WinnerCreatedEvent.of(
+                command.getUserId(),
+                bid.getProductId(),
+                bid.getProductPrice().intValue(),
+                command.getQuantity(),
+                bid.getCategoryId(),
+                bid.getSellerId(),
+                allocationKey,
+                expireAt,
+                command.getStreet(),
+                command.getCity(),
+                command.getZipcode()
             );
+
+            String idempotencyKey = InventoryChangeType.RESERVE.idempotencyKey(
+                String.valueOf(allocationKey)
+            );
+
+            Integer delta = command.getQuantity();
+
+            Integer stockBefore = bid.getStock();
+            Integer stockAfter = stockBefore - delta;
+
+            BidInventoryLog log = BidInventoryLog.create(
+                bid.getId(),
+                savedWinner.getId(),
+                InventoryChangeType.RESERVE,
+                stockBefore,
+                stockAfter,
+                delta,
+                idempotencyKey,
+                now
+            );
+
+            bidInventoryLogRepository.saveAndFlush(log);
+
+            Outbox outbox = Outbox.create(
+                AggregateType.BID,
+                bid.getId(),
+                EventType.BID_WINNER_SELECTED,
+                UUID.randomUUID(),
+                makePayload(event)
+            );
+
+            if (tracer.currentSpan() != null) {
+                outbox.attachTracing(
+                    tracer.currentSpan().context().traceId(),
+                    tracer.currentSpan().context().spanId()
+                );
+            }
+
+            outboxRepository.save(outbox);
+
+            return BidResponse.success(
+                savedWinner.getBidId(),
+                savedWinner.getQuantity(),
+                savedWinner.getAllocationKey(),
+                savedWinner.getExpireAt()
+            );
+        } catch (Exception e) {
+
+            stockRedisService.rollback(
+                command.getBidId(),
+                allocationKey.toString(),
+                command.getIdempotencyKey().toString(),
+                command.getQuantity()
+            );
+
+            throw e;
         }
-
-
-
-        // Winner가 등록된 후, 등록되었음을 알리는 이벤트 발행
-        outboxRepository.save(outbox);
-
-        return BidResponse.success(
-            savedWinner.getBidId(),
-            savedWinner.getProductId(),
-            savedWinner.getQuantity(),
-            savedWinner.getAllocationKey(),
-            savedWinner.getExpireAt()
-        );
 
     }
 
@@ -305,6 +418,12 @@ public class BidCompetitionService {
             throw new WinnerConflictException(BidErrorCode.WINNER_CONFLICT);
         }
 
+        stockRedisService.confirmCleanup(
+            winner.getBidId(),
+            winner.getAllocationKey().toString(),
+            winner.getIdempotencyKey().toString()
+        );
+
         return ServiceResult.SUCCESS;
     }
 
@@ -374,6 +493,13 @@ public class BidCompetitionService {
             log.error("예기치 못한 예외로 인해 처리하지 못했습니다. allocationKey : {}", command.getAllocationKey());
             throw new WinnerConflictException(BidErrorCode.WINNER_CONFLICT);
         }
+
+        stockRedisService.rollback(
+            winner.getBidId(),
+            winner.getAllocationKey().toString(),
+            winner.getIdempotencyKey().toString(),
+            winner.getQuantity()
+        );
     }
 
     @Transactional
@@ -479,6 +605,20 @@ public class BidCompetitionService {
                 log.error("동시성 충돌로 인해 작업을 처리하지 못했습니다. allocationKey : {}", command.getAllocationKey());
                 throw new WinnerConflictException(BidErrorCode.WINNER_CONFLICT);
             }
+        }
+
+
+        long restored = stockRedisService.refundRestore(
+            winner.getBidId(),
+            command.getRefundId(),
+            delta
+        );
+        if (restored == 0) {
+            log.info("이미 처리된 환불 복구입니다. bidId={}, refundId={}", winner.getBidId(),
+                command.getRefundId());
+        } else if (restored < 0) {
+            log.error("환불 복구 실패(redis) bidId={}, refundId={}, result={}", winner.getBidId(),
+                command.getRefundId(), restored);
         }
     }
 

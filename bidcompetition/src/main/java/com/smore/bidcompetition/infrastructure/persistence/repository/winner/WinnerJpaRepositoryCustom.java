@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface WinnerJpaRepositoryCustom {
 
-    WinnerEntity findByIdempotencyKey(UUID idempotencyKey);
+    WinnerEntity findByIdempotencyKey(UUID bidId, UUID idempotencyKey);
 
     WinnerEntity findByAllocationKey(UUID allocationKey);
 

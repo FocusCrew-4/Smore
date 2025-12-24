@@ -27,10 +27,10 @@ public class BidScheduler {
 
     // TODO: 페이지 스킵 발생하므로 이를 해결해야 함
     // TODO: @Async 비동기 예외 모니터링/재시도 처리 추가
-    @Scheduled(fixedDelay = 30_000)
+    @Scheduled(fixedDelay = 10_000)
     public void recoveryExpiredStockScheduler() {
         int page = 0;
-        int pageSize = 100;
+        int pageSize = 50;
 
         while (true) {
             Page<UUID> taskIds = bidProcessor.getExpiredWinnerIds(

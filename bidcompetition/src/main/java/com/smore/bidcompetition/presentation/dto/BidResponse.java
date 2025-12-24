@@ -12,7 +12,6 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class BidResponse {
     private UUID bidId;
-    private UUID productId;
     private Integer quantity;
     private UUID allocationKey;
     private String expireAt;
@@ -20,14 +19,12 @@ public class BidResponse {
 
     public static BidResponse success(
         UUID bidId,
-        UUID productId,
         Integer quantity,
         UUID allocationKey,
         LocalDateTime expireAt
     ) {
         return BidResponse.builder()
             .bidId(bidId)
-            .productId(productId)
             .quantity(quantity)
             .allocationKey(allocationKey)
             .expireAt(expireAt.toString())
@@ -37,14 +34,26 @@ public class BidResponse {
 
     public static BidResponse fail(
         UUID bidId,
-        UUID productId,
         Integer quantity,
         String message
     ) {
         return BidResponse.builder()
             .bidId(bidId)
-            .productId(productId)
             .quantity(quantity)
+            .message(message)
+            .build();
+    }
+
+    public static BidResponse processing(
+        UUID bidId,
+        Integer quantity,
+        UUID allocationKey,
+        String message
+    ) {
+        return BidResponse.builder()
+            .bidId(bidId)
+            .quantity(quantity)
+            .allocationKey(allocationKey)
             .message(message)
             .build();
     }

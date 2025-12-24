@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
         ),
         @UniqueConstraint(
             name = "uk_winner_idempotency_key",
-            columnNames = {"idempotency_key"}
+            columnNames = {"bid_id", "idempotency_key"}
         )
     }
 )

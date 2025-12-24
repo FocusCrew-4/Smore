@@ -12,7 +12,7 @@ public interface WinnerRepository {
 
     Winner findById(UUID winnerId);
 
-    Winner findByIdempotencyKey(UUID idempotencyKey);
+    Winner findByIdempotencyKey(UUID bidId, UUID idempotencyKey);
 
     Winner findByAllocationKey(UUID allocationKey);
 
