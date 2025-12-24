@@ -2,6 +2,7 @@ package com.smore.auction.infrastructure.websocket.interceptor;
 
 import com.smore.auction.infrastructure.websocket.manager.AuctionPubManager;
 import com.smore.auction.infrastructure.websocket.manager.AuctionSessionManager;
+import java.nio.file.AccessDeniedException;
 import java.security.Principal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,11 +74,15 @@ public class AuctionStompInterceptor implements ChannelInterceptor {
                 return null; // 이상한 토픽 구독 차단
             }
             String auctionId = extractAuctionId(destination, true);
-            sessionManager.handleSubscribe(
+            boolean isExist = sessionManager.handleSubscribe(
                 accessor.getSessionId(),
                 Long.valueOf(principal.getName()),
                 auctionId
             );
+            if (!isExist) {
+                log.info("경매방이 열려있지 않아 SUBSCRIBE 차단");
+                return null;
+            }
         }
 
         // 3. SEND 검증 (/pub/auction/** 만 처리)
@@ -95,7 +100,8 @@ public class AuctionStompInterceptor implements ChannelInterceptor {
                 pubManager.validateSend(accessor.getSessionId(), auctionId);
             } catch (Exception e) {
                 log.info(String.valueOf(e));
-                log.warn("Unauthorized SEND: session={}, auction={}", accessor.getSessionId(), auctionId);
+                log.warn("Unauthorized SEND: session={}, auction={}", accessor.getSessionId(),
+                    auctionId);
                 return null; // 메시지 브로커로 안 보냄
             }
         }
