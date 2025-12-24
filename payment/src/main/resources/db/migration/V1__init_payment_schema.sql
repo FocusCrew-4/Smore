@@ -20,7 +20,7 @@ CREATE TABLE cancel_policies
     id                   UUID PRIMARY KEY,
     cancel_target_type   VARCHAR(50)  NOT NULL,
     target_key           VARCHAR(255) NOT NULL,
-    cancel_limit_minutes BIGINT,
+    cancel_limit_minutes INTERVAL,
     cancel_fee_type      VARCHAR(50)  NOT NULL,
     rate                 NUMERIC(10, 4),
     fixed_amount         NUMERIC(19, 2),
@@ -39,7 +39,7 @@ CREATE TABLE refund_policies
     id                 UUID PRIMARY KEY,
     refund_target_type VARCHAR(50)  NOT NULL,
     target_key         VARCHAR(255) NOT NULL,
-    refund_period_days BIGINT,
+    refund_period_days INTERVAL,
     refund_fee_type    VARCHAR(50)  NOT NULL,
     rate               NUMERIC(10, 4),
     fixed_amount       NUMERIC(19, 2),
@@ -110,4 +110,21 @@ CREATE TABLE outboxes
     retry_count     INTEGER,
     status          VARCHAR(50),
     created_at      TIMESTAMP
+);
+
+CREATE TABLE refund_inbox
+(
+    id              BIGSERIAL PRIMARY KEY,
+    version         BIGINT,
+    refund_id       UUID         NOT NULL,
+    order_id        UUID         NOT NULL,
+    payment_id      UUID         NOT NULL,
+    idempotency_key UUID,
+    status          VARCHAR(50)  NOT NULL,
+    retry_count     INTEGER      NOT NULL,
+    last_error      VARCHAR(255),
+    pg_refund_key   VARCHAR(255),
+    created_at      TIMESTAMP,
+    updated_at      TIMESTAMP,
+    CONSTRAINT uk_refund_inbox_refund_id UNIQUE (refund_id)
 );

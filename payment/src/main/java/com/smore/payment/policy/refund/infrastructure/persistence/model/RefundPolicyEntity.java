@@ -29,7 +29,7 @@ public class RefundPolicyEntity extends BaseEntity {
     @Column(name = "target_key", nullable = false, updatable = false)
     private String targetKey;
 
-    @Column(name = "refund_period_days")
+    @Column(name = "refund_period_days",  columnDefinition = "interval")
     private Duration refundPeriodDays;
 
     @Enumerated(EnumType.STRING)

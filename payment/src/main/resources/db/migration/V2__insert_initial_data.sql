@@ -42,7 +42,7 @@ INSERT INTO cancel_policies (
           gen_random_uuid(),
           'MERCHANT',
           '2002',
-          1800000000000,   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
+          interval '30 minutes',   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
           'MIXED',
           0.04,
           300,
@@ -55,7 +55,7 @@ INSERT INTO cancel_policies (
           gen_random_uuid(),
           'AUCTION_TYPE',
           'BID',
-          1800000000000,   -- 30 minutes = 1800초 = 1,800,000,000,000 ns
+          interval '30 minutes',   -- 30 minutes = 1800초 = 1,800,000,000,000 ns
           'MIXED',
           0.03,
           250,
@@ -68,7 +68,7 @@ INSERT INTO cancel_policies (
           gen_random_uuid(),
           'AUCTION_TYPE',
           'AUCTION',
-          10000000000,   -- 1 minutes = 1800초 = 1,800,000,000,000 ns
+          interval '30 minutes',   -- 1 minutes = 1800초 = 1,800,000,000,000 ns
           'RATE',
           100.0,
           0.0,
@@ -96,7 +96,7 @@ INSERT INTO refund_policies (
           gen_random_uuid(),
           'MERCHANT',
           '2002',
-          259200000000000,   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
+          interval '3 days',   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
           'MIXED',
           0.04,
           300,
@@ -109,7 +109,7 @@ INSERT INTO refund_policies (
           gen_random_uuid(),
           'AUCTION_TYPE',
           'BID',
-          259200000000000,   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
+          interval '3 days',   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
           'MIXED',
           0.04,
           300,
@@ -122,7 +122,7 @@ INSERT INTO refund_policies (
           gen_random_uuid(),
           'AUCTION_TYPE',
           'AUCTION',
-          259200000000000,   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
+          interval '3 days',   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
           'MIXED',
           0.04,
           300,

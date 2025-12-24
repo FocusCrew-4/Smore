@@ -55,6 +55,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+      type:
+        preferred_duration_jdbc_type: INTERVAL_SECOND
 
   kafka:
     # 로컬에서 Docker로 띄운 브로커 외부 포트에 맞춰 설정 (docker-compose의 EXTERNAL 매핑)
@@ -96,6 +98,7 @@ topic:
     failed: payment.failed.v1
     refund: payment.refund.v1
     refund-fail: payment.refund-fail.v1
+    refund-dlt: payment.refund-dlt.v1
   seller:
     approved: payment.settlement.v1
     success: payment.settlement-success.v1

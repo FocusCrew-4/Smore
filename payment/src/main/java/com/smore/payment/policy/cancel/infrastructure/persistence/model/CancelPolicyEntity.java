@@ -29,7 +29,7 @@ public class CancelPolicyEntity extends BaseEntity {
     @Column(name = "target_key", nullable = false, updatable = false)
     private String targetKey;
 
-    @Column(name = "cancel_limit_minutes")
+    @Column(name = "cancel_limit_minutes",  columnDefinition = "interval")
     private Duration cancelLimitMinutes;
 
     @Enumerated(EnumType.STRING)
