@@ -40,12 +40,7 @@ public class PaymentFinalizeRefund {
     private final OutboxPort outboxPort;
     private final PaymentAuditLogService paymentAuditLogService;
 
-    public record PolicyResult(
-            boolean refundable,
-            BigDecimal refundAmount,
-            String failureReason,
-            Payment payment
-    ) {}
+    private static final Long MAX_RETRY_COUNT = 3L;
 
     /**
      * 1) 정책 판단 + Inbox 상태 갱신 (짧은 TX)
@@ -115,12 +110,30 @@ public class PaymentFinalizeRefund {
                 .orElseThrow();
 
         inbox.increaseRetry(reason);
-        inbox.markFailed(reason);
+
+        boolean retryable = inbox.getRetryCount() <= MAX_RETRY_COUNT;
+
+        if (!retryable) {
+            inbox.markFailed(reason);
+        }
         refundInboxRepository.save(inbox);
 
-        OutboxMessage msg = toDlt
-                ? outboxCreator.refundDlt(PaymentRefundFailedEvent.of(event.orderId(), event.refundId(), event.refundAmount(), reason))
-                : outboxCreator.paymentRefundFailed(PaymentRefundFailedEvent.of(event.orderId(), event.refundId(), event.refundAmount(), reason));
+        PaymentRefundFailedEvent payload =
+                PaymentRefundFailedEvent.of(
+                        event.orderId(),
+                        event.refundId(),
+                        event.refundAmount(),
+                        reason
+                );
+
+        OutboxMessage msg;
+        if (retryable) {
+            msg = outboxCreator.refundRetry(payload);
+        } else if (toDlt) {
+            msg = outboxCreator.refundDlt(payload);
+        } else {
+            msg = outboxCreator.paymentRefundFailed(payload);
+        }
 
         outboxPort.save(msg);
     }
@@ -166,5 +179,13 @@ public class PaymentFinalizeRefund {
                         PaymentRefundSucceededEvent.of(paymentRefundEvent.orderId(), paymentRefundEvent.refundId(), paymentRefundEvent.refundAmount())
                 )
         );
+    }
+
+    public record PolicyResult(
+            boolean refundable,
+            BigDecimal refundAmount,
+            String failureReason,
+            Payment payment
+    ) {
     }
 }

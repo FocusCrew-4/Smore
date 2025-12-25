@@ -54,7 +54,7 @@ public class RedisConfig {
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         Jackson2JsonRedisSerializer<ApprovePaymentResult> serializer =
-                new Jackson2JsonRedisSerializer<>(ApprovePaymentResult.class);
+                new Jackson2JsonRedisSerializer<>(objectMapper, ApprovePaymentResult.class);
 
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());

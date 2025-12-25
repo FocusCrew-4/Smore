@@ -164,4 +164,17 @@ public class OutboxMessageCreator {
                 OutboxStatus.FAILED
         );
     }
+
+    public OutboxMessage refundRetry(PaymentRefundFailedEvent event) {
+        return new OutboxMessage(
+                "REFUND_FAILED",
+                event.orderId(),
+                event.getClass().getSimpleName(),
+                UUID.randomUUID(),
+                orderRefundDltTopic,
+                jsonUtil.jsonToString(event),
+                3,
+                OutboxStatus.FAILED
+        );
+    };
 }

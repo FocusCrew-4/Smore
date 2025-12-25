@@ -15,6 +15,17 @@ INSERT INTO fee_policies (
     (
         gen_random_uuid(),
         'MERCHANT',
+        '2001',
+        'RATE',
+        0.02,
+        500.0,
+        true,
+        now(),
+        now()
+    ),
+    (
+        gen_random_uuid(),
+        'MERCHANT',
         '2002',
         'RATE',
         0.02,
@@ -41,7 +52,7 @@ INSERT INTO cancel_policies (
       (
           gen_random_uuid(),
           'MERCHANT',
-          '2002',
+          '2001',
           interval '30 minutes',   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
           'MIXED',
           0.04,
@@ -95,7 +106,7 @@ INSERT INTO refund_policies (
       (
           gen_random_uuid(),
           'MERCHANT',
-          '2002',
+          '2001',
           interval '3 days',   -- 3 days = 259,200 seconds = 259,200,000,000,000 ns
           'MIXED',
           0.04,

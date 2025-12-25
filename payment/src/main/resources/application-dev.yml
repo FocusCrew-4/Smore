@@ -46,6 +46,10 @@ spring:
     redis:
       host: redis-stack
       port: 6379
+      password: ""
+      database: 0
+      ssl:
+        enabled: false
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
