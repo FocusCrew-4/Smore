@@ -17,13 +17,13 @@ public class AuctionSessionManagerImpl implements AuctionSessionManager {
     private final RedisKeyFactory key;
 
     @Override
-    public void handleSubscribe(String sessionId, Long userId, String auctionId) {
+    public boolean handleSubscribe(String sessionId, Long userId, String auctionId) {
         log.info("구독매니저 진입 경매진행 중인지 확인 후 sub");
 
         Boolean auctionExist = redis.hasKey(key.auctionOpen(auctionId));
         log.info("경매방 검증: {}", redis.hasKey(key.auctionOpen(auctionId)));
         if (!auctionExist) {
-            return;
+            return false;
         }
         // 해당 경매에 참여중인 세션으로 기록 (메시지 발송용)
         redis.opsForSet()
@@ -34,6 +34,8 @@ public class AuctionSessionManagerImpl implements AuctionSessionManager {
         // 세션이 어느 유저Id 로 들어왔는지 기록
         redis.opsForValue()
             .set(key.sessionUser(sessionId), userId.toString());
+
+        return true;
     }
 
     @Override
