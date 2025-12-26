@@ -167,11 +167,11 @@ public class OutboxMessageCreator {
 
     public OutboxMessage refundRetry(PaymentRefundFailedEvent event) {
         return new OutboxMessage(
-                "REFUND_FAILED",
-                event.orderId(),
+                "REFUND_RETRY",
+                event.refundId(),
                 event.getClass().getSimpleName(),
                 UUID.randomUUID(),
-                orderRefundDltTopic,
+                "order.refund.v1",
                 jsonUtil.jsonToString(event),
                 3,
                 OutboxStatus.FAILED
