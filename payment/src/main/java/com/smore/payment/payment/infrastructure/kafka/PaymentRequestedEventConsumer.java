@@ -22,7 +22,11 @@ public class PaymentRequestedEventConsumer {
     private final CreateTemporaryPaymentService createTemporaryPaymentService;
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "order.created.v1")
+    @KafkaListener(
+            topics = "order.created.v1",
+            groupId = "consumer.payment.group",
+            concurrency = "3"
+    )
     public void handle(String message, Acknowledgment ack) throws JsonProcessingException {
         PaymentCreateRequestEvent event = objectMapper.readValue(message, PaymentCreateRequestEvent.class);
 

@@ -1,8 +1,8 @@
 package com.smore.payment.payment.infrastructure.kafka;
 
-import com.smore.payment.global.outbox.OutboxStatus;
-import com.smore.payment.payment.infrastructure.persistence.jpa.model.outbox.OutboxEntity;
-import com.smore.payment.payment.infrastructure.persistence.jpa.repository.outbox.OutboxJpaRepository;
+import com.smore.payment.shared.outbox.OutboxStatus;
+import com.smore.payment.payment.infrastructure.persistence.outbox.OutboxEntity;
+import com.smore.payment.payment.infrastructure.persistence.outbox.OutboxJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,7 +20,6 @@ public class PaymentApprovedOutboxPublisher {
     private final MessageBrokerPublisher messageBrokerPublisher;
 
     @Scheduled(fixedDelay = 5000)
-    @Transactional
     public void publish() {
         log.info("이벤트 발행 시작");
         List<OutboxEntity> pendingMessages = outboxJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
@@ -29,10 +28,9 @@ public class PaymentApprovedOutboxPublisher {
     }
 
     @Scheduled(fixedDelay = 30000)
-    @Transactional
     public void retry() {
         log.info("이벤트 재전송 시작");
-        List<OutboxEntity> pendingMessages = outboxJpaRepository.findTop50ByStatusOrderByCreatedAtAsc(OutboxStatus.FAILED);
+        List<OutboxEntity> pendingMessages = outboxJpaRepository.findTop50ByStatusAndRetryCountGreaterThanOrderByCreatedAtAsc(OutboxStatus.FAILED, 0);
         log.info("재전송 아웃박스 찾아오기 {}", pendingMessages.size());
         send(pendingMessages);
     }
@@ -51,8 +49,10 @@ public class PaymentApprovedOutboxPublisher {
 
             } catch (Exception e) {
 
-                if (message.getRetryCount() <= 1) {
+                if (message.getRetryCount() < 1) {
                     message.markAsFailed();
+                    message.resetRetryCount();
+                    log.warn("out box 재전송 실패 : {}", message.getId());
                 } else {
                     message.decreaseRetryCount();
                 }

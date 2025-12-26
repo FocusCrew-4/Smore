@@ -1,6 +1,6 @@
 package com.smore.payment.payment.infrastructure.config;
 
-import com.smore.payment.payment.infrastructure.persistence.redis.RedisKeyExpirationListener;
+import com.smore.payment.payment.infrastructure.redis.RedisKeyExpirationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

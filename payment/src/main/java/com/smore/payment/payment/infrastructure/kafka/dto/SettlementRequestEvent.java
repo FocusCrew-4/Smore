@@ -1,19 +1,21 @@
 package com.smore.payment.payment.infrastructure.kafka.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@AllArgsConstructor
+@Setter
+@NoArgsConstructor
 public class SettlementRequestEvent {
 
-    private final Long userId;
-    private final BigDecimal amount;
-    private final String accountNumber;
-    private final UUID idempotencyKey;
-    private final LocalDateTime createdAt;
+    private Long userId;
+    private BigDecimal amount;
+    private String accountNumber;
+    private UUID idempotencyKey;
+    private LocalDateTime createdAt;
 }

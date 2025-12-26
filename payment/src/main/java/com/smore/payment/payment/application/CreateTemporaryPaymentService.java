@@ -1,22 +1,21 @@
 package com.smore.payment.payment.application;
 
 import com.smore.payment.payment.application.event.inbound.PaymentRequestedEvent;
-import com.smore.payment.payment.infrastructure.persistence.redis.model.TemporaryPayment;
-import com.smore.payment.payment.domain.repository.RedisRepository;
+import com.smore.payment.payment.application.port.out.TemporaryPaymentPort;
+import com.smore.payment.payment.domain.model.TemporaryPayment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class CreateTemporaryPaymentService {
 
-    private final RedisRepository redisRepository;
+    private final TemporaryPaymentPort temporaryPaymentPort;
+    private final PaymentAuditLogService paymentAuditLogService;
 
-    @Transactional
     public void create(PaymentRequestedEvent paymentRequestedEvent) {
 
-        if (redisRepository.existsByOrderId(paymentRequestedEvent.orderId())) {
+        if (temporaryPaymentPort.existsByOrderId(paymentRequestedEvent.orderId())) {
             return;
         }
 
@@ -31,6 +30,7 @@ public class CreateTemporaryPaymentService {
                 paymentRequestedEvent.expiredAt()
         );
 
-        redisRepository.save(temp);
+        temporaryPaymentPort.save(temp);
+        paymentAuditLogService.logTemporaryPaymentCreated(paymentRequestedEvent);
     }
 }

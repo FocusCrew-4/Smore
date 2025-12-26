@@ -1,7 +1,5 @@
 package com.smore.payment.payment.application;
 
-import com.smore.payment.global.outbox.OutboxMessage;
-import com.smore.payment.global.outbox.OutboxMessageCreator;
 import com.smore.payment.payment.application.event.inbound.PaymentRefundEvent;
 import com.smore.payment.payment.application.event.outbound.PaymentRefundFailedEvent;
 import com.smore.payment.payment.application.event.outbound.PaymentRefundSucceededEvent;
@@ -9,118 +7,88 @@ import com.smore.payment.payment.application.facade.CancelPolicyFacade;
 import com.smore.payment.payment.application.facade.RefundPolicyFacade;
 import com.smore.payment.payment.application.facade.dto.CancelPolicyResult;
 import com.smore.payment.payment.application.facade.dto.RefundPolicyResult;
+import com.smore.payment.payment.application.port.in.RefundPaymentUseCase;
+import com.smore.payment.payment.application.port.out.OutboxPort;
+import com.smore.payment.payment.application.port.out.PaymentRepository;
 import com.smore.payment.payment.application.port.out.PgClient;
 import com.smore.payment.payment.domain.model.Payment;
+import com.smore.payment.payment.domain.model.PaymentStatus;
 import com.smore.payment.payment.domain.model.PgResponseResult;
-import com.smore.payment.payment.domain.repository.OutboxRepository;
-import com.smore.payment.payment.domain.repository.PaymentRepository;
+import com.smore.payment.payment.domain.service.RefundCalculator;
+import com.smore.payment.payment.domain.service.RefundDecision;
+import com.smore.payment.payment.infrastructure.persistence.inbox.RefundInbox;
+import com.smore.payment.payment.infrastructure.persistence.inbox.RefundInboxRepository;
+import com.smore.payment.shared.outbox.OutboxMessage;
+import com.smore.payment.shared.outbox.OutboxMessageCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
-public class PaymentRefundService {
+public class PaymentRefundService implements RefundPaymentUseCase {
 
-    private final PaymentRepository paymentRepository;
-    private final CancelPolicyFacade cancelPolicyFacade;
-    private final RefundPolicyFacade refundPolicyFacade;
     private final PgClient pgClient;
-    private final OutboxMessageCreator outboxCreator;
-    private final OutboxRepository outboxRepository;
 
+    private final PaymentAuditLogService paymentAuditLogService;
+
+    private final PaymentFinalizeRefund paymentFinalizeRefund;
+
+    @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void refund(PaymentRefundEvent event) {
 
-        //
-        // 1) 결제 조회
-        //
-        Payment payment = paymentRepository.findById(event.paymentId())
-                .orElseThrow(() -> new IllegalArgumentException("결제 정보를 찾을 수 없습니다. paymentId=" + event.paymentId()));
+        paymentAuditLogService.logRefundRequested(event);
 
-        //
-        // 2) 취소 정책 조회
-        //
-        CancelPolicyResult cancelResult = cancelPolicyFacade.findApplicablePolicy(
-                payment.getSellerId(),
-                payment.getCategoryId(),
-                payment.getAuctionType()
-        );
-
-        //
-        // 3) 취소 정책 검증
-        //
-        boolean cancelAvailable = cancelResult.cancellable(payment.getApprovedAt(), event.publishedAt());
-        RefundPolicyResult refundResult = null;
-        if (!cancelAvailable) {
-            refundResult = refundPolicyFacade.findApplicablePolicy(
-                    payment.getSellerId(),
-                    payment.getCategoryId(),
-                    payment.getAuctionType()
-            );
-
-            if (!refundResult.refundable(payment.getApprovedAt(), event.publishedAt())) {
-                OutboxMessage failedMsg = outboxCreator.paymentRefundFailed(
-                        PaymentRefundFailedEvent.of(event.orderId(), event.refundId(), event.refundAmount(), "환불이 불가능 한 상품입니다.")
-                );
-                outboxRepository.save(failedMsg);
-                return;
-            }
+        PaymentFinalizeRefund.PolicyResult policy = paymentFinalizeRefund.policyPhaseTx(event);
+        if (!policy.refundable()) {
+            return;
         }
 
-        //
-        // 5) 최종 환불 금액 계산
-        //
-        final BigDecimal refundAmount = (cancelAvailable)
-                ? cancelResult.calculateCancelFee(event.refundAmount())
-                : refundResult.calculateRefundFee(event.refundAmount());
+        paymentFinalizeRefund.markPgRequestedTx(event);
 
-        //
-        // 6) PG 환불 호출
-        //
         PgResponseResult pgRefundResult;
 
         try {
+            paymentAuditLogService.logPgRefundRequested(policy.payment(), event, policy.refundAmount());
+
             pgRefundResult = pgClient.refund(
-                    payment.getPaymentKey(),
-                    refundAmount,
+                    policy.payment().getPaymentKey(),
+                    policy.refundAmount(),
                     event.refundReason()
             );
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            paymentAuditLogService.logPgRefundFailed(policy.payment(), event, e.getMessage());
 
-            // PG 실패 → 환불 실패 이벤트 Outbox 발행
-            OutboxMessage failedMsg = outboxCreator.paymentRefundFailed(
-                    PaymentRefundFailedEvent.of(event.orderId(), event.refundId(), refundAmount, e.getMessage())
-            );
-            outboxRepository.save(failedMsg);
+            paymentFinalizeRefund.failSystemTx(event, "PG 환불 요청 실패(시스템 오류): " + e.getMessage(), true);
 
             throw e;
         }
 
-        //
-        // 7) Payment 엔티티 상태 업데이트
-        //
-        payment.updateRefund(
-                pgRefundResult.cancels().cancelReason(),
-                event.refundAmount(),
-                pgRefundResult.cancels().canceledAt(),
-                pgRefundResult.cancels().cancelTransactionKey(),
-                pgRefundResult.cancels().cancelAmount()
-        );
-        paymentRepository.updateRefund(payment.getId(), payment.getRefund());
+        if (!pgRefundResult.pgStatus().equals("CANCELED")) {
+            paymentAuditLogService.logPgRefundFailed(policy.payment(), event, pgRefundResult.failureMessage());
 
-        // Todo: 환불 후 정산금 어떻게 하지..........
-        //
-        // 8) 환불 성공 이벤트 Outbox 저장
-        //
-        OutboxMessage successMsg = outboxCreator.paymentRefunded(
-                PaymentRefundSucceededEvent.of(event.orderId(), event.refundId(), refundAmount)
-        );
+            paymentFinalizeRefund.failSystemTx(event, "PG 환불 상태 오류: " + pgRefundResult.failureMessage(), false);
+            return;
+        }
 
-        outboxRepository.save(successMsg);
+        paymentAuditLogService.logPgRefundSucceeded(policy.payment(), event, pgRefundResult);
+
+        try {
+            paymentFinalizeRefund.finalizeRefund(pgRefundResult, event);
+
+            paymentAuditLogService.logRefundSucceeded(policy.payment(), event);
+        } catch (RuntimeException e) {
+            paymentAuditLogService.logRefundFailed(policy.payment(), event, e.getMessage());
+
+            paymentFinalizeRefund.failSystemTx(event, "finalize 실패: " + e.getMessage(), true);
+            throw e;
+        }
     }
+
+
 }

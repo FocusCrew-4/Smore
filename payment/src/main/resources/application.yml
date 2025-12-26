@@ -2,11 +2,15 @@ spring:
   application:
     name: payment-service
 
-
 management:
   endpoints:
     web:
-      discovery:
-        enabled: true
       exposure:
-        include: "*"
+        include: prometheus,health,info
+  metrics:
+    tags:
+      application: payment-service
+  endpoint:
+    health:
+      show-details: always
+      show-components: always

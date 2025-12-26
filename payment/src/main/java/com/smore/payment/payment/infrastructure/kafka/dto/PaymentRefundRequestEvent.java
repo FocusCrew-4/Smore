@@ -1,20 +1,22 @@
 package com.smore.payment.payment.infrastructure.kafka.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@AllArgsConstructor
+@Setter
+@NoArgsConstructor
 public class PaymentRefundRequestEvent {
-    private final UUID orderId;
-    private final Long userId;
-    private final UUID refundId;
-    private final UUID paymentId;
-    private final Integer refundAmount;
-    private final UUID idempotencyKey;
-    private final String reason;
-    private final LocalDateTime publishedAt;
+    private UUID orderId;
+    private Long userId;
+    private UUID refundId;
+    private UUID paymentId;
+    private Integer refundAmount;
+    private UUID idempotencyKey;
+    private String reason;
+    private LocalDateTime publishedAt;
 }

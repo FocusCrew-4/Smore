@@ -6,6 +6,7 @@ spring:
     activate:
       on-profile: dev
     import: "optional:configserver:"
+
   cloud:
     config:
       discovery:
@@ -19,7 +20,7 @@ spring:
 
   sql:
     init:
-      mode: always
+      mode: never
 
   datasource:
     url: jdbc:postgresql://postgresql:5432/payment
@@ -31,24 +32,36 @@ spring:
       minimum-idle: 2
       idle-timeout: 30000
       pool-name: HikariPool
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+
   data:
     mongodb:
-      uri: mongodb://mongo_user:mongo_pass@mongo:27017/my_mongo_db?authSource=admin
+      uri: mongodb://root:examplepassword@mongodb:27017/default?authSource=admin
       auto-index-creation: true
     redis:
       host: redis-stack
       port: 6379
-
+      password: ""
+      database: 0
+      ssl:
+        enabled: false
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-    defer-datasource-initialization: true
+      type:
+        preferred_duration_jdbc_type: INTERVAL_SECOND
+
   kafka:
     # 로컬에서 Docker로 띄운 브로커 외부 포트에 맞춰 설정 (docker-compose의 EXTERNAL 매핑)
     bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
@@ -89,6 +102,7 @@ topic:
     failed: payment.failed.v1
     refund: payment.refund.v1
     refund-fail: payment.refund-fail.v1
+    refund-dlt: payment.refund-dlt.v1
   seller:
     approved: payment.settlement.v1
     success: payment.settlement-success.v1

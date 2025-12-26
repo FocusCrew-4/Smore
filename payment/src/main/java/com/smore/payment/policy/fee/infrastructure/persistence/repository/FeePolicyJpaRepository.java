@@ -1,0 +1,12 @@
+package com.smore.payment.policy.fee.infrastructure.persistence.repository;
+
+import com.smore.payment.policy.fee.domain.model.TargetType;
+import com.smore.payment.policy.fee.infrastructure.persistence.model.FeePolicyEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+public interface FeePolicyJpaRepository extends JpaRepository<FeePolicyEntity, UUID> {
+    Optional<FeePolicyEntity> findByTargetTypeAndTargetKey(TargetType targetType, String targetKey);
+}

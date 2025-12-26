@@ -2,8 +2,8 @@ package com.smore.payment.payment.infrastructure.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smore.payment.payment.application.PaymentSettlementService;
 import com.smore.payment.payment.application.event.inbound.PaymentSettlementRequestEvent;
+import com.smore.payment.payment.application.port.in.SettlePaymentUseCase;
 import com.smore.payment.payment.infrastructure.kafka.dto.SettlementRequestEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +16,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PaymentSettlementEventConsumer {
 
-    private final PaymentSettlementService paymentSettlementService;
+    private final SettlePaymentUseCase paymentSettlementService;
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "seller.settlement.v1")
+    @KafkaListener(
+            topics = "seller.settlement.v1",
+            groupId = "consumer.settlement.group",
+            concurrency = "3"
+    )
     public void handle(String message, Acknowledgment ack) throws JsonProcessingException {
         SettlementRequestEvent event = objectMapper.readValue(message, SettlementRequestEvent.class);
 
@@ -33,7 +37,7 @@ public class PaymentSettlementEventConsumer {
                 event.getCreatedAt()
         );
 
-        paymentSettlementService.settlement(paymentSettlementRequestEvent);
+        paymentSettlementService.settle(paymentSettlementRequestEvent);
         ack.acknowledge();
     }
 }
