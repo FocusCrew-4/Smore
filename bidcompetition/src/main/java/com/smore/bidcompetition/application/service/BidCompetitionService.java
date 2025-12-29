@@ -89,19 +89,22 @@ public class BidCompetitionService {
 
         BidCompetition saved = bidCompetitionRepository.save(newBid);
 
-        try {
-            long setResult = stockRedisService.setStock(saved.getId(), saved.getTotalQuantity());
+        Outbox outbox = Outbox.create(
+            AggregateType.BID,
+            saved.getId(),
+            EventType.SAVE_STOCK,
+            UUID.randomUUID(),
+            String.valueOf(saved.getTotalQuantity())
+        );
 
-            if (setResult == -1L) {
-                log.error("재고 초기화 실패: bidId={}, stock={}", saved.getId(), saved.getTotalQuantity());
-            } else if (setResult == 0L) {
-                log.info("이미 재고 키가 존재합니다. bidId={}", saved.getId());
-            } else {
-                log.info("재고 초기화 완료: bidId={}, stock={}", saved.getId(), setResult);
-            }
-        } catch (Exception e) {
-            log.error("재고 초기화 중 예외 발생. bidId={}", saved.getId(), e);
+        if (tracer.currentSpan() != null) {
+            outbox.attachTracing(
+                tracer.currentSpan().context().traceId(),
+                tracer.currentSpan().context().spanId()
+            );
         }
+
+        outboxRepository.save(outbox);
     }
 
     @Transactional
