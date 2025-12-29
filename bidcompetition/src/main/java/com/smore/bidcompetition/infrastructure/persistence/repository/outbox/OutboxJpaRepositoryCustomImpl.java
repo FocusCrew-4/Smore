@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.smore.bidcompetition.domain.status.EventStatus;
 import com.smore.bidcompetition.infrastructure.persistence.entity.QOutboxEntity;
 import jakarta.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,7 @@ public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom 
         long updated = queryFactory
             .update(outboxEntity)
             .set(outboxEntity.eventStatus, eventStatus)
+            .set(outboxEntity.updatedAt, LocalDateTime.now())
             .where(
                 outboxEntity.id.eq(outboxId),
                 outboxEntity.eventStatus.eq(EventStatus.PENDING)
@@ -67,6 +69,7 @@ public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom 
         long updated = queryFactory
             .update(outboxEntity)
             .set(outboxEntity.eventStatus, eventStatus)
+            .set(outboxEntity.updatedAt, LocalDateTime.now())
             .where(
                 outboxEntity.id.eq(outboxId),
                 outboxEntity.eventStatus.eq(EventStatus.PROCESSING)
@@ -85,6 +88,7 @@ public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom 
             .update(outboxEntity)
             .set(outboxEntity.eventStatus, eventStatus)
             .set(outboxEntity.retryCount, outboxEntity.retryCount.add(1))
+            .set(outboxEntity.updatedAt, LocalDateTime.now())
             .where(
                 outboxEntity.id.eq(outboxId),
                 outboxEntity.eventStatus.eq(EventStatus.PROCESSING)
@@ -102,6 +106,7 @@ public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom 
         long updated = queryFactory
             .update(outboxEntity)
             .set(outboxEntity.eventStatus, eventStatus)
+            .set(outboxEntity.updatedAt, LocalDateTime.now())
             .where(
                 outboxEntity.id.eq(outboxId),
                 outboxEntity.eventStatus.eq(EventStatus.PROCESSING),
