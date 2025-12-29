@@ -8,7 +8,9 @@ import com.smore.order.infrastructure.persistence.entity.outbox.OutboxEntity;
 import com.smore.order.infrastructure.persistence.exception.CreateOutboxFailException;
 import com.smore.order.infrastructure.persistence.exception.NotFoundOutboxException;
 import com.smore.order.infrastructure.persistence.mapper.OutboxMapper;
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -52,6 +54,11 @@ public class OutboxRepositoryImpl implements OutboxRepository {
         }
 
         return outboxJpaRepository.findPendingIds(states, pageable);
+    }
+
+    @Override
+    public List<Long> findExpiredProcessingIds(LocalDateTime expiredAt) {
+        return outboxJpaRepository.findExpiredProcessingIds(expiredAt);
     }
 
     @Override
@@ -123,5 +130,10 @@ public class OutboxRepositoryImpl implements OutboxRepository {
         }
 
         return outboxJpaRepository.markFail(outboxId, eventStatus, maxRetryCount);
+    }
+
+    @Override
+    public int bulkResetExpiredProcessingToReady(List<Long> ids) {
+        return outboxJpaRepository.bulkResetExpiredProcessingToReady(ids);
     }
 }

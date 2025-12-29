@@ -46,6 +46,19 @@ public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom 
     }
 
     @Override
+    public List<Long> findExpiredProcessingIds(LocalDateTime expiredAt) {
+
+        return queryFactory
+            .select(outboxEntity.id)
+            .from(outboxEntity)
+            .where(
+                outboxEntity.eventStatus.eq(EventStatus.PROCESSING),
+                outboxEntity.updatedAt.loe(expiredAt)
+            )
+            .fetch();
+    }
+
+    @Override
     public int claim(Long outboxId, EventStatus eventStatus) {
 
         long updated = queryFactory
@@ -111,6 +124,25 @@ public class OutboxJpaRepositoryCustomImpl implements OutboxJpaRepositoryCustom 
                 outboxEntity.id.eq(outboxId),
                 outboxEntity.eventStatus.eq(EventStatus.PROCESSING),
                 outboxEntity.retryCount.goe(maxRetryCount)
+            )
+            .execute();
+
+        em.flush();
+        em.clear();
+
+        return (int) updated;
+    }
+
+    @Override
+    public int bulkResetExpiredProcessingToReady(List<Long> ids) {
+        long updated = queryFactory
+            .update(outboxEntity)
+            .set(outboxEntity.eventStatus, EventStatus.PENDING)
+            .set(outboxEntity.retryCount, outboxEntity.retryCount.add(1))
+            .set(outboxEntity.updatedAt, LocalDateTime.now())
+            .where(
+                outboxEntity.id.in(ids),
+                outboxEntity.eventStatus.eq(EventStatus.PROCESSING)
             )
             .execute();
 
