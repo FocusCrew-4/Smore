@@ -44,6 +44,7 @@ public class OutboxHandlerFactory {
             case BID_RESULT_FINALIZED -> new BidResultFinalizedHandler(tracer, propagator, bidResultFinalizedTopic, kafkaTemplate, outbox);
             case BID_INVENTORY_CONFIRM_TIMEOUT -> new InventoryConfirmTimeout(tracer, propagator, bidInventoryConfirmTimeoutTopic, kafkaTemplate, outbox);
             case SAVE_STOCK -> new SaveStockHandler(tracer, propagator, stockRedisService, outbox);
+            case DELETE_STOCK -> new ClearStockHandler(tracer, propagator, stockRedisService, outbox);
             default -> throw new IllegalArgumentException(
                 "지원되지 않은 이벤트입니다." + outbox.getEventType()
             );
