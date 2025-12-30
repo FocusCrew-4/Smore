@@ -76,6 +76,23 @@ public class BidEndFinalizer {
         }
 
         outboxRepository.save(outbox);
+
+        Outbox redisOutbox = Outbox.create(
+            AggregateType.BID,
+            bid.getId(),
+            EventType.DELETE_STOCK,
+            UUID.randomUUID(),
+            ""
+        );
+
+        if (tracer.currentSpan() != null) {
+            redisOutbox.attachTracing(
+                tracer.currentSpan().context().traceId(),
+                tracer.currentSpan().context().spanId()
+            );
+        }
+
+        outboxRepository.save(redisOutbox);
     }
 
     private String makePayload(BidEvent event)  {

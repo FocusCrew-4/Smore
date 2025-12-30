@@ -74,4 +74,9 @@ public class StockRedisService {
             String.valueOf(stockQuantity)
         );
     }
+
+    public boolean deleteStock(UUID bidId) {
+        Boolean deleted = redis.delete(keys.stockKey(bidId));
+        return Boolean.TRUE.equals(deleted);
+    }
 }
