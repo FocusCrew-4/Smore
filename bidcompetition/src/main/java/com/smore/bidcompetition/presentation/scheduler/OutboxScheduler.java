@@ -4,6 +4,8 @@ package com.smore.bidcompetition.presentation.scheduler;
 import com.smore.bidcompetition.application.repository.OutboxRepository;
 import com.smore.bidcompetition.application.service.OutboxProcessor;
 import com.smore.bidcompetition.domain.status.EventStatus;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,5 +50,18 @@ public class OutboxScheduler {
             if (!taskIds.hasNext()) break;
             page++;
         }
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void recoverExpiredProcessing() {
+        LocalDateTime expiredAt = LocalDateTime.now().minusMinutes(2);
+
+        List<Long> expiredProcessingIds = outboxRepository.findExpiredProcessingIds(expiredAt);
+
+        if (expiredProcessingIds.isEmpty()) {
+            return;
+        }
+
+        int updated = outboxRepository.bulkResetExpiredProcessingToReady(expiredProcessingIds);
     }
 }
