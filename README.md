@@ -92,7 +92,8 @@ Smore는
 ---
 
 ### 시스템 아키텍처 
-<img width="2742" height="1800" alt="image" src="https://github.com/user-attachments/assets/7eb69486-7b58-4c84-a0ba-e7717b377318" />
+<img width="2338" height="1314" alt="CleanShot 2026-09-04 at 19 15 07@2x" src="https://github.com/user-attachments/assets/dfc5b851-f7d4-4444-9fe4-d93dee7971b2" />
+
 
 ### ERD
 <img width="3912" height="2160" alt="image" src="https://github.com/user-attachments/assets/f5066131-f087-41fb-9c19-54c1d409bad4" />
